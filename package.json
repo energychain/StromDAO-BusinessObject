@@ -1,0 +1,34 @@
+{
+  "name": "stromdao-businessobject",
+  "version": "0.1.0",
+  "description": "Abstract BusinessObject for StromDAO Energy Blockchain. Abstraction layer between blockchain technology and business logic providing energy market related entities and use cases.",
+  "main": "StromDAONode.js",
+  "scripts": {
+    "test": "mocha --harmony"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/energychain/StromDAO-BusinessObject.git"
+  },
+  "keywords": [
+    "blockchain",
+    "energy",
+    "businessobject",
+    "power",
+    "delivery",
+    "smartmeter",
+    "abstraction",
+    "stromdao"
+  ],
+  "author": "Thorsten Zoerner <me@thorsten-zoerner.com> (https://blog.stromhaltig.de)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/energychain/StromDAO-BusinessObject/issues"
+  },
+  "homepage": "https://github.com/energychain/StromDAO-BusinessObject#readme",
+  "dependencies": {
+    "ethers": "^2.0.3",
+    "mocha": "^3.2.0",
+    "node-persist": "^2.0.10"
+  }
+}

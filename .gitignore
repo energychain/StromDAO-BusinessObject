@@ -1,0 +1,9 @@
+node_modules/ 
+npm-debug.log
+tmp/ 
+key.ring/
+orbit-db/
+orbit/
+test.js
+.node-persist/
+chainspec/chains/stromdao_poa
