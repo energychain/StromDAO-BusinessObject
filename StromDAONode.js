@@ -12,7 +12,14 @@ module.exports = {
     Node:function(options) {
         parent = this;
 		
-		
+		this._createNewPK = function() {		
+		    var getRandomValues = require('get-random-values'); 
+			var array = new Uint8Array(32);	
+			
+			var pk = ethers.utils.keccak256(getRandomValues(array));	
+			
+			return pk;
+		}
 		this._keepObjRef=function(address,contract_type) {
 			if(typeof parent.objRef[contract_type]=="undefined") {
 					parent.objRef[contract_type] = {};
@@ -120,8 +127,8 @@ module.exports = {
               options.privateKey=storage.getItemSync("ext:"+options.external_id);      
               if(typeof options.privateKey=="undefined") {
                   this.options=options;
-                  this.wallet = new ethers.Wallet.createRandom(this.options);
-                  options.privateKey=this.wallet.privateKey;				  
+                  //this.wallet = new ethers.Wallet.createRandom(this.options);				  
+                  options.privateKey=this._createNewPK();					  			  
                   storage.setItemSync("ext:"+options.external_id,options.privateKey);
               }
         } else
