@@ -6,7 +6,7 @@ var assert = require('assert');
 var StromDAONode = require("../StromDAONode.js");    
 
 describe('SmartMeter', function() {
-	this.timeout(30000);
+	this.timeout(60000);
 	
 	var known_gwalink = '0x119AA4A3C2C7287f99FCBB41C5a78a8Dc15d1338';
 	var external_id = Math.random()*10000000; 
