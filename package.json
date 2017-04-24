@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Abstract BusinessObject for StromDAO Energy Blockchain. Abstraction layer between blockchain technology and business logic providing energy market related entities and use cases.",
   "main": "StromDAONode.js",
+  "engines" : { "node" : ">=0.12" },
   "scripts": {
     "test": "mocha --harmony"
   },
