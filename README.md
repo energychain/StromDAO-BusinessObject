@@ -1,6 +1,10 @@
 # StromDAO-BusinessObject
 Abstract BusinessObject for StromDAO Energy Blockchain. Abstraction layer between blockchain technology and business logic providing energy market related entities and use cases.
 
+![Build Status](https://codeship.com/projects/214849/status?branch=master)
+
+
+
 ## Entities 
 
 ### SmartMeter [Reading]
