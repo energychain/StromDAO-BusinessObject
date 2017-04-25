@@ -57,6 +57,7 @@ describe('PowerDelivery', function() {
 													done2();													
 											});
 									});	
+									/*
 									it('Set new Reading, endure to false, execute clearing (n2n test)', function(done2) {
 											node.gwalink(known_gwalink).then(
 													function(gwalink) {
@@ -85,6 +86,7 @@ describe('PowerDelivery', function() {
 														});															
 										});
 									});
+									*/
 									/*
 									it('Check cost_sum 1.000.000', function(done2) {
 											pdcontract.obj.cost_sum().then(function(o) {

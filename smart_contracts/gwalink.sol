@@ -7,7 +7,7 @@ pragma solidity ^0.4.10;
  * Lieferanten/Abnehmer Managements in einem HSM oder P2P Markt ohne zentrale
  * Kontrollstelle.
  * 
- * Kontakt V0.1.3: 
+ * Kontakt V0.1.4: 
  * Thorsten Zoerner <thorsten.zoerner(at)stromdao.de)
  * https://stromdao.de/
  */
@@ -135,7 +135,28 @@ contract StromDAOReading is owned {
    }
 }
 
-contract PDclearing is owned {
+
+contract PDclearingStub is owned {
+    BalancerOracles public stromkonto;
+    mapping(address=>PrivatePDcontract) public pds;
+    
+    function PDclearingStub(BalancerOracles _stromkonto) {
+        stromkonto=_stromkonto;
+    }
+    
+    function execute(PrivatePDcontract _pd) onlyOwner {
+        _pd.execute();
+        //stromkonto.addTx(_pd.to(),_pd.from(),_pd.cost_sum()/1000,_pd.zs_last());
+    }
+
+    function getPD() returns(address) {
+        return(pds[msg.sender]);
+    }    
+    function PDfactory(GWALink _link,address _mpid,address _from, address _to,uint256 _wh_microcent,uint256 _min_tx_microcent,bool _endure)  {
+        pds[msg.sender]=new PrivatePDcontract(_link, _mpid,_from,_to,_wh_microcent,_min_tx_microcent,_endure,this);
+    }
+}
+contract PDclearing is PDclearingStub {
     BalancerOracles public stromkonto;
     
     function PDclearing(BalancerOracles _stromkonto) {
@@ -145,18 +166,6 @@ contract PDclearing is owned {
     function execute(PrivatePDcontract _pd) onlyOwner {
         _pd.execute();
         stromkonto.addTx(_pd.to(),_pd.from(),_pd.cost_sum()/1000,_pd.zs_last());
-    }
-}
-contract PDclearingStub is owned {
-    BalancerOracles public stromkonto;
-    
-    function PDclearing(BalancerOracles _stromkonto) {
-        stromkonto=_stromkonto;
-    }
-    
-    function execute(PrivatePDcontract _pd) onlyOwner {
-        _pd.execute();
-        //stromkonto.addTx(_pd.to(),_pd.from(),_pd.cost_sum()/1000,_pd.zs_last());
     }
 }
 contract PrivatePDcontract is owned {
@@ -175,7 +184,7 @@ contract PrivatePDcontract is owned {
     uint256 public zs_end;
     uint256 public zs_last;
     uint256 public min_wh;
-    PDclearing public clearing;
+    PDclearingStub public clearing;
     
      struct ZS {
         uint256 time;
@@ -184,7 +193,7 @@ contract PrivatePDcontract is owned {
         address oracle;
     }
     
-    function PrivatePDcontract(GWALink _link,address _mpid,address _from, address _to,uint256 _wh_microcent,uint256 _min_tx_microcent,bool _endure,PDclearing _clearing) {
+    function PrivatePDcontract(GWALink _link,address _mpid,address _from, address _to,uint256 _wh_microcent,uint256 _min_tx_microcent,bool _endure,PDclearingStub _clearing) {
         gwalink=_link;
         from=_from;
         to=_to;
