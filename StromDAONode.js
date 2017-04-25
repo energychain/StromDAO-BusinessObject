@@ -123,6 +123,22 @@ module.exports = {
 			return p1;
 		}
 		
+		this.stromkonto = function(obj_or_address) {
+			var p1 = new Promise(function(resolve, reject) { 					
+						var instance=parent._objInstance(obj_or_address,'BalancerStub');
+						instance.addTx=function(_from,_to,_value,_base) {
+								var p2 = new Promise(function(resolve2, reject2) { 
+											instance.obj.addTx(_from,_to,_value,_base).then(function(o) {
+													resolve2(parent._keepHashRef(o));
+											});
+								});
+								return p2;
+						}
+						resolve(instance);
+			});
+			return p1;
+		}
+		
 		this.pdcontract = function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 					
 					var instance=parent._objInstance(obj_or_address,'PrivatePDcontract');
