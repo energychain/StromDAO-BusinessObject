@@ -20,7 +20,9 @@ module.exports = {
 			
 			return pk;
 		}
-		
+		this._waitForTransaction = function(tx) {		
+			return parent.provider.waitForTransaction(tx);
+		}
 		this._waitNextBlock = function(cb) {
 			var block1=0;
 			var interval = setInterval(function() {					

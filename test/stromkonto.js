@@ -25,8 +25,8 @@ describe('Stromkonto', function() {
 	it('Transfer 100 Cent to me (and test)', function(done) {			
 			node.stromkonto(known_stromkontostub).then( function(stromkonto) {
 					stromkonto.addTx(known_stromkontostub,node.wallet.address,100,known_stromkontostub).then(
-						function(o) {
-							node._waitNextBlock(function() {
+						function(o) {							
+							node._waitForTransaction(o).then(function() {
 									stromkonto.obj.balanceHaben(node.wallet.address).then(function(p) {
 											assert.equal(p[0].toString(),100);
 											done();

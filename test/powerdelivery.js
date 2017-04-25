@@ -57,21 +57,22 @@ describe('PowerDelivery', function() {
 													done2();													
 											});
 									});	
-									/*
+									
 									it('Set new Reading, endure to false, execute clearing (n2n test)', function(done2) {
 											node.gwalink(known_gwalink).then(
 													function(gwalink) {
 													var reader_in = gwalink.reader_in;
 														reader_in.pingReading(1000).then(function(o) {
-																node._waitNextBlock(function() {												
+																node._waitForTransaction(o).then(function() {																
 																 pdcontract.obj.check().then(function(o) {
-																  node._waitNextBlock(function() {
+																
+																
 																	  pdcontract.obj.stopEndure().then( function(o) {
-																		node._waitNextBlock(function() {
+																		node._waitForTransaction(o.hash).then(function() {																		
 																		  pdcontract.obj.endure().then(function(endure) { 													
 																		  assert.equal(endure[0],false);
 																		   pdclearing.obj.execute(pdcontract.obj.address).then(function(o) {
-																			node._waitNextBlock(function() {
+																			node._waitForTransaction(o.hash).then(function() {
 																			 pdcontract.obj.executed().then(function(executed) {
 																			 done2();
 																			 });	
@@ -80,18 +81,16 @@ describe('PowerDelivery', function() {
 																		  });																		
 																		 });
 																	});	 
-																	});
-														        });
+																	});														       
 															   });	
 														});															
 										});
 									});
-									*/
+									
 									/*
 									it('Check cost_sum 1.000.000', function(done2) {
-											pdcontract.obj.cost_sum().then(function(o) {
-													console.log(o);
-													assert.equals(o[0].toString(),1000000);
+											pdcontract.obj.cost_sum().then(function(o) {													
+													assert.equal(o[0].toString(),1000000);
 													done2();													
 											});
 									});
