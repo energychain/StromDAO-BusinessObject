@@ -20,6 +20,21 @@ module.exports = {
 			
 			return pk;
 		}
+		
+		this._waitNextBlock = function(cb) {
+			var block1=0;
+			var interval = setInterval(function() {					
+					parent.provider.getBlockNumber().then(function(blockNumber) {
+													if(block1 == 0) block1=blockNumber;
+													var block2=blockNumber;														
+													if(block1!=block2) {
+															clearInterval(interval);
+															cb();
+													}
+											});
+					}
+			,1000);				
+		}
 		this._keepObjRef=function(address,contract_type) {
 			if(typeof parent.objRef[contract_type]=="undefined") {
 					parent.objRef[contract_type] = {};
@@ -87,8 +102,29 @@ module.exports = {
 			return p1;
 		}
 		
-		this.pdcontract = function(obj_or_address) {
+		this.pdclearing = function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 
+			
+				var instance=parent._objInstance(obj_or_address,'PDClearingStub');				
+				instance.factory=function(_link,_mpid,_from,_to,_wh_microcent,_min_tx_microcent,_endure) {					
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.PDfactory(_link,_mpid,_from,_to,_wh_microcent,_min_tx_microcent,_endure).then(function(o) {									
+									parent._waitNextBlock(function() {											
+										instance.obj.pds(parent.wallet.address).then(function(x) {												
+												resolve2(x[0]);
+										});										
+									});
+							});									
+					});
+					return p2;
+				};
+				resolve(instance);
+			});
+			return p1;
+		}
+		
+		this.pdcontract = function(obj_or_address) {
+			var p1 = new Promise(function(resolve, reject) { 					
 					var instance=parent._objInstance(obj_or_address,'PrivatePDcontract');
 					instance.check = function() {
 						var p1 = new Promise(function(resolve, reject) { 
