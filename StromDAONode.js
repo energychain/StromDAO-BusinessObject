@@ -19,6 +19,24 @@ function Node (options) {
     return pk
   }
 
+  this._waitForTransaction = function (tx) {
+    return parent.provider.waitForTransaction(tx)
+  }
+
+  this._waitNextBlock = function (cb) {
+    var block1 = 0
+    var interval = setInterval(function () {
+      parent.provider.getBlockNumber().then(function (blockNumber) {
+        if (block1 === 0) { block1 = blockNumber }
+        var block2 = blockNumber
+        if (block1 !== block2) {
+          clearInterval(interval)
+          cb()
+        }
+      })
+    }, 1000)
+  }
+
   this._keepObjRef = function (address, contractType) {
     if (typeof parent.objRef[contractType] === 'undefined') {
       parent.objRef[contractType] = {}
@@ -80,6 +98,42 @@ function Node (options) {
           resolve(gwalink)
         })
       })
+    })
+    return p1
+  }
+
+  this.pdclearing = function (objOrAddress) {
+    var p1 = new Promise(function (resolve, reject) {
+      var instance = parent._objInstance(objOrAddress, 'PDClearingStub')
+      instance.factory = function (_link, _mpid, _from, _to, _whMicrocent, _minTxTicrocent, _endure) {
+        var p2 = new Promise(function (resolve2, reject2) {
+          instance.obj.PDfactory(_link, _mpid, _from, _to, _whMicrocent, _minTxTicrocent, _endure).then(function (o) {
+            parent._waitNextBlock(function () {
+              instance.obj.pds(parent.wallet.address).then(function (x) {
+                resolve2(x[0])
+              })
+            })
+          })
+        })
+        return p2
+      }
+      resolve(instance)
+    })
+    return p1
+  }
+
+  this.stromkonto = function (objOrAddress) {
+    var p1 = new Promise(function (resolve, reject) {
+      var instance = parent._objInstance(objOrAddress, 'BalancerStub')
+      instance.addTx = function (_from, _to, _value, _base) {
+        var p2 = new Promise(function (resolve2, reject2) {
+          instance.obj.addTx(_from, _to, _value, _base).then(function (o) {
+            resolve2(parent._keepHashRef(o))
+          })
+        })
+        return p2
+      }
+      resolve(instance)
     })
     return p1
   }
