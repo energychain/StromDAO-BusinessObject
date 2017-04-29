@@ -6,8 +6,16 @@
   "engines": {
     "node": ">=0.12"
   },
+  "ava": {
+    "verbose": "true",
+    "serial": "true"
+  },
   "scripts": {
-    "test": "mocha --harmony"
+    "lint": "standard --verbose | snazzy",
+    "precommit": "npm run lint -s",
+    "pretestBAK": "npm run lint -s",
+    "test": "NODE_ENV=test ava ",
+    "test-mocha": "mocha --harmony"
   },
   "repository": {
     "type": "git",
@@ -32,7 +40,13 @@
   "dependencies": {
     "ethers": "^2.0.3",
     "get-random-values": "^1.2.0",
-    "mocha": "^3.2.0",
-    "node-persist": "^2.0.10"
+    "node-persist": "^2.0.11"
+  },
+  "devDependencies": {
+    "ava": "^0.19.1",
+    "mocha": "^3.3.0",
+    "promise-tool": "^1.0.1",
+    "snazzy": "^7.0.0",
+    "standard": "^10.0.2"
   }
 }
