@@ -8,14 +8,13 @@
   },
   "ava": {
     "verbose": "true",
-    "serial": "true"
+    "serial": "false"
   },
   "scripts": {
     "lint": "standard --verbose | snazzy",
     "precommit": "npm run lint -s",
     "pretestBAK": "npm run lint -s",
-    "test": "NODE_ENV=test ava ",
-    "test-mocha": "mocha --harmony"
+    "test": "mocha --harmony; NODE_ENV=test ava ./test-ava "
   },
   "repository": {
     "type": "git",
