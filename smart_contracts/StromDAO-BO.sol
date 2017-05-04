@@ -130,7 +130,9 @@ contract MPO is RoleMPO {
             IssuedDelivery(address(delivery),msg.sender,approvedMeterPoints[msg.sender],readings[msg.sender].time,now,_reading-readings[msg.sender].power);
             issuedDeliverables[msg.sender][address(lastDelivery[msg.sender])]=address(delivery);
             lastDelivery[msg.sender]=delivery;
-            delivery.transferOwnership(msg.sender);
+            address provider = roles.relations(msg.sender,roles.roles(3));
+            if(address(0)==provider) provider=msg.sender;
+            delivery.transferOwnership(provider);
         }
         readings[msg.sender]=reading(now,_reading);
     }
@@ -139,7 +141,7 @@ contract MPO is RoleMPO {
         /*
         reading last_reading = readings[_meterpoint];
         reading last_processed = processed[_meterpoint];
-        if(last_processed.power!=0) { 
+        if(last_processed.power!=0) { 3
             uint256 delta_power = last_reading.power - last_processed.power;
             if(delta_power>0) {
                 last_reading.power -= _clearable.doClearingGridIn(delta_power);
@@ -202,23 +204,7 @@ contract DSO is RoleDSO {
         Clearable clearable_to = clearances[to];
         clearable_to.setChild(_clearable);
     }
-    /*
-    function addClearableTo(ClearablesLink _clearableLink) {
-        // if(clearances[msg.sender].valid_untilTime()<now) throw; // if we do not have a valid base clearable (approve Connection required). ! Not possible to throw !
-        // TODO: Should check approved Provider 
-        cl=_clearableLink;
-        
-        //clearances[msg.sender].setChild(_clearable);
-        address to = roles.relations(_clearableLink,roles.roles(5));
-        
-        if(address(roles.relations(to,roles.roles(2)))==address(this)) {
-            Clearable clearable_to = clearances[to];
-            clearable_to.setChild(_clearableLink.clearable_to());
-        }
-        
-        
-    }
-    */
+
     function providerAllowance(address dso,bool allow) onlyOwner {
         approvedProvider[dso]=allow;
     }

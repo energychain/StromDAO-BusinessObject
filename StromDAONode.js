@@ -74,7 +74,7 @@ module.exports = {
 				var p1 = new Promise(function(resolve, reject) { 	
 					if(parent.options.testMode==true) { 
 						if(contract_type=="StromDAO-BO.sol:DSO") resolve("0x0513f2B6E0a0a3A79288dC31a3dF714f7C8c4BA1");
-						if(contract_type=="StromDAO-BO.sol:MPO") resolve("0xDcD39ff37d0908340123DDD11491C8eBaDa2E4CF");
+						if(contract_type=="StromDAO-BO.sol:MPO") resolve("0xd5C3B4f181F20d4288877df1196882f23DE22098");
 					} else {
 					var bin = fs.readFileSync("smart_contracts/"+contract_type+".bin");
 					var deployTransaction = ethers.Contract.getDeployTransaction("0x"+	bin, abi, roles_address);
@@ -221,7 +221,34 @@ module.exports = {
 							});
 							return p2;
 					}
-					
+					instance.power=function() {
+							var p2 = new Promise(function(resolve2, reject2) {
+								instance.obj.deliverable_power().then(function(o) {
+										resolve2(o);
+								});
+							});
+							return p2;
+					}
+					instance.transferOwnership=function(owner) {
+							var p2 = new Promise(function(resolve2, reject2) {
+								instance.obj.transferOwnership(owner).then(function(o) {
+									parent._waitForTransaction(o.hash).then(function() {								
+										resolve2(parent._keepHashRef(o));					
+									});				
+								});
+							});
+							return p2;
+					}
+					instance.includeDelivery=function(delivery) {
+							var p2 = new Promise(function(resolve2, reject2) {
+								instance.obj.includeDelivery(delivery).then(function(o) {
+									parent._waitForTransaction(o.hash).then(function() {								
+										resolve2(parent._keepHashRef(o));					
+									});				
+								});
+							});
+							return p2;
+					}					
 					resolve(instance);
 			});
 			return p1;

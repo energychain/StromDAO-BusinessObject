@@ -40,7 +40,7 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 								//console.log("Deployed",address);
 								assert.equal(address.length,42);
 								my_dso=address;
-								console.log("  - My DSO:",my_dso);
+								console.log("        - My DSO:",my_dso);
 								done();
 				});
 		});	
@@ -49,7 +49,7 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 								
 								assert.equal(address.length,42);
 								my_mpo=address;
-								console.log("  - My MPO:",my_mpo);
+								console.log("        - My MPO:",my_mpo);
 								done();
 				});
 		});	
@@ -108,7 +108,7 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 		});	
 	
 	});
-	describe('Usecase:Process sequential Meterpoint readings', function() {	
+	describe('Usecase: Process sequential Meterpoint readings', function() {	
 		it('Set my reading 1 according to MPO contract', function(done) {
 						node.mpo(my_mpo).then( function(mpo) {
 							mpo.storeReading(my_reading_1).then( function(tx_result) {	
@@ -156,6 +156,7 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 							});
 						});
 		});	
+		
 		it('Retrieve my last Delivery - should be different to first', function(done) {
 						node.mpo(my_mpo).then( function(mpo) {
 							
@@ -166,6 +167,78 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 									done();
 							});
 						});
+		});	
+	});		
+	describe('Usecase: Consensus of Power Delivery is given after exchange (merge/resolve)', function() {
+		it('Sumup energy in deliveries - should be eq to reading 3 - reading 1', function(done) {
+			node.delivery(delivery_1).then( function(delivery) {
+				
+				delivery.power().then( function(tx_result) {	
+						var power_1 = (tx_result[0].toString())*1;
+							node.delivery(delivery_2).then( function(delivery) {				
+								delivery.power().then( function(tx_result) {
+									var power_2 = (tx_result[0].toString())*1;
+									assert.equal(power_1+power_2,my_reading_3-my_reading_1);
+									//console.log(power_1,power_2,power_1+power_2,my_reading_3-my_reading_1);
+									done();	
+							    });
+							});
+						
+				});
+			});
+		});	
+		it('Transfer Ownership of Delivery 2 to Delivery 1', function(done) {
+			node.delivery(delivery_2).then( function(delivery) {
+				delivery.transferOwnership(delivery_1).then(function(tx_result) {
+					assert.equal(tx_result.length,66);
+					done();
+				});
+			});
 		});
-	});			
+		it('Check that Delivery 1 got Ownership', function(done) {
+						node.delivery(delivery_2).then( function(delivery) {
+							
+							delivery.owner().then( function(tx_result) {	
+									assert.equal(tx_result[0].length,42);
+									assert.equal(tx_result[0],delivery_1);									
+									done();
+							});
+						});
+		});
+		it('Include Delivery 2 into 1 ', function(done) {
+						node.delivery(delivery_1).then( function(delivery) {
+							
+							delivery.includeDelivery(delivery_2).then( function(tx_result) {	
+								assert.equal(tx_result.length,66);
+								done();
+							});
+						});
+		});	
+		it('Re-Sumup energy in deliveries - should be eq to reading 3 - reading 1', function(done) {
+			node.delivery(delivery_1).then( function(delivery) {
+				
+				delivery.power().then( function(tx_result) {	
+						var power_1 = (tx_result[0].toString())*1;
+							node.delivery(delivery_2).then( function(delivery) {				
+								delivery.power().then( function(tx_result) {
+									var power_2 = (tx_result[0].toString())*1;
+									assert.equal(power_1+power_2,my_reading_3-my_reading_1);
+									done();	
+							    });
+							});
+						
+				});
+			});
+		});	
+		it('Delivery 2 should have power eq 0', function(done) {
+			node.delivery(delivery_2).then( function(delivery) {
+				
+				delivery.power().then( function(tx_result) {	
+						var power_2 = (tx_result[0].toString())*1;						
+						assert.equal(power_2,0);
+						done();														
+				});
+			});
+		});							
+	});	
 });
