@@ -112,12 +112,12 @@ contract MPO is RoleMPO {
         roles=_roles;    
     }
     
-    function approveMP(address _meter_point,uint256 role_id) onlyOwner {
+    function approveMP(address _meter_point,uint256 role_id)  {
         approvedMeterPoints[_meter_point]=role_id;
         StatusChange(_meter_point,true);
     }
     
-    function declineMP(address _meter_point) onlyOwner {
+    function declineMP(address _meter_point)  {
         approvedMeterPoints[_meter_point]=0;
         StatusChange(_meter_point,false);
     }
@@ -176,7 +176,7 @@ contract DSO is RoleDSO {
         roles=_roles;    
     }
     
-    function approveConnection(address _address,uint256 _base_from_time,uint256 _base_to_time,uint256 _base_powerIn,uint256 _base_powerOut) onlyOwner {
+    function approveConnection(address _address,uint256 _base_from_time,uint256 _base_to_time,uint256 _base_powerIn,uint256 _base_powerOut)  {
         Clearable base_clearance = clearances[_address];
         if(address(base_clearance)!=0) {
             _base_from_time=base_clearance.valid_untilTime();

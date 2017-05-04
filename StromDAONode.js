@@ -67,15 +67,26 @@ module.exports = {
         }  
         
         this._deployContract=function(contract_type,roles_address) {
+				// if we are in a test situation we will simply use a test deployment.
+				
 				var abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
-				var p1 = new Promise(function(resolve, reject) { 
+			
+				var p1 = new Promise(function(resolve, reject) { 	
+					if(parent.options.testMode==true) { 
+						if(contract_type=="StromDAO-BO.sol:DSO") resolve("0x0513f2B6E0a0a3A79288dC31a3dF714f7C8c4BA1");
+						if(contract_type=="StromDAO-BO.sol:MPO") resolve("0xDcD39ff37d0908340123DDD11491C8eBaDa2E4CF");
+					} else {
 					var bin = fs.readFileSync("smart_contracts/"+contract_type+".bin");
 					var deployTransaction = ethers.Contract.getDeployTransaction("0x"+	bin, abi, roles_address);
 					var sendPromise = parent.wallet.sendTransaction(deployTransaction);
 					sendPromise.then(function(transaction) {
-						address=ethers.utils.getContractAddress(transaction);
-						resolve(address);
-					});
+						parent._waitForTransaction(transaction.hash).then(function() {
+								var address = ethers.utils.getContractAddress(transaction);																
+									resolve(address);	
+								});
+						});
+					}	
+					
 				});
 				return p1;
 		}  
@@ -141,6 +152,81 @@ module.exports = {
 			return p1;
 		}
 		
+		this.dso = function(obj_or_address) {
+			var p1 = new Promise(function(resolve, reject) { 
+			
+				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:DSO');						
+				instance.approveConnection=function(_address,_base_from_time,_base_to_time,_base_powerIn,_base_powerOut)  {					
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.approveConnection(_address,_base_from_time,_base_to_time,_base_powerIn,_base_powerOut).then(function(o) {									
+								parent._waitForTransaction(o.hash).then(function() {										
+								 resolve2(parent._keepHashRef(o));						
+								});												
+							});									
+					});
+					return p2;
+				};
+				resolve(instance);
+			});
+			return p1;
+		}
+		
+		this.mpo = function(obj_or_address) {
+			var p1 = new Promise(function(resolve, reject) { 
+			
+				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:MPO');						
+				instance.approveMP=function(_meter,_role) {					
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.approveMP(_meter,_role).then(function(o) {
+								parent._waitForTransaction(o.hash).then(function() {										
+								 resolve2(parent._keepHashRef(o));						
+								});			
+							});									
+					});
+					return p2;
+				};
+				instance.storeReading=function(_reading) {
+					_reading=Math.round(_reading);
+					var p2 = new Promise(function(resolve2, reject2) { 
+							
+							instance.obj.storeReading(_reading).then(function(o) {	
+								parent._waitForTransaction(o.hash).then(function() {								
+								 resolve2(parent._keepHashRef(o));					
+								});				
+							});									
+					});
+					return p2;
+				}
+				instance.lastDelivery=function(_meterpoint) {					
+					var p2 = new Promise(function(resolve2, reject2) { 							
+							instance.obj.lastDelivery(_meterpoint).then(function(o) {									
+								 resolve2(o);									
+							});									
+					});
+					return p2;
+				}
+				resolve(instance);
+			});
+			return p1;
+		}
+		
+		this.delivery = function(obj_or_address) {
+			var p1 = new Promise(function(resolve, reject) { 
+					var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:Delivery');
+					instance.owner=function() {
+							var p2 = new Promise(function(resolve2, reject2) {
+								instance.obj.owner().then(function(o) {
+										resolve2(o);
+								});
+							});
+							return p2;
+					}
+					
+					resolve(instance);
+			});
+			return p1;
+		}
+				
 		this.roleLookup = function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 
 			
@@ -153,6 +239,25 @@ module.exports = {
 										});																		
 							});									
 				
+					return p2;
+				};
+				instance.roles=function(i) {					
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.roles(i).then(function(o) {																											
+												resolve2(o[0]);
+										});																		
+							});									
+				
+					return p2;
+				};
+				instance.setRelation=function(_role,_target) {					
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.setRelation(_role,_target).then(function(o) {
+								parent._waitForTransaction(o.hash).then(function() {										
+												 resolve2(parent._keepHashRef(o));						
+												});																														
+										});																		
+							});													
 					return p2;
 				};
 				resolve(instance);
