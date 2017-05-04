@@ -441,24 +441,22 @@ contract Delivery is owned{
     address public dso;
     uint256 public role;
     
-    struct Deliverable {
-        uint256 startTime;
-        uint256 endTime;
-        uint256 power;
-        address resolution;
-    }
-    
-    Deliverable public deliverable;
-    
-    function getDeliverableStartTime() returns(uint256) { return(deliverable.startTime);}
-    function getDeliverableEndTime() returns(uint256) { return(deliverable.endTime);}
-    function getDeliverablePower() returns(uint256) { return(deliverable.power);}
-    function getDeliverableResolution() returns(address) { return(deliverable.resolution);}
+    uint256 public deliverable_startTime;
+    uint256 public deliverable_endTime;
+    uint256 public deliverable_power;
+    address public resolution;
+     event Destructed(address _destruction);
+     event Included(address _address,uint256 power,uint256 startTime,uint256 endTime,uint256 role);
+ 
     
     function Delivery(RoleLookup _roles,address _meterpoint,uint256 _mprole,uint256 _startTime,uint256 _endTime, uint256 _power)  {
         roles=_roles;
         role=_mprole;
-        deliverable=Deliverable(_startTime,_endTime,_power,address(0));
+
+        deliverable_startTime=_startTime;
+        deliverable_endTime=_endTime;
+        deliverable_power=_power;
+        
         // check sender is MPO for MP
         if(msg.sender!=roles.relations(_meterpoint,roles.roles(1))) throw;
         dso=roles.relations(_meterpoint,roles.roles(2));
@@ -469,25 +467,27 @@ contract Delivery is owned{
     function includeDelivery(Delivery _delivery) onlyOwner {
         if(_delivery.owner()!=address(this)) throw; // Operation only allowed if not owned by this Delivery
         
-         Deliverable memory _deliverable = Deliverable(_delivery.getDeliverableStartTime(),_delivery.getDeliverableEndTime(),_delivery.getDeliverablePower(),_delivery.getDeliverableResolution());
-        
-        if(deliverable.startTime>_deliverable.startTime) deliverable.startTime=_deliverable.startTime;
-        if(deliverable.endTime<_deliverable.endTime) deliverable.endTime=_deliverable.endTime;
+       
+        if(deliverable_startTime>_delivery.deliverable_startTime()) deliverable_startTime=_delivery.deliverable_startTime();
+        if(deliverable_endTime<_delivery.deliverable_endTime()) deliverable_endTime=_delivery.deliverable_endTime();
         if(_delivery.role()==role) { 
             // add
-            deliverable.power+=_deliverable.power;
+            deliverable_power+=_delivery.deliverable_power();
         } else {
             // substract (Need to change Role, if lt 0)
-            if(_deliverable.power>deliverable.power) throw; // Not a include!
-            deliverable.power-=_deliverable.power;
+            if(_delivery.deliverable_power()>deliverable_power) throw; // Not a include!
+           deliverable_power-=_delivery.deliverable_power();
         }
+        Included(address(_delivery),_delivery.deliverable_power(),_delivery.deliverable_startTime(),_delivery.deliverable_endTime(),_delivery.role());
         _delivery.destructWith(this);
+        
     }
     
     function destructWith(Delivery _delivery) onlyOwner { 
-        if(address(deliverable.resolution)!=0) throw;
-        deliverable.power=0;
-        deliverable.resolution=address(_delivery);
+        if(address(resolution)!=0) throw;
+        deliverable_power=0;
+        Destructed(address(_delivery));
+        resolution=address(_delivery);
         
     }
 }

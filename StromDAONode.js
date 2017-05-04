@@ -125,6 +125,25 @@ module.exports = {
 			return p1;
 		}
 		
+		this.roleLookup = function(obj_or_address) {
+			var p1 = new Promise(function(resolve, reject) { 
+			
+				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:RoleLookup');				
+				instance.owner=function() {					
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.owner().then(function(o) {									
+																		
+												resolve2(o);
+										});																		
+							});									
+				
+					return p2;
+				};
+				resolve(instance);
+			});
+			return p1;
+		}
+		
 		this.stromkonto = function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 					
 						var instance=parent._objInstance(obj_or_address,'BalancerStub');
