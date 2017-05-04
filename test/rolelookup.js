@@ -19,4 +19,11 @@ describe('RoleLookup', function() {
 						});
 					});		
 	});
+	it('Test Deployment DSO (low-level)', function(done) {
+			node._deployContract('StromDAO-BO.sol:DSO',known_rolelookup).then(function(address) {
+							//console.log("Deployed",address);
+							assert.equal(address.length,42);
+							done();
+			});
+	});	
 });

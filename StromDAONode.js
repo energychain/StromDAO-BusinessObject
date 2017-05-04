@@ -55,21 +55,37 @@ module.exports = {
 		this.getRef=function(ref) {
 				return storage.getItemSync(ref);
 		}
-        this._loadContract=function(address,contract_type) {
-            var abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
-            contract = new ethers.Contract(address, abi, this.wallet);
-			parent._keepObjRef(address,contract_type);
+        this._loadContract=function(address,contract_type,roles_address) {
+			var abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
+			if(address!="0x0") {				
+				contract = new ethers.Contract(address, abi, this.wallet);
+				parent._keepObjRef(address,contract_type);
+			} else {
+				// Deploy new?
+			}
             return contract;
-        }       
+        }  
+        
+        this._deployContract=function(contract_type,roles_address) {
+				var abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
+				var p1 = new Promise(function(resolve, reject) { 
+					var bin = fs.readFileSync("smart_contracts/"+contract_type+".bin");
+					var deployTransaction = ethers.Contract.getDeployTransaction("0x"+	bin, abi, roles_address);
+					var sendPromise = parent.wallet.sendTransaction(deployTransaction);
+					sendPromise.then(function(transaction) {
+						address=ethers.utils.getContractAddress(transaction);
+						resolve(address);
+					});
+				});
+				return p1;
+		}  
 		
 		this._objInstance=function(obj_or_address,type_of_object) {
 				var instance = {};
 				instance.obj=obj_or_address;
 				if(typeof obj != "object") {
 					instance.obj = parent._loadContract(instance.obj,type_of_object);
-				} else {
-					// Hier könnte man neue Objekte Deployen!	
-				}
+				} 
 				return instance;
 		}
         
