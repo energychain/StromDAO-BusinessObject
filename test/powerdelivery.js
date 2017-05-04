@@ -11,7 +11,7 @@ var assert = require('assert');
 var StromDAONode = require("../StromDAONode.js");    
 
 describe('PowerDelivery', function() {
-	this.timeout(240000);
+	this.timeout(360000);
 	var external_id = Math.random()*10000000; 
 	var node = new StromDAONode.Node({external_id:external_id});
 	var known_gwalink = '0x119AA4A3C2C7287f99FCBB41C5a78a8Dc15d1338';
