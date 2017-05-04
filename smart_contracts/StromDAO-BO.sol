@@ -97,12 +97,12 @@ contract MPO is RoleMPO {
     
     event StatusChange(address _meter_point,bool _is_approved);
     event ProcessedClearance(address _meterpoint,Clearable _clearable,uint256 power);
-    event IssuedDelivery(address delivery,address _meterpoint,uint256 fromTime,uint256 toTime,uint256 power);
-    mapping(address=>bool) public approvedMeterPoints;
+    event IssuedDelivery(address delivery,address _meterpoint,uint256 _roleId,uint256 fromTime,uint256 toTime,uint256 power);
+    mapping(address=>uint256) public approvedMeterPoints;
     mapping(address=>reading) public readings;
     mapping(address=>reading) public processed;
     mapping(address=>Delivery) public lastDelivery;
-    
+    mapping(address=>mapping(address=>address)) public issuedDeliverables;
     struct reading {
         uint256 time;
         uint256 power;
@@ -112,21 +112,23 @@ contract MPO is RoleMPO {
         roles=_roles;    
     }
     
-    function approveMP(address _meter_point) onlyOwner {
-        approvedMeterPoints[_meter_point]=true;
+    function approveMP(address _meter_point,uint256 role_id) onlyOwner {
+        approvedMeterPoints[_meter_point]=role_id;
         StatusChange(_meter_point,true);
     }
     
     function declineMP(address _meter_point) onlyOwner {
-        approvedMeterPoints[_meter_point]=false;
+        approvedMeterPoints[_meter_point]=0;
         StatusChange(_meter_point,false);
     }
     
     function storeReading(uint256 _reading) {
-        if(approvedMeterPoints[msg.sender]==false) throw;
+        if((approvedMeterPoints[msg.sender]!=4)&&(approvedMeterPoints[msg.sender]!=5)) throw;
+        if(readings[msg.sender].power>_reading) throw;
         if(readings[msg.sender].power<_reading) {
-            Delivery delivery = new Delivery(roles,msg.sender,readings[msg.sender].time,now,_reading-readings[msg.sender].power);
-            IssuedDelivery(address(delivery),msg.sender,readings[msg.sender].time,now,_reading-readings[msg.sender].power);
+            Delivery delivery = new Delivery(roles,msg.sender,approvedMeterPoints[msg.sender],readings[msg.sender].time,now,_reading-readings[msg.sender].power);
+            IssuedDelivery(address(delivery),msg.sender,approvedMeterPoints[msg.sender],readings[msg.sender].time,now,_reading-readings[msg.sender].power);
+            issuedDeliverables[msg.sender][address(lastDelivery[msg.sender])]=address(delivery);
             lastDelivery[msg.sender]=delivery;
             delivery.transferOwnership(msg.sender);
         }
@@ -134,6 +136,7 @@ contract MPO is RoleMPO {
     }
     
     function process(address _meterpoint,Clearable _clearable) {
+        /*
         reading last_reading = readings[_meterpoint];
         reading last_processed = processed[_meterpoint];
         if(last_processed.power!=0) { 
@@ -144,6 +147,7 @@ contract MPO is RoleMPO {
             }
         } 
         processed[_meterpoint]=last_reading;
+        */
         
     }
 }
@@ -389,7 +393,7 @@ contract PowerDelivery {
          if(roles.relations(_address,roles.roles(1))==address(0)) throw; // No MeterPointOperator available
          address mpo_adr = roles.relations(_address,roles.roles(1));
          MPO mpo = MPO(mpo_adr);
-         if(!mpo.approvedMeterPoints(_address)) throw; // MPO refuses to have actor
+         if(mpo.approvedMeterPoints(_address)==0) throw; // MPO refuses to have actor
          
           if(roles.relations(_address,roles.roles(2))==address(0)) throw; // No DSO available
          address dso_adr = roles.relations(_address,roles.roles(2));
@@ -435,18 +439,26 @@ contract PowerDelivery {
 contract Delivery is owned{
     RoleLookup public roles;
     address public dso;
+    uint256 public role;
     
     struct Deliverable {
         uint256 startTime;
         uint256 endTime;
         uint256 power;
+        address resolution;
     }
     
     Deliverable public deliverable;
     
-    function Delivery(RoleLookup _roles,address _meterpoint,uint256 _startTime,uint256 _endTime, uint256 _power)  {
+    function getDeliverableStartTime() returns(uint256) { return(deliverable.startTime);}
+    function getDeliverableEndTime() returns(uint256) { return(deliverable.endTime);}
+    function getDeliverablePower() returns(uint256) { return(deliverable.power);}
+    function getDeliverableResolution() returns(address) { return(deliverable.resolution);}
+    
+    function Delivery(RoleLookup _roles,address _meterpoint,uint256 _mprole,uint256 _startTime,uint256 _endTime, uint256 _power)  {
         roles=_roles;
-        deliverable=Deliverable(_startTime,_endTime,_power);
+        role=_mprole;
+        deliverable=Deliverable(_startTime,_endTime,_power,address(0));
         // check sender is MPO for MP
         if(msg.sender!=roles.relations(_meterpoint,roles.roles(1))) throw;
         dso=roles.relations(_meterpoint,roles.roles(2));
@@ -455,10 +467,29 @@ contract Delivery is owned{
     }
     
     function includeDelivery(Delivery _delivery) onlyOwner {
-        deliverable.power+=_delivery.excludeDelivery(this);
+        if(_delivery.owner()!=address(this)) throw; // Operation only allowed if not owned by this Delivery
+        
+         Deliverable memory _deliverable = Deliverable(_delivery.getDeliverableStartTime(),_delivery.getDeliverableEndTime(),_delivery.getDeliverablePower(),_delivery.getDeliverableResolution());
+        
+        if(deliverable.startTime>_deliverable.startTime) deliverable.startTime=_deliverable.startTime;
+        if(deliverable.endTime<_deliverable.endTime) deliverable.endTime=_deliverable.endTime;
+        if(_delivery.role()==role) { 
+            // add
+            deliverable.power+=_deliverable.power;
+        } else {
+            // substract (Need to change Role, if lt 0)
+            if(_deliverable.power>deliverable.power) throw; // Not a include!
+            deliverable.power-=_deliverable.power;
+        }
+        _delivery.destructWith(this);
     }
     
-    function excludeDelivery(Delivery _delivery) returns(uint256) { return 1;}
+    function destructWith(Delivery _delivery) onlyOwner { 
+        if(address(deliverable.resolution)!=0) throw;
+        deliverable.power=0;
+        deliverable.resolution=address(_delivery);
+        
+    }
 }
 contract IT_Connectivity is owned {
     RoleLookup public roles;
@@ -496,59 +527,3 @@ contract IT_Provider is owned {
     } 
 } 
 
-/**
- * Integration Test PowerDelivery
- * ====================================================================
- * Integration testing for consens of Business Object Model (Framework) 
- * 
- * - Creates a Meter Point Operator and assigns to TX Sender and Self
- * - Creates a Powerdelivery:
- *     - from Self to Self
- *     - from Msg.sender to Msg.sender
- *     - from Self to Msg.sender
- *     - from Msg.sender to Self
- */   
-contract IT_PowerDelivery is owned {
-    RoleLookup public roles;
-    MPO public mpo;
-    PowerDelivery public powerdelivery;
-
-    
-    function IT_PowerDelivery(RoleLookup _roles) {
-        roles = _roles;
-        
-        
-        mpo = new MPO(roles);
-        mpo.approveMP(msg.sender);
-        mpo.approveMP(this);
-        
-        roles.setRelationOnBehalf(roles.roles(1),address(mpo),msg.sender);
-        roles.setRelationOnBehalf(roles.roles(1),address(mpo),this);
-    /*
-        powerdelivery = new PowerDelivery(roles,now,3600,10,10);
-        
-        powerdelivery.becomeFrom();
-        
-        powerdelivery.becomeTo();
-*/
-        // Removed to avoid Gas-Limit issues in quick test szenario
-        /*
-        powerdelivery = new PowerDelivery(roles,now,3600,10,10);
-        powerdelivery.setFrom(msg.sender);
-        powerdelivery.setTo(msg.sender);
-        
-        powerdelivery = new PowerDelivery(roles,now,3600,10,10);
-        powerdelivery.setFrom(this);
-        powerdelivery.setTo(msg.sender);
-        
-        powerdelivery = new PowerDelivery(roles,now,3600,10,10);
-        powerdelivery.setFrom(msg.sender);
-        powerdelivery.setTo(this);
-        */
-    
-    }
-    function becomeInstanceOwner() onlyOwner {
-        mpo.transferOwnership(msg.sender);
-        //powerdelivery.transferOwnership(msg.sender);
-    } 
-} 
