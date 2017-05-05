@@ -379,17 +379,18 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 			});							
 			it('Let provider handle my last delivery', function(done) {
 						node.provider(my_provider).then( function(provider) {							
-							provider.handleDelivery(delivery_4).then( function(tx_result) {	
+							provider.handleDelivery(delivery_4).then( function(tx_result) {										
 									assert.equal(tx_result.length,66);
 									done();
 							});
 						});
 			});	
-			it('Check my due is higher 0 on Stromkonto', function(done) {
+			it('Check my due is double energy on Stromkonto as cost per energy is set to 2 (reading#5-reading#4)*2', function(done) {
 						node.stromkonto(my_stromkonto).then( function(stromkonto) {	
-							stromkonto.balancesSoll(node.wallet.address).then( function(tx_result) {	
-									
-									assert.notEqual(tx_result[0].toString()*1,0);									
+							stromkonto.balancesSoll(node.wallet.address).then( function(tx_result) {										
+									assert.notEqual(tx_result[0].toString()*1,0);	
+									due=tx_result[0].toString()*1;
+									assert.equal(due,(my_reading_5-my_reading_4)*2);								
 									done();
 							});
 						});
