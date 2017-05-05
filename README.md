@@ -138,6 +138,9 @@ node mytest.js
 
 What this Hello-World does is creating a new MeterPoint derived from a random id (external_id). Signs conract for Meter-Point-Operations and confirms (counter-sign by MPO). 
 
+## Test-Cases
+https://github.com/energychain/StromDAO-BusinessObject/blob/master/test/rolelookup.js
+
 ## Contributing
 - https://stromdao.de/
 - https://gitter.im/stromdao/Lobby
