@@ -8,7 +8,7 @@ var StromDAONode = require("../StromDAONode.js");
 describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 	this.timeout(240000);
 	var external_id = Math.random()*10000000; 
-	var external_id_alternate = Math.random()*10000000; 
+
 	var node = new StromDAONode.Node({external_id:external_id,testMode:true});
 
 	var known_rolelookup = '0xbc723c385dB9FC5E82e301b8A7aa45819E4c3e8B';

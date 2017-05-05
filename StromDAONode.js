@@ -56,7 +56,12 @@ module.exports = {
 				return storage.getItemSync(ref);
 		}
         this._loadContract=function(address,contract_type,roles_address) {
-			var abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
+			if(fs.existsSync("smart_contracts/"+contract_type+".abi")) {
+					var abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
+				} else {
+					var abi = JSON.parse(fs.readFileSync("node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi"));
+			}
+			
 			if(address!="0x0") {				
 				contract = new ethers.Contract(address, abi, this.wallet);
 				parent._keepObjRef(address,contract_type);
@@ -69,8 +74,11 @@ module.exports = {
         this._deployContract=function(contract_type,roles_address) {
 				// if we are in a test situation we will simply use a test deployment.
 				
-				var abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
-			
+				if(fs.existsSync("smart_contracts/"+contract_type+".abi")) {
+					var abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
+				} else {
+					var abi = JSON.parse(fs.readFileSync("node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi"));
+				}
 				var p1 = new Promise(function(resolve, reject) { 	
 					if(parent.options.testMode==true) { 
 						if(contract_type=="StromDAO-BO.sol:DSO") resolve("0x7a0134578718b171168A7Cf73b861662E945a4D3");
