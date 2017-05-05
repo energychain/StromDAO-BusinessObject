@@ -21,7 +21,7 @@ module.exports = {
 			return pk;
 		}
 		this._waitForTransaction = function(tx) {		
-			return parent.provider.waitForTransaction(tx);
+			return parent.rpcprovider.waitForTransaction(tx);
 		}
 		this._waitNextBlock = function(cb) {
 			var block1=0;
@@ -75,6 +75,7 @@ module.exports = {
 					if(parent.options.testMode==true) { 
 						if(contract_type=="StromDAO-BO.sol:DSO") resolve("0x0513f2B6E0a0a3A79288dC31a3dF714f7C8c4BA1");
 						if(contract_type=="StromDAO-BO.sol:MPO") resolve("0xd5C3B4f181F20d4288877df1196882f23DE22098");
+						if(contract_type=="StromDAO-BO.sol:Provider") resolve("0x6D0BC1446E8eA18D03A1b5122F59419339ED7D8b");
 					} else {
 					var bin = fs.readFileSync("smart_contracts/"+contract_type+".bin");
 					var deployTransaction = ethers.Contract.getDeployTransaction("0x"+	bin, abi, roles_address);
@@ -210,6 +211,30 @@ module.exports = {
 			return p1;
 		}
 		
+		this.provider = function(obj_or_address) {
+			var p1 = new Promise(function(resolve, reject) { 
+					var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:Provider');
+					instance.handleDelivery=function(_delivery) {
+							var p2 = new Promise(function(resolve2, reject2) {
+								instance.obj.handleDelivery(_delivery).then(function(o) {
+										resolve2(parent._keepHashRef(o));
+								});
+							});
+							return p2;
+					}
+					instance.stromkonto=function() {
+							var p2 = new Promise(function(resolve2, reject2) {
+								instance.obj.stromkonto().then(function(o) {
+										resolve2(o);
+								});
+							});
+							return p2;
+					}
+					resolve(instance);
+			});
+			return p1;
+		}
+		
 		this.delivery = function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 
 					var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:Delivery');
@@ -253,6 +278,8 @@ module.exports = {
 			});
 			return p1;
 		}
+		
+
 				
 		this.roleLookup = function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 
@@ -294,7 +321,7 @@ module.exports = {
 		
 		this.stromkonto = function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 					
-						var instance=parent._objInstance(obj_or_address,'BalancerStub');
+						var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:Stromkonto');
 						instance.addTx=function(_from,_to,_value,_base) {
 								var p2 = new Promise(function(resolve2, reject2) { 
 											instance.obj.addTx(_from,_to,_value,_base).then(function(o) {
@@ -303,6 +330,15 @@ module.exports = {
 								});
 								return p2;
 						}
+						instance.balancesSoll=function(_address) {
+								var p2 = new Promise(function(resolve2, reject2) { 
+											//console.log(instance.obj);
+											instance.obj.balanceSoll(_address).then(function(o) {
+													resolve2(o);
+											});
+								});
+								return p2;
+						}						
 						resolve(instance);
 			});
 			return p1;
@@ -342,7 +378,7 @@ module.exports = {
         
         
         
-        var provider = new ethers.providers.JsonRpcProvider(options.rpc, 42);        
+        var rpcprovider = new ethers.providers.JsonRpcProvider(options.rpc, 42);        
         
         if(typeof options.external_id !="undefined") {
               options.privateKey=storage.getItemSync("ext:"+options.external_id);      
@@ -355,7 +391,7 @@ module.exports = {
         } else
         if(typeof options.privateKey == "undefined") options.privateKey='0x1471693ac4ae1646256c6a96edf2d808ad2dc6b75df69aa2709c4140e16bc7c4';
         this.options=options;
-        this.wallet = new ethers.Wallet(options.privateKey,provider);
+        this.wallet = new ethers.Wallet(options.privateKey,rpcprovider);
         this.options.address = this.wallet.address;
         
         this.objRef = storage.getItemSync("objRef");
@@ -363,6 +399,6 @@ module.exports = {
 				storage.setItemSync("objRef",{}); 
 				this.objRef=storage.getItemSync("objRef");
 		}
-		this.provider=provider;
+		this.rpcprovider=rpcprovider;
     }
 };

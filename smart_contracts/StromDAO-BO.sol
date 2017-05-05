@@ -154,13 +154,59 @@ contract MPO is RoleMPO {
     }
 }
 
-contract Provider is RoleProvider {
-    RoleLookup public roles;
+contract Stromkonto is owned {
+ 
+    event Transfer(address indexed _from, address indexed _to, uint256 _value);
+    event Tx(address _from,address _to, uint256 _value,uint256 _base);
     
-    function Provider(RoleLookup _roles) {
-        roles=_roles;    
+    mapping (address => uint256) balancesHaben;
+    mapping (address => uint256) balancesSoll;
+    
+    function transfer(address _to, uint256 _value) returns (bool success) { return false; throw;}
+    
+    function balanceHaben(address _owner) constant returns (uint256 balance) {
+        return balancesHaben[_owner];
     }
     
+    function balanceSoll(address _owner) constant returns (uint256 balance) {
+        return balancesSoll[_owner];
+    }
+    
+    function addTx(address _from,address _to, uint256 _value,uint256 _base) onlyOwner {
+        balancesSoll[_from]+=_value;
+        balancesHaben[_to]+=_value;
+        Tx(_from,_to,_value,_base);
+    }
+    
+}
+
+contract Provider is RoleProvider {
+    RoleLookup public roles;
+    Delivery public base_delivery;
+    Stromkonto public stromkonto;
+    uint256 public mCentPerWh;
+    
+    function Provider(RoleLookup _roles,uint256 _mCentPerWh) {
+        roles=_roles;  
+        mCentPerWh=_mCentPerWh;
+        roles.setRelation(roles.roles(1),this); 
+        roles.setRelation(roles.roles(2),this);
+        stromkonto=new Stromkonto();
+        base_delivery=new Delivery(roles,this,5,now,now+86400, 10000000000);
+    }
+    
+    function handleDelivery(Delivery _delivery) {
+        if(_delivery.owner()!=address(this)) throw; //TODO: Check that sender is approved MP
+        stromkonto.addTx(msg.sender,this,_delivery.deliverable_power()*mCentPerWh,_delivery.deliverable_power());
+        _delivery.transferOwnership(base_delivery);
+        base_delivery.includeDelivery(_delivery);
+    } 
+    function changeBaseDelivery(uint256 startTime, uint256 endTime,uint256 power) onlyOwner {
+        if(startTime==0) startTime=now;
+        if(endTime==0) endTime=startTime+86400;
+        if(power==0) power=1000000000;
+        base_delivery=new Delivery(roles,this,5,startTime,endTime, power);
+    }
     function process(address _meterpoint)  {
         MPO mpo = MPO(roles.relations(_meterpoint,roles.roles(1)));
         DSO dso = DSO(roles.relations(_meterpoint,roles.roles(2)));
@@ -431,6 +477,7 @@ contract Delivery is owned{
     uint256 public deliverable_endTime;
     uint256 public deliverable_power;
     address public resolution;
+    address public account;
      event Destructed(address _destruction);
      event Included(address _address,uint256 power,uint256 startTime,uint256 endTime,uint256 role);
  
@@ -447,7 +494,8 @@ contract Delivery is owned{
         if(msg.sender!=roles.relations(_meterpoint,roles.roles(1))) throw;
         dso=roles.relations(_meterpoint,roles.roles(2));
         if(address(0)==dso) throw;
-       
+        account=_meterpoint;    
+        
     }
     
     function includeDelivery(Delivery _delivery) onlyOwner {
@@ -493,23 +541,4 @@ contract IT_Connectivity is owned {
     } 
 }
 
-/**
- * Integration Test Provider
- * ====================================================================
- * Integration testing for consens of Business Object Model (Framework) 
- * 
- */   
-contract IT_Provider is owned { 
-    RoleLookup public roles;
-    Provider public provider;
-    
-    function IT_Provider(RoleLookup _roles) {
-        roles = _roles;
-        provider=new Provider(_roles);
-    }
-    
-    function becomeInstanceOwner() onlyOwner {
-        provider.transferOwnership(msg.sender);
-    } 
-} 
 
