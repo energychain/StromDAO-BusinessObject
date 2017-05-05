@@ -75,7 +75,7 @@ module.exports = {
 					if(parent.options.testMode==true) { 
 						if(contract_type=="StromDAO-BO.sol:DSO") resolve("0x7a0134578718b171168A7Cf73b861662E945a4D3");
 						if(contract_type=="StromDAO-BO.sol:MPO") resolve("0xc4719B91742D052d0A93F513f59F6Ac15e95D061");
-						if(contract_type=="StromDAO-BO.sol:Provider") resolve("0x2f5890270DA1Ee0f0F98E9885ADCd6dc4c0a2003");
+						if(contract_type=="StromDAO-BO.sol:Provider") resolve("0xd457F18DB9949899263d5bEbd74e74Ef6d2a6624");
 					} else {
 					var bin = fs.readFileSync("smart_contracts/"+contract_type+".bin");
 					var deployTransaction = ethers.Contract.getDeployTransaction("0x"+	bin, abi, roles_address);
@@ -224,9 +224,9 @@ module.exports = {
 							});
 							return p2;
 					}
-					instance.approveSender=function(_sender,_approve) {
+					instance.approveSender=function(_sender,_approve,_cost_per_day,_cost_per_energy) {
 							var p2 = new Promise(function(resolve2, reject2) {
-								instance.obj.approveSender(_sender,_approve).then(function(o) {
+								instance.obj.approveSender(_sender,_approve,_cost_per_day,_cost_per_energy).then(function(o) {
 										parent._waitForTransaction(o.hash).then(function() {										
 												 resolve2(parent._keepHashRef(o));						
 												});	
@@ -242,7 +242,32 @@ module.exports = {
 							});
 							return p2;
 					}
-					
+					instance.billings=function(_address) {
+							var p2 = new Promise(function(resolve2, reject2) {
+								instance.obj.billings(_address).then(function(o) {
+										resolve2(o);
+								});
+							});
+							return p2;
+					}
+					resolve(instance);
+			});
+			return p1;
+		}
+		
+		this.billing = function(obj_or_address) {
+			var p1 = new Promise(function(resolve, reject) { 
+					var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:Billing');
+					instance.becomeTo=function() {
+							var p2 = new Promise(function(resolve2, reject2) {
+								instance.obj.becomeTo().then(function(o) {
+										parent._waitForTransaction(o.hash).then(function() {										
+												 resolve2(parent._keepHashRef(o));						
+												});	
+								});
+							});
+							return p2;
+					}
 					resolve(instance);
 			});
 			return p1;

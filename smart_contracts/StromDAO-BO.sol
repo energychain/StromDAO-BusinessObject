@@ -206,34 +206,83 @@ contract Stromkonto is owned {
     
 }
 
+contract Billing {
+    
+    event Calculated(address from,address to,uint256 cost);
+    address public from;
+    address public to;
+    uint256 public cost_per_day;
+    uint256 public cost_per_energy;
+    
+    function Billing(uint256 _cost_per_day,uint256 _cost_per_energy) {
+        cost_per_day=_cost_per_day;
+        cost_per_energy=_cost_per_energy;
+    }
+    
+    function becomeFrom() {
+        if(address(0)!=from) throw;
+        from=msg.sender;
+    }
+    
+    function becomeTo() {
+        if(address(0)!=to) throw;
+        to=msg.sender;
+    }
+    
+    function calculate(Delivery _delivery) returns(uint256) {
+        if(msg.sender!=from) throw;
+        if(address(0)==to) throw;
+        uint256 cost=0;
+        
+        cost+=_delivery.deliverable_power()*cost_per_energy;
+        cost+=((_delivery.deliverable_endTime()-_delivery.deliverable_startTime())/86400)*cost_per_day;
+        
+        Calculated(from,to,cost);
+        
+        return cost;
+        
+    }
+}
 contract Provider is RoleProvider  {
     RoleLookup public roles;
     Delivery public base_delivery;
     Stromkonto public stromkonto;
-    uint256 public mCentPerWh;
     
-    function Provider(RoleLookup _roles,uint256 _mCentPerWh) {
+    mapping(address=>Billing) public billings;
+    
+    function Provider(RoleLookup _roles) {
         roles=_roles;  
-        mCentPerWh=_mCentPerWh;
         roles.setRelation(roles.roles(1),this); 
         roles.setRelation(roles.roles(2),this);
         stromkonto=new Stromkonto();
         base_delivery=new Delivery(roles,this,5,now,now+86400, 10000000000);
     }
     
+    function powerToMoney(Delivery _delivery) internal {
+        var cost_per_wh=0;
+        var cost_per_day=0;
+        
+        if(address(billings[msg.sender])!=address(0)) {
+            stromkonto.addTx(msg.sender,this,billings[msg.sender].calculate(_delivery),_delivery.deliverable_power());
+        }
+    }
+    
     function handleDelivery(Delivery _delivery) {
         if(_delivery.owner()!=address(this)) throw; 
         if(!monitored[msg.sender]) throw;
-        
-        stromkonto.addTx(msg.sender,this,_delivery.deliverable_power()*mCentPerWh,_delivery.deliverable_power());
+        powerToMoney(_delivery);
         _delivery.transferOwnership(base_delivery);
         base_delivery.includeDelivery(_delivery);
     }
     
-    function approveSender(address _address,bool _approve) {
+    function approveSender(address _address,bool _approve,uint256 cost_per_day,uint256 cost_per_energy) {
         // TODO: Set onlyOwner in production
         monitored[_address]=_approve;
-        
+        Billing billing=new Billing(cost_per_day,cost_per_energy);
+        if(_approve) {
+            billing.becomeFrom();
+        } 
+        billings[_address]=billing;
     }
     function changeBaseDelivery(uint256 startTime, uint256 endTime,uint256 power) onlyOwner {
         if(startTime==0) startTime=now;
@@ -241,7 +290,8 @@ contract Provider is RoleProvider  {
         if(power==0) power=1000000000;
         base_delivery=new Delivery(roles,this,5,startTime,endTime, power);
     }
-        DeliveryReceiver public nextReceiver;
+    
+    DeliveryReceiver public nextReceiver;
     mapping(address=>bool) public monitored;
     
     event Process(address sender,address account,uint256 startTime,uint256 endTime,uint256 power);

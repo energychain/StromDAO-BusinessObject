@@ -22,6 +22,7 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 	var my_dso ='';
 	var my_provider = '';
 	var my_stromkonto = '';
+	var my_billing='';
 	var role_mpo='';
 	var role_dso='';
 	var role_provider='';
@@ -327,9 +328,9 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 		});			
 	});	
 	describe('Usecase: Provider does energy to money exchange', function() {
-			it('Let Provider accept deliveries from me as sender', function(done) {
+			it('Let Provider accept deliveries from me as sender with cost per day 0 and cost per energy 2', function(done) {
 						node.provider(my_provider).then( function(provider) {							
-							provider.approveSender(node.wallet.address,true).then( function(tx_result) {	
+							provider.approveSender(node.wallet.address,true,0,2).then( function(tx_result) {	
 									assert.equal(tx_result.length,66);
 									done();
 							});
@@ -361,7 +362,21 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 									done();
 							});
 						});
-			});				
+			});	
+			it('Sign Billing Contract with Provider', function(done) {
+						node.provider(my_provider).then( function(provider) {	
+							provider.billings(node.wallet.address).then( function(tx_result) {
+									my_billing=tx_result[0];	
+									node.billing(tx_result[0]).then( function(billing) {
+											billing.becomeTo().then(function(tx_result2) {
+												//console.log(tx_result2);
+												assert.equal(tx_result2.length,66);												
+												done();
+										    });
+									});									
+							});
+						});
+			});							
 			it('Let provider handle my last delivery', function(done) {
 						node.provider(my_provider).then( function(provider) {							
 							provider.handleDelivery(delivery_4).then( function(tx_result) {	
