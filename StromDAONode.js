@@ -217,7 +217,9 @@ module.exports = {
 					instance.handleDelivery=function(_delivery) {
 							var p2 = new Promise(function(resolve2, reject2) {
 								instance.obj.handleDelivery(_delivery).then(function(o) {
-										resolve2(parent._keepHashRef(o));
+										parent._waitForTransaction(o.hash).then(function() {										
+												 resolve2(parent._keepHashRef(o));						
+												});	
 								});
 							});
 							return p2;
@@ -325,7 +327,9 @@ module.exports = {
 						instance.addTx=function(_from,_to,_value,_base) {
 								var p2 = new Promise(function(resolve2, reject2) { 
 											instance.obj.addTx(_from,_to,_value,_base).then(function(o) {
-													resolve2(parent._keepHashRef(o));
+													parent._waitForTransaction(o.hash).then(function() {										
+														resolve2(parent._keepHashRef(o));						
+													});	
 											});
 								});
 								return p2;
