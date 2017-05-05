@@ -73,9 +73,9 @@ module.exports = {
 			
 				var p1 = new Promise(function(resolve, reject) { 	
 					if(parent.options.testMode==true) { 
-						if(contract_type=="StromDAO-BO.sol:DSO") resolve("0x0513f2B6E0a0a3A79288dC31a3dF714f7C8c4BA1");
-						if(contract_type=="StromDAO-BO.sol:MPO") resolve("0xd5C3B4f181F20d4288877df1196882f23DE22098");
-						if(contract_type=="StromDAO-BO.sol:Provider") resolve("0x6D0BC1446E8eA18D03A1b5122F59419339ED7D8b");
+						if(contract_type=="StromDAO-BO.sol:DSO") resolve("0x7a0134578718b171168A7Cf73b861662E945a4D3");
+						if(contract_type=="StromDAO-BO.sol:MPO") resolve("0xc4719B91742D052d0A93F513f59F6Ac15e95D061");
+						if(contract_type=="StromDAO-BO.sol:Provider") resolve("0x2f5890270DA1Ee0f0F98E9885ADCd6dc4c0a2003");
 					} else {
 					var bin = fs.readFileSync("smart_contracts/"+contract_type+".bin");
 					var deployTransaction = ethers.Contract.getDeployTransaction("0x"+	bin, abi, roles_address);
@@ -157,9 +157,9 @@ module.exports = {
 			var p1 = new Promise(function(resolve, reject) { 
 			
 				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:DSO');						
-				instance.approveConnection=function(_address,_base_from_time,_base_to_time,_base_powerIn,_base_powerOut)  {					
+				instance.approveConnection=function(_address,_power_limit)  {					
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.approveConnection(_address,_base_from_time,_base_to_time,_base_powerIn,_base_powerOut).then(function(o) {									
+							instance.obj.approveConnection(_address,_power_limit).then(function(o) {									
 								parent._waitForTransaction(o.hash).then(function() {										
 								 resolve2(parent._keepHashRef(o));						
 								});												
@@ -224,6 +224,16 @@ module.exports = {
 							});
 							return p2;
 					}
+					instance.approveSender=function(_sender,_approve) {
+							var p2 = new Promise(function(resolve2, reject2) {
+								instance.obj.approveSender(_sender,_approve).then(function(o) {
+										parent._waitForTransaction(o.hash).then(function() {										
+												 resolve2(parent._keepHashRef(o));						
+												});	
+								});
+							});
+							return p2;
+					}
 					instance.stromkonto=function() {
 							var p2 = new Promise(function(resolve2, reject2) {
 								instance.obj.stromkonto().then(function(o) {
@@ -232,6 +242,7 @@ module.exports = {
 							});
 							return p2;
 					}
+					
 					resolve(instance);
 			});
 			return p1;

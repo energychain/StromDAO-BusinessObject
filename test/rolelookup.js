@@ -32,6 +32,7 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
     var delivery_4='';
 	console.log("Consens Parameters for this test instance:");	
 	console.log("  - MyAddress:",node.wallet.address);
+	console.log("  - Private Key:",node.wallet.privateKey);
     console.log("  - Reading#1:",my_reading_1);
     console.log("  - Reading#2:",my_reading_2);
     console.log("  - Reading#3:",my_reading_3);
@@ -129,7 +130,7 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 		
 		it('@DSO: Approve myself as Connection', function(done) {
 						node.dso(my_dso).then( function(dso) {
-							dso.approveConnection(node.wallet.address,0,0,1000000,1000000).then( function(tx_result) {	
+							dso.approveConnection(node.wallet.address,1000000).then( function(tx_result) {	
 									assert.equal(tx_result.length,66);
 									done();
 							});
@@ -326,6 +327,14 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 		});			
 	});	
 	describe('Usecase: Provider does energy to money exchange', function() {
+			it('Let Provider accept deliveries from me as sender', function(done) {
+						node.provider(my_provider).then( function(provider) {							
+							provider.approveSender(node.wallet.address,true).then( function(tx_result) {	
+									assert.equal(tx_result.length,66);
+									done();
+							});
+						});
+			});	
 			it('Retrieve my last Delivery', function(done) {
 						node.mpo(my_mpo).then( function(mpo) {
 							mpo.lastDelivery(node.wallet.address).then( function(tx_result) {	
