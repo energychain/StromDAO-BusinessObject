@@ -1,7 +1,7 @@
 language: node_js
 node_js:
-  - "iojs"
-  - "7"
-install:
-  - npm install -g mocha
-  - npm install
+  - 7.6
+sudo: false
+before_script:
+  - git config --global user.email "smuemd@gmail.com"
+  - git config --global user.name "smuemd"

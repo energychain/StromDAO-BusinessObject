@@ -4,9 +4,11 @@
   "description": "Abstract BusinessObject for StromDAO Energy Blockchain. Abstraction layer between blockchain technology and business logic providing energy market related entities and use cases.",
   "main": "StromDAONode.js",
   "engines": {
-    "node": ">=0.12"
+    "node": ">=7.6.0",
+    "npm": ">=4.5.0"
   },
   "scripts": {
+    "lint": "standard --verbose | snazzy",
     "test": "mocha --harmony test/rolelookup.js"
   },
   "repository": {
@@ -32,11 +34,12 @@
   "dependencies": {
     "ethers": "^2.0.3",
     "get-random-values": "^1.2.0",
-    "mocha": "^3.2.0",
-    "node-persist": "^2.0.10",
-    "snazzy": "^7.0.0"
+    "node-persist": "^2.0.11"
   },
   "devDependencies": {
-    "bithound": "^1.7.0"
+    "bithound": "^1.7.0",
+    "mocha": "^3.3.0",
+    "snazzy": "^7.0.0",
+    "standard": "^10.0.2"
   }
 }

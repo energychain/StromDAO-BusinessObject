@@ -1,6 +1,7 @@
-node_modules/ 
-npm-debug.log
-tmp/ 
+node_modules
+.DS_Store
+*.log
+tmp/
 key.ring/
 orbit-db/
 orbit/
