@@ -72,11 +72,11 @@ module.exports = {
         };
         this._deployContract=function(contract_type,roles_address) {
 				// if we are in a test situation we will simply use a test deployment.
-				
+				var abi="";
 				if(fs.existsSync("smart_contracts/"+contract_type+".abi")) {
-					var abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
+					abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
 				} else {
-					var abi = JSON.parse(fs.readFileSync("node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi"));
+					abi = JSON.parse(fs.readFileSync("node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi"));
 				}
 				var p1 = new Promise(function(resolve, reject) { 	
 					if(parent.options.testMode===true) { 
