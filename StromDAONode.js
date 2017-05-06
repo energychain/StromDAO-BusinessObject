@@ -22,7 +22,7 @@ module.exports = {
 		};
 		this._waitForTransaction = function(tx) {		
 			return parent.rpcprovider.waitForTransaction(tx);
-		}
+		};
 		this._waitNextBlock = function(cb) {
 			var block1=0;
 			var interval = setInterval(function() {					
@@ -54,10 +54,12 @@ module.exports = {
 				return storage.getItemSync(ref);
 		};
         this._loadContract=function(address,contract_type,roles_address) {
+			
+			var abi="";
 			if(fs.existsSync("smart_contracts/"+contract_type+".abi")) {
-					var abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
+					 abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
 				} else {
-					var abi = JSON.parse(fs.readFileSync("node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi"));
+					 abi = JSON.parse(fs.readFileSync("node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi"));
 			}
 			
 			if(address!="0x0") {				
@@ -113,7 +115,7 @@ module.exports = {
 						});
 					});
 					return p1;
-			}
+			};
 			return instance;
 		};
         this.gwalink = function(obj_or_address) {			
@@ -196,7 +198,7 @@ module.exports = {
 							});									
 					});
 					return p2;
-				}
+				};
 				instance.lastDelivery=function(_meterpoint) {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
 							instance.obj.lastDelivery(_meterpoint).then(function(o) {									
@@ -204,7 +206,7 @@ module.exports = {
 							});									
 					});
 					return p2;
-				}
+				};
 				resolve(instance);
 			});
 			return p1;
@@ -221,7 +223,7 @@ module.exports = {
 								});
 							});
 							return p2;
-					}
+					};
 					instance.approveSender=function(_sender,_approve,_cost_per_day,_cost_per_energy) {
 							var p2 = new Promise(function(resolve2, reject2) {
 								instance.obj.approveSender(_sender,_approve,_cost_per_day,_cost_per_energy).then(function(o) {
@@ -231,7 +233,7 @@ module.exports = {
 								});
 							});
 							return p2;
-					}
+					};
 					instance.stromkonto=function() {
 							var p2 = new Promise(function(resolve2, reject2) {
 								instance.obj.stromkonto().then(function(o) {
@@ -239,7 +241,7 @@ module.exports = {
 								});
 							});
 							return p2;
-					}
+					};
 					instance.billings=function(_address) {
 							var p2 = new Promise(function(resolve2, reject2) {
 								instance.obj.billings(_address).then(function(o) {
@@ -247,7 +249,7 @@ module.exports = {
 								});
 							});
 							return p2;
-					}
+					};
 					resolve(instance);
 			});
 			return p1;
@@ -264,7 +266,7 @@ module.exports = {
 								});
 							});
 							return p2;
-					}
+					};
 					resolve(instance);
 			});
 			return p1;
@@ -279,7 +281,7 @@ module.exports = {
 								});
 							});
 							return p2;
-					}
+					};
 					instance.power=function() {
 							var p2 = new Promise(function(resolve2, reject2) {
 								instance.obj.deliverable_power().then(function(o) {
@@ -287,7 +289,7 @@ module.exports = {
 								});
 							});
 							return p2;
-					}
+					};
 					instance.transferOwnership=function(owner) {
 							var p2 = new Promise(function(resolve2, reject2) {
 								instance.obj.transferOwnership(owner).then(function(o) {
@@ -297,7 +299,7 @@ module.exports = {
 								});
 							});
 							return p2;
-					}
+					};
 					instance.includeDelivery=function(delivery) {
 							var p2 = new Promise(function(resolve2, reject2) {
 								instance.obj.includeDelivery(delivery).then(function(o) {
@@ -307,7 +309,7 @@ module.exports = {
 								});
 							});
 							return p2;
-					}					
+					};					
 					resolve(instance);
 			});
 			return p1;
@@ -361,7 +363,7 @@ module.exports = {
 											});
 								});
 								return p2;
-						}
+						};
 						instance.balancesSoll=function(_address) {
 								var p2 = new Promise(function(resolve2, reject2) { 
 											//console.log(instance.obj);
@@ -370,7 +372,7 @@ module.exports = {
 											});
 								});
 								return p2;
-						}						
+						};					
 						resolve(instance);
 			});
 			return p1;
@@ -397,7 +399,7 @@ module.exports = {
 							return p1;
 							
 							//return instance.obj.cost_sum();
-					}
+					};
 					resolve(instance);
 			});
 			return p1;
