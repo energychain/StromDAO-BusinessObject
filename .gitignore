@@ -1,6 +1,6 @@
 node_modules/ 
 npm-debug.log
-tmp/ 
+tmp/
 key.ring/
 orbit-db/
 orbit/
