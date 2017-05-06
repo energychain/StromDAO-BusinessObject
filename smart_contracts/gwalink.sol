@@ -7,7 +7,7 @@ pragma solidity ^0.4.10;
  * Lieferanten/Abnehmer Managements in einem HSM oder P2P Markt ohne zentrale
  * Kontrollstelle.
  * 
- * Kontakt V0.1.3: 
+ * Kontakt V0.1.4: 
  * Thorsten Zoerner <thorsten.zoerner(at)stromdao.de)
  * https://stromdao.de/
  */
@@ -135,6 +135,39 @@ contract StromDAOReading is owned {
    }
 }
 
+
+contract PDclearingStub is owned {
+    BalancerOracles public stromkonto;
+    mapping(address=>PrivatePDcontract) public pds;
+    
+    function PDclearingStub(BalancerOracles _stromkonto) {
+        stromkonto=_stromkonto;
+    }
+    
+    function execute(PrivatePDcontract _pd) onlyOwner {
+        _pd.execute();
+        //stromkonto.addTx(_pd.to(),_pd.from(),_pd.cost_sum()/1000,_pd.zs_last());
+    }
+
+    function getPD() returns(address) {
+        return(pds[msg.sender]);
+    }    
+    function PDfactory(GWALink _link,address _mpid,address _from, address _to,uint256 _wh_microcent,uint256 _min_tx_microcent,bool _endure)  {
+        pds[msg.sender]=new PrivatePDcontract(_link, _mpid,_from,_to,_wh_microcent,_min_tx_microcent,_endure,this);
+    }
+}
+contract PDclearing is PDclearingStub {
+    BalancerOracles public stromkonto;
+    
+    function PDclearing(BalancerOracles _stromkonto) {
+        stromkonto=_stromkonto;
+    }
+    
+    function execute(PrivatePDcontract _pd) onlyOwner {
+        _pd.execute();
+        stromkonto.addTx(_pd.to(),_pd.from(),_pd.cost_sum()/1000,_pd.zs_last());
+    }
+}
 contract PrivatePDcontract is owned {
     address public from;
     address public to;
@@ -143,8 +176,7 @@ contract PrivatePDcontract is owned {
     uint256 public min_tx_microcent;
     uint256 public cost_sum;
     address public mpid;
-    PrivatePDcontract public next;
-    BalancerOracles public stromkonto;
+    
     bool public started;
     bool public endure;
     bool public executed;
@@ -152,6 +184,7 @@ contract PrivatePDcontract is owned {
     uint256 public zs_end;
     uint256 public zs_last;
     uint256 public min_wh;
+    PDclearingStub public clearing;
     
      struct ZS {
         uint256 time;
@@ -160,7 +193,7 @@ contract PrivatePDcontract is owned {
         address oracle;
     }
     
-    function PrivatePDcontract(GWALink _link,BalancerOracles _stromkonto,address _mpid,address _from, address _to,uint256 _wh_microcent,uint256 _min_tx_microcent,bool _endure) {
+    function PrivatePDcontract(GWALink _link,address _mpid,address _from, address _to,uint256 _wh_microcent,uint256 _min_tx_microcent,bool _endure,PDclearingStub _clearing) {
         gwalink=_link;
         from=_from;
         to=_to;
@@ -171,17 +204,26 @@ contract PrivatePDcontract is owned {
         executed=false;
         min_wh=1;
         if(_wh_microcent>0) {
-        min_wh=_min_tx_microcent/_wh_microcent;
+            min_wh=_min_tx_microcent/_wh_microcent;
         }
-        stromkonto=_stromkonto;
+        clearing=_clearing;
+        init();
         started=false;
     }
     function init() {
         var(time,power_in,power_out,oracle) = gwalink.zss(mpid);
         
         zs_start = power_in;
-
+        endure=true;
         started=true;
+    }
+    
+    function execute() {
+        check();
+        if(executed) throw;
+        if(endure) throw;
+        if(msg.sender!=address(clearing )) throw;
+        executed = true;
     }
     function check() {
         
@@ -191,9 +233,7 @@ contract PrivatePDcontract is owned {
             zs_end= cur_power_in;
             if(endure) {
                 uint256 microcent = wh_microcent*(zs_end-zs_start);
-                uint256 cent = microcent/1000; // Hier wird eine Rundung gemacht, deren Rest nicht beachtet wird
-                cost_sum+=microcent+((cent*1000)-microcent);
-                stromkonto.addTx(from,to,cent,zs_end-zs_start); 
+                cost_sum+=microcent;
                 init();
             }
         }
