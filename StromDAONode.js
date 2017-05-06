@@ -19,7 +19,7 @@ module.exports = {
 			var pk = ethers.utils.keccak256(getRandomValues(array));	
 			
 			return pk;
-		}
+		};
 		this._waitForTransaction = function(tx) {		
 			return parent.rpcprovider.waitForTransaction(tx);
 		}
@@ -27,16 +27,15 @@ module.exports = {
 			var block1=0;
 			var interval = setInterval(function() {					
 					parent.provider.getBlockNumber().then(function(blockNumber) {
-													if(block1 == 0) block1=blockNumber;
+													if(block1 === 0) block1=blockNumber;
 													var block2=blockNumber;														
 													if(block1!=block2) {
 															clearInterval(interval);
 															cb();
 													}
 											});
-					}
-			,1000);				
-		}
+					},1000);				
+		};
 		this._keepObjRef=function(address,contract_type) {
 			if(typeof parent.objRef[contract_type]=="undefined") {
 					parent.objRef[contract_type] = {};
@@ -46,15 +45,14 @@ module.exports = {
 				parent.objRef[contract_type][address]={ type: contract_type};
 				storage.setItemSync("objRef",parent.objRef); 
 			}					
-		}
-		
+		};	
 		this._keepHashRef=function(transaction) {
 				storage.setItemSync(transaction.hash,transaction);
 				return transaction.hash;
-		}
+		};
 		this.getRef=function(ref) {
 				return storage.getItemSync(ref);
-		}
+		};
         this._loadContract=function(address,contract_type,roles_address) {
 			if(fs.existsSync("smart_contracts/"+contract_type+".abi")) {
 					var abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
@@ -69,8 +67,7 @@ module.exports = {
 				// Deploy new?
 			}
             return contract;
-        }  
-        
+        };
         this._deployContract=function(contract_type,roles_address) {
 				// if we are in a test situation we will simply use a test deployment.
 				
@@ -80,7 +77,7 @@ module.exports = {
 					var abi = JSON.parse(fs.readFileSync("node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi"));
 				}
 				var p1 = new Promise(function(resolve, reject) { 	
-					if(parent.options.testMode==true) { 
+					if(parent.options.testMode===true) { 
 						if(contract_type=="StromDAO-BO.sol:DSO") resolve("0x7a0134578718b171168A7Cf73b861662E945a4D3");
 						if(contract_type=="StromDAO-BO.sol:MPO") resolve("0xc4719B91742D052d0A93F513f59F6Ac15e95D061");
 						if(contract_type=="StromDAO-BO.sol:Provider") resolve("0xd457F18DB9949899263d5bEbd74e74Ef6d2a6624");
@@ -98,8 +95,7 @@ module.exports = {
 					
 				});
 				return p1;
-		}  
-		
+		};
 		this._objInstance=function(obj_or_address,type_of_object) {
 				var instance = {};
 				instance.obj=obj_or_address;
@@ -107,8 +103,7 @@ module.exports = {
 					instance.obj = parent._loadContract(instance.obj,type_of_object);
 				} 
 				return instance;
-		}
-        
+		};
 		this.reader = function(obj_or_address) {
 			var instance=parent._objInstance(obj_or_address,'StromDAOReader');
 			instance.pingReading = function(reading) {
@@ -120,8 +115,7 @@ module.exports = {
 					return p1;
 			}
 			return instance;
-		}
-		
+		};
         this.gwalink = function(obj_or_address) {			
 			var gwalink=parent._objInstance(obj_or_address,'gwalink');
 			
@@ -138,8 +132,7 @@ module.exports = {
 							});
 			});
 			return p1;
-		}
-		
+		};
 		this.pdclearing = function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 
 			
@@ -159,8 +152,7 @@ module.exports = {
 				resolve(instance);
 			});
 			return p1;
-		}
-		
+		};
 		this.dso = function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 
 			
@@ -178,8 +170,7 @@ module.exports = {
 				resolve(instance);
 			});
 			return p1;
-		}
-		
+		};
 		this.mpo = function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 
 			
@@ -217,8 +208,7 @@ module.exports = {
 				resolve(instance);
 			});
 			return p1;
-		}
-		
+		};
 		this.provider = function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 
 					var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:Provider');
@@ -261,8 +251,7 @@ module.exports = {
 					resolve(instance);
 			});
 			return p1;
-		}
-		
+		};
 		this.billing = function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 
 					var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:Billing');
@@ -279,8 +268,7 @@ module.exports = {
 					resolve(instance);
 			});
 			return p1;
-		}
-		
+		};
 		this.delivery = function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 
 					var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:Delivery');
@@ -323,10 +311,7 @@ module.exports = {
 					resolve(instance);
 			});
 			return p1;
-		}
-		
-
-				
+		};	
 		this.roleLookup = function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 
 			
@@ -363,8 +348,7 @@ module.exports = {
 				resolve(instance);
 			});
 			return p1;
-		}
-		
+		};
 		this.stromkonto = function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 					
 						var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:Stromkonto');
@@ -390,8 +374,7 @@ module.exports = {
 						resolve(instance);
 			});
 			return p1;
-		}
-		
+		};
 		this.pdcontract = function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 					
 					var instance=parent._objInstance(obj_or_address,'PrivatePDcontract');
@@ -418,7 +401,7 @@ module.exports = {
 					resolve(instance);
 			});
 			return p1;
-		}
+		};
 		
 		storage.initSync();
 		
