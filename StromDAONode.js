@@ -126,40 +126,11 @@ module.exports = {
 		this.delivery = require("./Delivery.js").delivery;
 		this.stromkonto = require("./Stromkonto.js").stromkonto;		
 		this.roleLookup = require("./RoleLookup").rolelookup;
-		this.pdcontract = function(obj_or_address) {
-			var p1 = new Promise(function(resolve, reject) { 					
-					var instance=parent._objInstance(obj_or_address,'PrivatePDcontract');
-					instance.check = function() {
-						var p1 = new Promise(function(resolve, reject) { 
-								instance.obj.check().then(function(o) {
-									resolve(parent._keepHashRef(o));	
-								});
-						});
-						return p1;
-					};
-					instance.costSum = function() {
-							
-							var p1 = new Promise(function(resolve, reject) { 
-									instance.obj.cost_sum().then(function(o) {
-										resolve(o);	
-									});
-							});
-							
-							return p1;
-							
-							//return instance.obj.cost_sum();
-					};
-					resolve(instance);
-			});
-			return p1;
-		};
 		
 		storage.initSync();
 		
         if(typeof options.rpc == "undefined") options.rpc='http://app.stromdao.de:8081/rpc';
-        
-        
-        
+
         var rpcprovider = new ethers.providers.JsonRpcProvider(options.rpc, 42);        
         
         if(typeof options.external_id !="undefined") {
