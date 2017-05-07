@@ -8,6 +8,8 @@
  */
  
 this.rolelookup=function(obj_or_address) {
+	       if(typeof obj_or_address == "undefined") obj_or_address=parent.options.rolelookup;
+	       
 			var p1 = new Promise(function(resolve, reject) { 
 			
 				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:RoleLookup');		
@@ -32,6 +34,14 @@ this.rolelookup=function(obj_or_address) {
 										});																		
 							});													
 					return p2;
+				};
+				instance.relations=function(_account,_role) {
+						var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.relations(_account,_role).then(function(o) {
+								resolve2(o[0]);																	
+							});
+						});													
+						return p2;
 				};
 				resolve(instance);
 			});

@@ -9,6 +9,7 @@
  
  
 this.provider = function(obj_or_address) {
+			if(typeof obj_or_address == "undefined") obj_or_address=parent.options.contracts["StromDAO-BO.sol:Provider"];	
 			var p1 = new Promise(function(resolve, reject) { 
 					var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:Provider');
 					instance.handleDelivery=function(_delivery) {

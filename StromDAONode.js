@@ -9,9 +9,11 @@ var ethers = require('ethers');
 var storage = require('node-persist');
 
 module.exports = {
-    Node:function(options) {
+	
+    Node:function(user_options) {
         parent = this;
-		
+        
+		this._defaults = require("./Defaults.js").deployment;
 		this._createNewPK = function() {		
 		    var getRandomValues = require('get-random-values'); 
 			var array = new Uint8Array(32);	
@@ -93,9 +95,7 @@ module.exports = {
 				}
 				var p1 = new Promise(function(resolve, reject) { 	
 					if(parent.options.testMode===true) { 
-						if(contract_type=="StromDAO-BO.sol:DSO") resolve("0x7a0134578718b171168A7Cf73b861662E945a4D3");
-						if(contract_type=="StromDAO-BO.sol:MPO") resolve("0xc4719B91742D052d0A93F513f59F6Ac15e95D061");
-						if(contract_type=="StromDAO-BO.sol:Provider") resolve("0xd457F18DB9949899263d5bEbd74e74Ef6d2a6624");
+						resolve(parent.options.contracts[contract_type]);						
 					} else {
 					var bin = fs.readFileSync("smart_contracts/"+contract_type+".bin");
 					var deployTransaction = ethers.Contract.getDeployTransaction("0x"+	bin, abi, roles_address);
@@ -126,6 +126,8 @@ module.exports = {
 		this.delivery = require("./Delivery.js").delivery;
 		this.stromkonto = require("./Stromkonto.js").stromkonto;		
 		this.roleLookup = require("./RoleLookup").rolelookup;
+		
+		var options=this._defaults(user_options);				
 		
 		storage.initSync();
 		

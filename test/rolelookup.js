@@ -42,7 +42,7 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
     console.log("  - Reading#5:",my_reading_5);
 	describe('Usecase: Connect new Meterpoint to Consensus System', function() {
 		it('Test Ownership of Consensus (deployed as prerequesit)', function(done) {			
-				node.roleLookup(known_rolelookup).then( function(roleLookup) {
+				node.roleLookup().then( function(roleLookup) {
 							roleLookup.owner().then( function(owner) {						
 							assert.equal(owner[0].toString(),"0x00D44194A83Affb40dB9DFded2ebb62aBE711F56");
 							done();

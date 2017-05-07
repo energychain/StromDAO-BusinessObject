@@ -8,6 +8,8 @@
  
 
 this.mpo = function(obj_or_address) {
+			if(typeof obj_or_address == "undefined") obj_or_address=parent.options.contracts["StromDAO-BO.sol:MPO"];
+			
 			var p1 = new Promise(function(resolve, reject) { 
 			
 				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:MPO');						
@@ -43,8 +45,44 @@ this.mpo = function(obj_or_address) {
 							});									
 					});
 					return p2;
-				};				
-				resolve(instance);
+				};		
+				if(parent.options.testMode) {
+							// In Testmode we do a full "Self-Register" if not registered.
+							parent.roleLookup().then( function(roleLookup) {
+								roleLookup.relations(parent.wallet.address,parent.options.roles[1]).then( function(tx_result) {						
+									if(tx_result=="0x0000000000000000000000000000000000000000") {
+										roleLookup.setRelation(parent.options.roles[1],parent.options.contracts["StromDAO-BO.sol:MPO"]).then( 
+										        function() {
+													return new Promise(function(resolve2, reject2) { resolve2(instance.approveMP(parent.wallet.address,4));	});
+												}
+										 )
+										 .then( function() {
+											  return new Promise(function(resolve2, reject2) { 
+													resolve2(parent.dso(parent.options.contracts["StromDAO-BO.sol:DSO"]));
+													})})
+										 .then(function(dso) {
+											   return new Promise(function(resolve2, reject2) { 
+													resolve2(dso.approveConnection(parent.wallet.address,100000000));
+													})})
+										 .then(function() {
+											  return new Promise(function(resolve2, reject2) { 
+													resolve2(roleLookup.setRelation(parent.options.roles[2],parent.options.contracts["StromDAO-BO.sol:DSO"]));
+												})})
+										 .then(function() {
+											  return new Promise(function(resolve2, reject2) { 
+												  resolve2(roleLookup.setRelation(parent.options.roles[2],parent.options.contracts["StromDAO-BO.sol:DSO"])); 
+											  })})										  	 
+										 .then(function() {
+											 resolve(instance);
+									     });
+									} else {
+										resolve(instance);
+									}
+								});
+							});
+				} else {	
+					resolve(instance);
+				}
 			});
 			return p1;
 		};
