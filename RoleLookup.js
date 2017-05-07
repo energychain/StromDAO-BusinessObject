@@ -12,18 +12,8 @@ this.rolelookup=function(obj_or_address) {
 			
 				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:RoleLookup');		
 				
-				instance.owner=function() {return parent._owner_promise(instance);};
-						
-				instance.owner2=function() {					
-					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.owner().then(function(o) {									
-																		
-												resolve2(o);
-										});																		
-							});									
-				
-					return p2;
-				};
+				instance.owner=function() {return parent._owner_promise(instance);};					
+			
 				instance.roles=function(i) {					
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.roles(i).then(function(o) {																											

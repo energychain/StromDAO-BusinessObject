@@ -119,55 +119,6 @@ module.exports = {
 				} 
 				return instance;
 		};
-		this.reader = function(obj_or_address) {
-			var instance=parent._objInstance(obj_or_address,'StromDAOReader');
-			instance.pingReading = function(reading) {
-					var p1 = new Promise(function(resolve, reject) { 
-						instance.obj.pingReading(reading).then(function(o) {
-							resolve(parent._keepHashRef(o));
-						});
-					});
-					return p1;
-			};
-			return instance;
-		};
-        this.gwalink = function(obj_or_address) {			
-			var gwalink=parent._objInstance(obj_or_address,'gwalink');
-			
-			var p1 = new Promise(function(resolve, reject) { 
-					gwalink.obj.reader_in().then(
-							function(o) { 
-									gwalink.reader_in=parent.reader(o[0]);	
-									
-									gwalink.obj.reader_out().then(
-										function(o) { 
-												gwalink.reader_out=parent.reader(o[0]);
-												resolve(gwalink);
-										});
-							});
-			});
-			return p1;
-		};
-		this.pdclearing = function(obj_or_address) {
-			var p1 = new Promise(function(resolve, reject) { 
-			
-				var instance=parent._objInstance(obj_or_address,'PDClearingStub');				
-				instance.factory=function(_link,_mpid,_from,_to,_wh_microcent,_min_tx_microcent,_endure) {					
-					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.PDfactory(_link,_mpid,_from,_to,_wh_microcent,_min_tx_microcent,_endure).then(function(o) {									
-									parent._waitNextBlock(function() {											
-										instance.obj.pds(parent.wallet.address).then(function(x) {												
-												resolve2(x[0]);
-										});										
-									});
-							});									
-					});
-					return p2;
-				};
-				resolve(instance);
-			});
-			return p1;
-		};
 		this.dso = require("./DSO.js").dso;
 		this.mpo = require("./MPO.js").mpo;
 		this.provider = require("./Provider.js").provider;
