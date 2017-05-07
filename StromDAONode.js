@@ -90,8 +90,12 @@ module.exports = {
 				var abi="";
 				if(fs.existsSync("smart_contracts/"+contract_type+".abi")) {
 					abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
-				} else {
+				} else if(fs.existsSync("node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi")) {
 					abi = JSON.parse(fs.readFileSync("node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi"));
+				} else {
+					var request = require('sync-request');
+					var res = request('GET', 'https://raw.githubusercontent.com/energychain/StromDAO-BusinessObject/master/smart_contracts/'+contract_type+'.abi');
+					abi = JSON.parse(res.getBody());
 				}
 				var p1 = new Promise(function(resolve, reject) { 	
 					if(parent.options.testMode===true) { 
