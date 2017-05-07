@@ -13,9 +13,7 @@ this.stromkonto = function(obj_or_address) {
 						instance.addTx=function(_from,_to,_value,_base) {
 								var p2 = new Promise(function(resolve2, reject2) { 
 											instance.obj.addTx(_from,_to,_value,_base).then(function(o) {
-													parent._waitForTransaction(o.hash).then(function() {										
-														resolve2(parent._keepHashRef(o));						
-													});	
+													parent._waitForTransactionKeepRef(o,resolve2);	
 											});
 								});
 								return p2;

@@ -14,9 +14,7 @@ this.provider = function(obj_or_address) {
 					instance.handleDelivery=function(_delivery) {
 							var p2 = new Promise(function(resolve2, reject2) {
 								instance.obj.handleDelivery(_delivery).then(function(o) {
-										parent._waitForTransaction(o.hash).then(function() {										
-												 resolve2(parent._keepHashRef(o));						
-												});	
+									parent._waitForTransactionKeepRef(o,resolve2);	
 								});
 							});
 							return p2;
@@ -24,9 +22,7 @@ this.provider = function(obj_or_address) {
 					instance.approveSender=function(_sender,_approve,_cost_per_day,_cost_per_energy) {
 							var p2 = new Promise(function(resolve2, reject2) {
 								instance.obj.approveSender(_sender,_approve,_cost_per_day,_cost_per_energy).then(function(o) {
-										parent._waitForTransaction(o.hash).then(function() {										
-												 resolve2(parent._keepHashRef(o));						
-												});	
+										parent._waitForTransactionKeepRef(o,resolve2);	
 								});
 							});
 							return p2;

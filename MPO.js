@@ -14,9 +14,7 @@ this.mpo = function(obj_or_address) {
 				instance.approveMP=function(_meter,_role) {					
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.approveMP(_meter,_role).then(function(o) {
-								parent._waitForTransaction(o.hash).then(function() {										
-								 resolve2(parent._keepHashRef(o));						
-								});			
+								parent._waitForTransactionKeepRef(o,resolve2);											
 							});									
 					});
 					return p2;
@@ -24,11 +22,8 @@ this.mpo = function(obj_or_address) {
 				instance.storeReading=function(_reading) {
 					_reading=Math.round(_reading);
 					var p2 = new Promise(function(resolve2, reject2) { 
-							
 							instance.obj.storeReading(_reading).then(function(o) {	
-								parent._waitForTransaction(o.hash).then(function() {								
-								 resolve2(parent._keepHashRef(o));					
-								});				
+								parent._waitForTransactionKeepRef(o,resolve2);			
 							});									
 					});
 					return p2;

@@ -10,8 +10,11 @@
 this.rolelookup=function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 
 			
-				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:RoleLookup');				
-				instance.owner=function() {					
+				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:RoleLookup');		
+				
+				instance.owner=function() {return parent._owner_promise(instance);};
+						
+				instance.owner2=function() {					
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.owner().then(function(o) {									
 																		

@@ -23,6 +23,11 @@ module.exports = {
 		this._waitForTransaction = function(tx) {		
 			return parent.rpcprovider.waitForTransaction(tx);
 		};
+		this._waitForTransactionKeepRef = function(o,resolve2) {		
+			this._waitForTransaction(o.hash).then(function() {								
+									resolve2(parent._keepHashRef(o));					
+			});				
+		};
 		this._waitNextBlock = function(cb) {
 			var block1=0;
 			var interval = setInterval(function() {					
@@ -70,6 +75,14 @@ module.exports = {
 			}
             return contract;
         };
+        this._owner_promise = function(instance) {
+							var p2 = new Promise(function(resolve2, reject2) {
+								instance.obj.owner().then(function(o) {
+										resolve2(o);
+								});
+							});
+							return p2;
+					};
         this._deployContract=function(contract_type,roles_address) {
 				// if we are in a test situation we will simply use a test deployment.
 				var abi="";

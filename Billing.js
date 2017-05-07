@@ -14,9 +14,7 @@ this.billing=function(obj_or_address) {
 					instance.becomeTo=function() {
 							var p2 = new Promise(function(resolve2, reject2) {
 								instance.obj.becomeTo().then(function(o) {
-										parent._waitForTransaction(o.hash).then(function() {										
-												 resolve2(parent._keepHashRef(o));						
-												});	
+									parent._waitForTransactionKeepRef(o,resolve2);	
 								});
 							});
 							return p2;
