@@ -36,6 +36,14 @@ this.mpo = function(obj_or_address) {
 					});
 					return p2;
 				};
+				instance.readings=function(_meterpoint) {					
+					var p2 = new Promise(function(resolve2, reject2) { 							
+							instance.obj.readings(_meterpoint).then(function(o) {									
+								 resolve2(o);									
+							});									
+					});
+					return p2;
+				};				
 				resolve(instance);
 			});
 			return p1;

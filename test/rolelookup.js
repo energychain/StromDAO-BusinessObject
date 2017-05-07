@@ -6,7 +6,7 @@ var assert = require('assert');
 var StromDAONode = require("../StromDAONode.js");    
 
 describe('StromDAO: Consensus System for Energy Blockchain	', function() {
-	this.timeout(240000);
+	this.timeout(300000);
 	var external_id = Math.random()*10000000; 
 
 	var node = new StromDAONode.Node({external_id:external_id,testMode:true});
@@ -18,6 +18,7 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 	var my_reading_3=Math.round(my_reading_2+(Math.random()*100+1));
 	var my_reading_4=Math.round(my_reading_3+(Math.random()*100+1));
 	var my_reading_5=Math.round(my_reading_4+(Math.random()*100+1));
+	var my_reading_6=Math.round(my_reading_5+(Math.random()*100+1));
 	var my_mpo ='';
 	var my_dso ='';
 	var my_provider = '';
@@ -396,4 +397,26 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 						});
 			});	
 	});	
+	describe('Usecase: End-To-End Test', function() {
+			it('Setting reading #6 should trigger event/transaction on stromkonto', function(done) {
+					node.stromkonto(my_stromkonto).then( function(stromkonto) {	
+							//console.log(stromkonto.obj);
+							/*
+							stromkonto.obj.ontx=function(from,to,value,base) {
+								console.log(from,to,value,base);
+								done();
+								//if(from==node.wallet.address) { done(); }
+							}*/
+							done();
+					});
+					
+					node.mpo(my_mpo).then( function(mpo) {
+							mpo.storeReading(my_reading_6).then( function(tx_result) {	
+									// Nothing to do here ... as Event should be triggered.
+							});
+						});
+				
+			});
+	
+	});
 });
