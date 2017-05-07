@@ -5,8 +5,7 @@ The StromDAO BusinessObject comes ready-to-use in custom applications.
 
 Please be aware that the last commited version is always a development only version and intended to use in production.
 
-![Build Status](https://app.codeship.com/projects/01db8140-0b02-0135-a191-4665eb7ab8b1/status?branch=master) [![bitHound Overall Score](https://www.bithound.io/github/energychain/StromDAO-BusinessObject/badges/score.svg)](https://www.bithound.io/github/energychain/StromDAO-BusinessObject)
-
+![Build Status](https://app.codeship.com/projects/01db8140-0b02-0135-a191-4665eb7ab8b1/status?branch=master) [![bitHound Overall Score](https://www.bithound.io/github/energychain/StromDAO-BusinessObject/badges/score.svg)](https://www.bithound.io/github/energychain/StromDAO-BusinessObject) ![Build Status](https://travis-ci.org/energychain/StromDAO-BusinessObject.svg?branch=master) [![bitHound Code](https://www.bithound.io/github/energychain/StromDAO-BusinessObject/badges/code.svg)](https://www.bithound.io/github/energychain/StromDAO-BusinessObject)
 
 ## Requirements
 - NODE JS Version 7.9 ( https://nodejs.org/en/ )
