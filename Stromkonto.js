@@ -26,6 +26,15 @@ this.stromkonto = function(obj_or_address) {
 											});
 								});
 								return p2;
+						};	
+						instance.balancesHaben=function(_address) {
+								var p2 = new Promise(function(resolve2, reject2) { 
+											//console.log(instance.obj);
+											instance.obj.balanceHaben(_address).then(function(o) {
+													resolve2(o);
+											});
+								});
+								return p2;
 						};					
 						resolve(instance);
 			});
