@@ -30,10 +30,13 @@ module.exports = {
 									resolve2(parent._keepHashRef(o));					
 			});				
 		};
+		this._getBlockNumber=function() {
+			return parent.rpcprovider.getBlockNumber();
+		}
 		this._waitNextBlock = function(cb) {
 			var block1=0;
 			var interval = setInterval(function() {					
-					parent.provider.getBlockNumber().then(function(blockNumber) {
+					parent.rpcprovider.getBlockNumber().then(function(blockNumber) {
 													if(block1 === 0) block1=blockNumber;
 													var block2=blockNumber;														
 													if(block1!=block2) {
