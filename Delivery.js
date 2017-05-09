@@ -20,6 +20,38 @@ this.delivery=function(obj_or_address) {
 							});
 							return p2;
 					};
+					instance.resolution=function() {
+							var p2 = new Promise(function(resolve2, reject2) {
+								instance.obj.resolution().then(function(o) {
+										resolve2(o);
+								});
+							});
+							return p2;
+					};
+					instance.endTime=function() {
+							var p2 = new Promise(function(resolve2, reject2) {
+								instance.obj.deliverable_endTime().then(function(o) {
+										resolve2(o);
+								});
+							});
+							return p2;
+					};	
+					instance.startTime=function() {
+							var p2 = new Promise(function(resolve2, reject2) {
+								instance.obj.deliverable_startTime().then(function(o) {
+										resolve2(o);
+								});
+							});
+							return p2;
+					};
+					instance.account=function() {
+							var p2 = new Promise(function(resolve2, reject2) {
+								instance.obj.account().then(function(o) {
+										resolve2(o);
+								});
+							});
+							return p2;
+					};
 					instance.transferOwnership=function(owner) {
 							var p2 = new Promise(function(resolve2, reject2) {
 								instance.obj.transferOwnership(owner).then(function(o) {
