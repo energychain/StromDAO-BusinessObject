@@ -21,6 +21,14 @@ this.dso=function(obj_or_address) {
 					});
 					return p2;
 				};
+				instance.approvedConnections=function(_address) {
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.approvedConnections(_address).then(function(o) {									
+								 resolve2(o);												
+							});									
+					});
+					return p2;
+				}
 				resolve(instance);
 			});
 			return p1;
