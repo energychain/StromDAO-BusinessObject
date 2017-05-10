@@ -66,6 +66,7 @@ module.exports = {
         this._loadContract=function(address,contract_type,roles_address) {
 			
 			var abi="";
+			contract_type=contract_type.replace(":","_");
 			if(fs.existsSync("smart_contracts/"+contract_type+".abi")) {
 					 abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
 				} else {
@@ -91,6 +92,7 @@ module.exports = {
         this._deployContract=function(contract_type,roles_address) {
 				// if we are in a test situation we will simply use a test deployment.
 				var abi="";
+					contract_type=contract_type.replace(":","_");
 				if(fs.existsSync("smart_contracts/"+contract_type+".abi")) {
 					abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
 				} else if(fs.existsSync("node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi")) {
