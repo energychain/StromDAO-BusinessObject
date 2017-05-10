@@ -50,8 +50,7 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 						});		
 		});
 		it('Ensure DSO Contract exists', function(done) {
-				node._deployContract('StromDAO-BO.sol:DSO',known_rolelookup).then(function(address) {
-								//console.log("Deployed",address);
+				node._deployContract('StromDAO-BO.sol:DSO',known_rolelookup).then(function(address) {								
 								assert.equal(address.length,42);
 								my_dso=address;
 								console.log("        - My DSO:",my_dso);

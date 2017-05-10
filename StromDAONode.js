@@ -67,6 +67,7 @@ module.exports = {
 			
 			var abi="";
 			contract_type=contract_type.replace(":","_");
+			
 			if(fs.existsSync("smart_contracts/"+contract_type+".abi")) {
 					 abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
 				} else {
@@ -83,7 +84,7 @@ module.exports = {
         };
         this._owner_promise = function(instance) {
 							var p2 = new Promise(function(resolve2, reject2) {
-								instance.obj.owner().then(function(o) {
+								instance.obj.owner().then(function(o) {										
 										resolve2(o);
 								});
 							});
@@ -93,19 +94,19 @@ module.exports = {
 				// if we are in a test situation we will simply use a test deployment.
 				var abi="";
 					contract_type=contract_type.replace(":","_");
+					
 				if(fs.existsSync("smart_contracts/"+contract_type+".abi")) {
 					abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
 				} else if(fs.existsSync("node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi")) {
 					abi = JSON.parse(fs.readFileSync("node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi"));
-				} else {
-					var request = require('sync-request');
-					var res = request('GET', 'https://raw.githubusercontent.com/energychain/StromDAO-BusinessObject/master/smart_contracts/'+contract_type+'.abi');
-					abi = JSON.parse(res.getBody());
-				}
+				} 
+				
 				var p1 = new Promise(function(resolve, reject) { 	
 					if(parent.options.testMode===true) { 
+						
 						resolve(parent.options.contracts[contract_type]);						
 					} else {
+						
 					var bin = fs.readFileSync("smart_contracts/"+contract_type+".bin");
 					var deployTransaction = ethers.Contract.getDeployTransaction("0x"+	bin, abi, roles_address);
 					var sendPromise = parent.wallet.sendTransaction(deployTransaction);
