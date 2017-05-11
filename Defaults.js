@@ -7,6 +7,7 @@ this.deployment=function(options) {
 				contract_type["StromDAO-BO.sol:DSO"]="0x7a0134578718b171168A7Cf73b861662E945a4D3";
 				contract_type["StromDAO-BO.sol:MPO"]="0x6Bd0712751bB6EC7D9f57E1a58b19eccd6AE9603";
 				contract_type["StromDAO-BO.sol:Provider"]="0x13522cfB417Ec804E821650Cbd8d5a58A3308D70";
+				
 				var roles=[];
 				roles[0]="0x0";
 				roles[1]="0x0ccE513Fc5581F636830D15ddA7eD211c211aa63";
