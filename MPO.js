@@ -38,7 +38,8 @@ this.mpo = function(obj_or_address) {
 					});
 					return p2;
 				};
-				instance.readings=function(_meterpoint) {					
+				instance.readings=function(_meterpoint) {	
+					console.log("READING",_meterpoint);
 					var p2 = new Promise(function(resolve2, reject2) { 							
 							instance.obj.readings(_meterpoint).then(function(o) {									
 								 resolve2(o);									
@@ -48,8 +49,8 @@ this.mpo = function(obj_or_address) {
 				};		
 				if(parent.options.testMode) {
 							// In Testmode we do a full "Self-Register" if not registered.
-							console.log("PreSet in TestMode");
-							
+							//console.log("PreSet in TestMode");
+							/*
 							if(typeof parent.options.mpo_dir_role=="undefined") parent.options.mpo_dir_role=4;
 							parent.roleLookup().then( function(roleLookup) {
 								roleLookup.relations(parent.wallet.address,parent.options.roles[1]).then( function(tx_result) {						
@@ -78,8 +79,11 @@ this.mpo = function(obj_or_address) {
 										resolve(instance);
 									}
 								});
+								
+									
 							});
-							
+							*/
+							resolve(instance);
 				} else {	
 					resolve(instance);
 				}

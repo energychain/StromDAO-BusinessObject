@@ -170,6 +170,7 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 		});
 		
 		it('Check that I am owner of last Delivery', function(done) {
+						
 						node.delivery(delivery_1).then( function(delivery) {
 							
 							delivery.owner().then( function(tx_result) {	
