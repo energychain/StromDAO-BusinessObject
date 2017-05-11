@@ -48,15 +48,13 @@ this.mpo = function(obj_or_address) {
 				};		
 				if(parent.options.testMode) {
 							// In Testmode we do a full "Self-Register" if not registered.
+							console.log("PreSet in TestMode");
+							
 							if(typeof parent.options.mpo_dir_role=="undefined") parent.options.mpo_dir_role=4;
 							parent.roleLookup().then( function(roleLookup) {
 								roleLookup.relations(parent.wallet.address,parent.options.roles[1]).then( function(tx_result) {						
 									if(tx_result=="0x0000000000000000000000000000000000000000") {
-										roleLookup.setRelation(parent.options.roles[1],parent.options.contracts["StromDAO-BO.sol:MPO"]).then( 
-										        function() {
-													return new Promise(function(resolve2, reject2) { resolve2(instance.approveMP(parent.wallet.address,parent.options.mpo_dir_role));	});
-												}
-										 )
+										roleLookup.setRelation(parent.options.roles[1],parent.options.contracts["StromDAO-BO.sol:MPO"])
 										 .then( function() {
 											  return new Promise(function(resolve2, reject2) { 
 													resolve2(parent.dso(parent.options.contracts["StromDAO-BO.sol:DSO"]));
@@ -81,6 +79,7 @@ this.mpo = function(obj_or_address) {
 									}
 								});
 							});
+							
 				} else {	
 					resolve(instance);
 				}
