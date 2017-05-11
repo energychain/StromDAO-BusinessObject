@@ -12,7 +12,8 @@ this.mpo = function(obj_or_address) {
 			
 			var p1 = new Promise(function(resolve, reject) { 
 			
-				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:MPO');						
+				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:MPO');			
+				instance.test = {};				
 				instance.approveMP=function(_meter,_role) {					
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.approveMP(_meter,_role).then(function(o) {
@@ -30,6 +31,16 @@ this.mpo = function(obj_or_address) {
 					});
 					return p2;
 				};
+				instance.test.storeReading=function(_reading) {
+					_reading=Math.round(_reading);
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.estimate.storeReading(_reading).then(function(cost) {									
+								resolve2(cost.toString());								
+							}).catch(function() { reject2(-1); });
+					});
+					return p2;
+				};
+				
 				instance.lastDelivery=function(_meterpoint) {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
 							instance.obj.lastDelivery(_meterpoint).then(function(o) {									
@@ -38,8 +49,7 @@ this.mpo = function(obj_or_address) {
 					});
 					return p2;
 				};
-				instance.readings=function(_meterpoint) {	
-					console.log("READING",_meterpoint);
+				instance.readings=function(_meterpoint) {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
 							instance.obj.readings(_meterpoint).then(function(o) {									
 								 resolve2(o);									
@@ -49,13 +59,15 @@ this.mpo = function(obj_or_address) {
 				};		
 				if(parent.options.testMode) {
 							// In Testmode we do a full "Self-Register" if not registered.
-							//console.log("PreSet in TestMode");
-							/*
 							if(typeof parent.options.mpo_dir_role=="undefined") parent.options.mpo_dir_role=4;
 							parent.roleLookup().then( function(roleLookup) {
 								roleLookup.relations(parent.wallet.address,parent.options.roles[1]).then( function(tx_result) {						
 									if(tx_result=="0x0000000000000000000000000000000000000000") {
-										roleLookup.setRelation(parent.options.roles[1],parent.options.contracts["StromDAO-BO.sol:MPO"])
+										roleLookup.setRelation(parent.options.roles[1],parent.options.contracts["StromDAO-BO.sol:MPO"]).then( 
+										        function() {
+													return new Promise(function(resolve2, reject2) { resolve2(instance.approveMP(parent.wallet.address,parent.options.mpo_dir_role));	});
+												}
+										 )
 										 .then( function() {
 											  return new Promise(function(resolve2, reject2) { 
 													resolve2(parent.dso(parent.options.contracts["StromDAO-BO.sol:DSO"]));
@@ -79,11 +91,7 @@ this.mpo = function(obj_or_address) {
 										resolve(instance);
 									}
 								});
-								
-									
 							});
-							*/
-							resolve(instance);
 				} else {	
 					resolve(instance);
 				}
