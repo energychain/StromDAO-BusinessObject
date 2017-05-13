@@ -267,6 +267,10 @@ contract Provider is RoleProvider  {
         }
     }
     
+    function addTx(address _from,address _to, uint256 _value,uint256 _base) onlyOwner {
+			stromkonto.addTx(_from,_to,_value,_base);
+	}
+    
     function handleDelivery(Delivery _delivery) {
         if(_delivery.owner()!=address(this)) throw; 
         if(!monitored[msg.sender]) throw;
@@ -284,6 +288,7 @@ contract Provider is RoleProvider  {
         } 
         billings[_address]=billing;
     }
+    
     function changeBaseDelivery(uint256 startTime, uint256 endTime,uint256 power) onlyOwner {
         if(startTime==0) startTime=now;
         if(endTime==0) endTime=startTime+86400;
@@ -413,5 +418,3 @@ contract Delivery is owned {
         
     }
 }
-
-
