@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/energychain/StromDAO-BusinessObject#readme",
   "dependencies": {
-    "ethers": "2.0.3",
+    "ethers": "^2.0.3",
     "get-random-values": "^1.2.0",
     "node-persist": "^2.0.11",
     "sync-request": "^4.0.3"
