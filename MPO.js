@@ -1,7 +1,9 @@
-/*
+/**
  * StromDAO Business Object: MPO
  * =========================================
  * Meter Point Operator handling for StromDAO Energy Blockchain.
+ * 
+ * In general a Meter Point Operating (Contract) handles meter readings and issues Deliverables as soon as a new reading is received.
  * 
  * @author Thorsten Zoerner thorsten.zoerner@stromdao.de 
  * */
@@ -14,6 +16,12 @@ this.mpo = function(obj_or_address) {
 			
 				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:MPO');			
 				instance.test = {};				
+				
+				/**
+				 * Approve a new Blockchain Address to this contract instance. Limit: Only-Owner
+				 * @param _meter address
+				 * @param _role Eq. to 4= Consumer or 5= Producer
+				 */
 				instance.approveMP=function(_meter,_role) {					
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.approveMP(_meter,_role).then(function(o) {
@@ -22,6 +30,11 @@ this.mpo = function(obj_or_address) {
 					});
 					return p2;
 				};
+				
+				/**
+				 * Stores a reading to this contract instance. Requires sender to be approved Meter-Point 
+				 * @see approveMP()
+				 */
 				instance.storeReading=function(_reading) {
 					_reading=Math.round(_reading);
 					var p2 = new Promise(function(resolve2, reject2) { 
@@ -31,6 +44,10 @@ this.mpo = function(obj_or_address) {
 					});
 					return p2;
 				};
+				
+				/**
+				 * Allows a test commit to check if it fails. Promise that might be used to validate a Meter-Point is fully connected.
+				 */
 				instance.test.storeReading=function(_reading) {
 					_reading=Math.round(_reading);
 					var p2 = new Promise(function(resolve2, reject2) { 
@@ -41,6 +58,9 @@ this.mpo = function(obj_or_address) {
 					return p2;
 				};
 				
+				/**
+				 * Returns last delivery issued for a Meter-Point 
+				 */
 				instance.lastDelivery=function(_meterpoint) {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
 							instance.obj.lastDelivery(_meterpoint).then(function(o) {									
@@ -49,6 +69,10 @@ this.mpo = function(obj_or_address) {
 					});
 					return p2;
 				};
+				
+				/**
+				 * Returns last reading for a Meter-Point 
+				 */
 				instance.readings=function(_meterpoint) {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
 							instance.obj.readings(_meterpoint).then(function(o) {									

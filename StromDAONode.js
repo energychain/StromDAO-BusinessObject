@@ -1,7 +1,9 @@
 /**
  * StromDAO Business Object
  * =========================================
- * Binding für den StromDAO Node zur Anbindung der Energy Blockchain und Arbeit mit den unterschiedlichen BC Objekten (SmartContracts)
+ * [DE] Binding für den StromDAO Node zur Anbindung der Energy Blockchain und Arbeit mit den unterschiedlichen BC Objekten (SmartContracts)
+ * [EN] Binding for StromDAO Node to the Energy Blockchain.
+ * 
  * @author Thorsten Zoerner thorsten.zoerner@stromdao.de 
  * */
 const fs = require("fs");
@@ -14,6 +16,10 @@ module.exports = {
         parent = this;
         
 		this._defaults = require("./Defaults.js").deployment;
+		
+		/**
+		 * Core Function to create a new key-pair.  
+		 */
 		this._createNewPK = function() {		
 		    var getRandomValues = require('get-random-values'); 
 			var array = new Uint8Array(32);	
@@ -22,6 +28,11 @@ module.exports = {
 			
 			return pk;
 		};
+		
+		/**
+		 * Core Function to wait for a transaction to be processed
+		 * @param Transaction hash to wait for 
+		 */
 		this._waitForTransaction = function(tx) {		
 			return parent.rpcprovider.waitForTransaction(tx);
 		};
@@ -30,6 +41,10 @@ module.exports = {
 									resolve2(parent._keepHashRef(o));					
 			});				
 		};
+		
+		/**
+		 * Core Function - Get latest Block Number in Energy Blockchain
+		 */
 		this._getBlockNumber=function() {
 			return parent.rpcprovider.getBlockNumber();
 		}
@@ -46,6 +61,10 @@ module.exports = {
 											});
 					},1000);				
 		};
+		
+		/**
+		 * Keeps a reference of the object in local persitance store
+		 */
 		this._keepObjRef=function(address,contract_type) {
 			if(typeof parent.objRef[contract_type]=="undefined") {
 					parent.objRef[contract_type] = {};
@@ -56,13 +75,25 @@ module.exports = {
 				storage.setItemSync("objRef",parent.objRef); 
 			}					
 		};	
+		
+		/**
+		 * Keeps transaction receipt for in local persistance store (Key=Hash, Value=Receipt)
+		 */
 		this._keepHashRef=function(transaction) {
 				storage.setItemSync(transaction.hash,transaction);
 				return transaction.hash;
 		};
+		
+		/**
+		 * Retrieves a value fromm local persistance store (Key=>Value)
+		 */
 		this.getRef=function(ref) {
 				return storage.getItemSync(ref);
 		};
+		
+		/**
+		 * Load a contract to be used in BO Instance
+		 */
         this._loadContract=function(address,contract_type,roles_address) {
 			
 			var abi="";
@@ -82,6 +113,10 @@ module.exports = {
 			}
             return contract;
         };
+        
+        /**
+         * Promise to retrieve general Owner() Function of SmartContracts
+         */
         this._owner_promise = function(instance) {
 							var p2 = new Promise(function(resolve2, reject2) {
 								instance.obj.owner().then(function(o) {										
@@ -90,6 +125,10 @@ module.exports = {
 							});
 							return p2;
 					};
+					
+		/**
+		 * Deploy a new contract to the Energy Blockchain
+		 */
         this._deployContract=function(contract_type,roles_address) {
 				// if we are in a test situation we will simply use a test deployment.
 				var abi="";
@@ -121,6 +160,10 @@ module.exports = {
 				});
 				return p1;
 		};
+		
+		/**
+		 * Get generic instance of a smart contract as object
+		 */
 		this._objInstance=function(obj_or_address,type_of_object) {
 				var instance = {};
 				instance.obj=obj_or_address;
@@ -129,12 +172,40 @@ module.exports = {
 				} 
 				return instance;
 		};
+		
+		/**
+		 * Bridge to DSO Smart Contract
+		 */
 		this.dso = require("./DSO.js").dso;
+		
+		/**
+		 * Bridge to MPO Smart Contract
+		 */
 		this.mpo = require("./MPO.js").mpo;
+		
+		/**
+		 * Bridge to Provider Smart Contract
+		 */
 		this.provider = require("./Provider.js").provider;
+		
+		/**
+		 * Bridge to Billing Smart Contract
+		 */
 		this.billing = require("./Billing.js").billing;
+		
+		/**
+		 * Bridge to Delivery Smart Contract
+		 */
 		this.delivery = require("./Delivery.js").delivery;
+		
+		/**
+		 * Bridge to Stromkonto Smart Contract
+		 */
 		this.stromkonto = require("./Stromkonto.js").stromkonto;		
+		
+		/**
+		 * Bridge to RoleLookup Smart Contract
+		 */
 		this.roleLookup = require("./RoleLookup").rolelookup;
 		
 		var options=this._defaults(user_options);				
