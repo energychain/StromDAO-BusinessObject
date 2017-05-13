@@ -2,6 +2,17 @@
 
 ## [Unreleased](https://github.com/energychain/StromDAO-BusinessObject/tree/HEAD)
 
+[Full Changelog](https://github.com/energychain/StromDAO-BusinessObject/compare/0.1.7-earlybird...HEAD)
+
+**Closed issues:**
+
+- Checking out the Projekt on one system leads to missing files [\#5](https://github.com/energychain/StromDAO-BusinessObject/issues/5)
+
+## [0.1.7-earlybird](https://github.com/energychain/StromDAO-BusinessObject/tree/0.1.7-earlybird) (2017-05-11)
+**Implemented enhancements:**
+
+- Standard Style refactor [\#3](https://github.com/energychain/StromDAO-BusinessObject/issues/3)
+
 **Merged pull requests:**
 
 - Travis [\#2](https://github.com/energychain/StromDAO-BusinessObject/pull/2) ([smuemd](https://github.com/smuemd))
