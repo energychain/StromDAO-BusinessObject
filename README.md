@@ -11,6 +11,9 @@ Please be aware that the last commited version is always a development only vers
 - NODE JS Version 7.9 ( https://nodejs.org/en/ )
 - Internet connection to our Blockchain nodes and JSON RPC Interfaces
 
+## Demo Case
+There is a Mock-Up Demo available to illustrate energy delivery handling, billing and other use cases on: https://github.com/energychain/BusinessObject-Demo
+
 ## Quick Start
 
 ### Install via npm:

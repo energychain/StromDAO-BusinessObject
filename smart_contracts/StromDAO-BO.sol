@@ -12,7 +12,7 @@ pragma solidity ^0.4.10;
 
 contract owned {
     address public owner;
-
+    event Transfered(address old_owner,address new_owner);
     function owned() {
         owner = msg.sender;
     }
@@ -28,6 +28,7 @@ contract owned {
     }
     
     function transferOwnership(address newOwner) onlyOwner {
+        Transfered(owner,newOwner);
         owner = newOwner;
     }
 }
@@ -245,7 +246,8 @@ contract Billing {
 }
 contract Provider is RoleProvider  {
     RoleLookup public roles;
-    Delivery public base_delivery;
+    Delivery public base_delivery_out;
+    Delivery public base_delivery_in;
     Stromkonto public stromkonto;
     
     mapping(address=>Billing) public billings;
@@ -255,7 +257,8 @@ contract Provider is RoleProvider  {
         roles.setRelation(roles.roles(1),this); 
         roles.setRelation(roles.roles(2),this);
         stromkonto=new Stromkonto();
-        base_delivery=new Delivery(roles,this,5,now,now+86400, 10000000000);
+        base_delivery_out=new Delivery(roles,this,5,now,now,0);
+        base_delivery_in=new Delivery(roles,this,4,now,now,0);
     }
     
     function powerToMoney(Delivery _delivery) internal {
@@ -275,8 +278,17 @@ contract Provider is RoleProvider  {
         if(_delivery.owner()!=address(this)) throw; 
         if(!monitored[msg.sender]) throw;
         powerToMoney(_delivery);
-        _delivery.transferOwnership(base_delivery);
-        base_delivery.includeDelivery(_delivery);
+        
+        /* Active Crossing of base_delivery */
+     
+        if(_delivery.role()==base_delivery_in.role()) {
+            _delivery.transferOwnership(address(base_delivery_in));
+           base_delivery_in.includeDelivery(_delivery);    
+        } else if(_delivery.role()==base_delivery_out.role()) {
+            _delivery.transferOwnership(address(base_delivery_out));
+            base_delivery_out.includeDelivery(_delivery);    
+        }
+     
     }
     
     function approveSender(address _address,bool _approve,uint256 cost_per_day,uint256 cost_per_energy) {
@@ -288,14 +300,7 @@ contract Provider is RoleProvider  {
         } 
         billings[_address]=billing;
     }
-    
-    function changeBaseDelivery(uint256 startTime, uint256 endTime,uint256 power) onlyOwner {
-        if(startTime==0) startTime=now;
-        if(endTime==0) endTime=startTime+86400;
-        if(power==0) power=1000000000;
-        base_delivery=new Delivery(roles,this,5,startTime,endTime, power);
-    }
-    
+  
     DeliveryReceiver public nextReceiver;
     mapping(address=>bool) public monitored;
     
@@ -360,6 +365,7 @@ contract DSO is RoleDSO {
         nextReceiver=_next;
     }
 }
+
 
 contract Delivery is owned {
     RoleLookup public roles;

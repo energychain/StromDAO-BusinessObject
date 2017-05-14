@@ -2,11 +2,11 @@ this.deployment=function(options) {
 				var contract_type=[];
 				contract_type["StromDAO-BO.sol_DSO"]="0x7a0134578718b171168A7Cf73b861662E945a4D3";
 				contract_type["StromDAO-BO.sol_MPO"]="0xc4719B91742D052d0A93F513f59F6Ac15e95D061";
-				contract_type["StromDAO-BO.sol_Provider"]="0x0C2Ca1ebe3cB6F1574A338C142b78839e87f51c1";
+				contract_type["StromDAO-BO.sol_Provider"]="0x6930FAF13b394C7F2436CA7C9e95Fd1724faDf60";
 				
 				contract_type["StromDAO-BO.sol:DSO"]="0x7a0134578718b171168A7Cf73b861662E945a4D3";
 				contract_type["StromDAO-BO.sol:MPO"]="0xc4719B91742D052d0A93F513f59F6Ac15e95D061";
-				contract_type["StromDAO-BO.sol:Provider"]="0x0C2Ca1ebe3cB6F1574A338C142b78839e87f51c1";
+				contract_type["StromDAO-BO.sol:Provider"]="0x6930FAF13b394C7F2436CA7C9e95Fd1724faDf60";
 				
 				var roles=[];
 				roles[0]="0x0";
