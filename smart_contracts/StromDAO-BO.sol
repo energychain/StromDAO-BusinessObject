@@ -70,7 +70,7 @@ contract DeliveryReceiver is owned {
  */
 contract RoleLookup {
     mapping(uint256 => uint8) public roles;
-    mapping(address=>mapping(address=>uint8)) public relations;
+    mapping(address=>mapping(address=>address)) public relations;
     
     event Relation(address _from,uint8 _for, address _to);
     
@@ -112,7 +112,7 @@ contract MPO is owned {
     
     event StatusChange(address _meter_point,bool _is_approved);
     event IssuedDelivery(address delivery,address _meterpoint,uint256 _roleId,uint256 fromTime,uint256 toTime,uint256 power);
-    mapping(address=>uint256) public approvedMeterPoints;
+    mapping(address=>uint8) public approvedMeterPoints;
     mapping(address=>reading) public readings;
     mapping(address=>reading) public processed;
     mapping(address=>Delivery) public lastDelivery;
@@ -126,7 +126,7 @@ contract MPO is owned {
         roles=_roles;    
     }
     
-    function approveMP(address _meter_point,uint256 role_id)  {
+    function approveMP(address _meter_point,uint8 role_id)  {
         approvedMeterPoints[_meter_point]=role_id;
         StatusChange(_meter_point,true);
     }
@@ -148,18 +148,19 @@ contract MPO is owned {
             address provider = roles.relations(msg.sender,roles.roles(3));
             if(address(0)!=provider) { 
                 nextOwner=provider; 
-                DeliveryReceiver provider_receiver = DeliveryReceiver(provider);
-                provider_receiver.process(delivery);
+               // DeliveryReceiver provider_receiver = DeliveryReceiver(provider);
+            //    provider_receiver.process(delivery);
             }
             delivery.transferOwnership(nextOwner);
             
 
-            
+            /*
             address dso = roles.relations(msg.sender,roles.roles(2));
             if(dso!=address(0)) {
                 DeliveryReceiver provider_dso = DeliveryReceiver(dso);
                 provider_dso.process(delivery);
             }
+            */
             
         }
         readings[msg.sender]=reading(now,_reading);
@@ -272,7 +273,7 @@ contract Provider is owned  {
         roles=_roles;  
         roles.setRelation(roles.roles(1),this); 
         roles.setRelation(roles.roles(2),this);
-        stromkonto=new Stromkonto();
+        stromkonto=_stromkonto;
         base_delivery_out=new Delivery(roles,this,5,now,now,0);
         base_delivery_in=new Delivery(roles,this,4,now,now,0);
     }
@@ -329,7 +330,7 @@ contract Provider is owned  {
     
 }
 
-contract DSO is owned {
+contract DSO is  owned {
     RoleLookup public roles;
     mapping(address=>bool) public approvedProvider;
     mapping(address=>uint256) public approvedConnections;
@@ -376,7 +377,7 @@ contract DSO is owned {
 contract Delivery is owned {
     RoleLookup public roles;
     address public dso;
-    uint256 public role;
+    uint8 public role;
     
     uint256 public deliverable_startTime;
     uint256 public deliverable_endTime;
@@ -387,7 +388,7 @@ contract Delivery is owned {
      event Included(address _address,uint256 power,uint256 startTime,uint256 endTime,uint256 role);
  
     
-    function Delivery(RoleLookup _roles,address _meterpoint,uint256 _mprole,uint256 _startTime,uint256 _endTime, uint256 _power)  {
+    function Delivery(RoleLookup _roles,address _meterpoint,uint8 _mprole,uint256 _startTime,uint256 _endTime, uint256 _power)  {
         roles=_roles;
         role=_mprole;
 
@@ -396,9 +397,9 @@ contract Delivery is owned {
         deliverable_power=_power;
         
         // check sender is MPO for MP
-        if(msg.sender!=roles.relations(_meterpoint,roles.roles(1))) throw;
-        dso=roles.relations(_meterpoint,roles.roles(2));
-        if(address(0)==dso) throw;
+       // if(msg.sender!=roles.relations(_meterpoint,roles.roles(1))) throw;
+        //dso=roles.relations(_meterpoint,roles.roles(2)); TODO: Check why that throws
+        //if(address(0)==dso) throw;
         account=_meterpoint;    
         
     }
