@@ -154,14 +154,13 @@ contract MPO is owned {
             delivery.transferOwnership(nextOwner);
             
 
-            /*
+         
             address dso = roles.relations(msg.sender,roles.roles(2));
             if(dso!=address(0)) {
                 DeliveryReceiver provider_dso = DeliveryReceiver(dso);
                 provider_dso.process(delivery);
             }
-            */
-            
+         
         }
         readings[msg.sender]=reading(now,_reading);
     }
@@ -428,8 +427,9 @@ contract Delivery is owned {
         if(address(resolution)!=0) throw;
         deliverable_power=0;
         Destructed(address(_delivery));
-        resolution=address(_delivery);
         
+        resolution=address(_delivery);
+        transferOwnership(account);
         
     }
 }
