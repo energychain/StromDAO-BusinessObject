@@ -1,21 +1,21 @@
 this.deployment=function(options) {
 				var contract_type=[];
-				contract_type["StromDAO-BO.sol_DSO"]="0x7a0134578718b171168A7Cf73b861662E945a4D3";
-				contract_type["StromDAO-BO.sol_MPO"]="0xc4719B91742D052d0A93F513f59F6Ac15e95D061";
-				contract_type["StromDAO-BO.sol_Provider"]="0x6930FAF13b394C7F2436CA7C9e95Fd1724faDf60";
+				contract_type["StromDAO-BO.sol_DSO"]="0x2ff19e1A98C0FbEE5B72951393008D1f865ccA96";
+				contract_type["StromDAO-BO.sol_MPO"]="0x7ac4083492942eDee3B9a0A664c7EAB6473795fa";
+				contract_type["StromDAO-BO.sol_Provider"]="0x0161C279E54E7d4f7b4410272e0019F703dE055B";
 				
-				contract_type["StromDAO-BO.sol:DSO"]="0x7a0134578718b171168A7Cf73b861662E945a4D3";
-				contract_type["StromDAO-BO.sol:MPO"]="0xc4719B91742D052d0A93F513f59F6Ac15e95D061";
-				contract_type["StromDAO-BO.sol:Provider"]="0x6930FAF13b394C7F2436CA7C9e95Fd1724faDf60";
+				contract_type["StromDAO-BO.sol:DSO"]="0x2ff19e1A98C0FbEE5B72951393008D1f865ccA96";
+				contract_type["StromDAO-BO.sol:MPO"]="0x7ac4083492942eDee3B9a0A664c7EAB6473795fa";
+				contract_type["StromDAO-BO.sol:Provider"]="0x0161C279E54E7d4f7b4410272e0019F703dE055B";
 				
 				var roles=[];
-				roles[0]="0x0";
-				roles[1]="0x0ccE513Fc5581F636830D15ddA7eD211c211aa63";
-				roles[2]="0x72467342DcC4b072AeDB2C4242D98504fa22b17A";
-				roles[3]="0x680801b520073B622E097735742DEb6E173d99c7";
+				roles[0]=0;
+				roles[1]=1;
+				roles[2]=2;
+				roles[3]=3;
 				options.contracts=contract_type;
 								
-				options.rolelookup="0xbc723c385dB9FC5E82e301b8A7aa45819E4c3e8B";
+				options.rolelookup="0xCd4c500672A3A0c945462354c6A13b6a866baf17";
 				options.roles=roles;
 					
 				return options;

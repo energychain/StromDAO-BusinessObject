@@ -11,9 +11,8 @@
 
 this.mpo = function(obj_or_address) {
 			if(typeof obj_or_address == "undefined") obj_or_address=parent.options.contracts["StromDAO-BO.sol:MPO"];
-			
+
 			var p1 = new Promise(function(resolve, reject) { 
-			
 				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:MPO');			
 				instance.test = {};				
 				
@@ -22,8 +21,8 @@ this.mpo = function(obj_or_address) {
 				 * @param _meter address
 				 * @param _role Eq. to 4= Consumer or 5= Producer
 				 */
-				instance.approveMP=function(_meter,_role) {					
-					var p2 = new Promise(function(resolve2, reject2) { 
+				instance.approveMP=function(_meter,_role) {								
+					var p2 = new Promise(function(resolve2, reject2) { 						
 							instance.obj.approveMP(_meter,_role).then(function(o) {
 								parent._waitForTransactionKeepRef(o,resolve2);											
 							});									
@@ -80,7 +79,8 @@ this.mpo = function(obj_or_address) {
 							});									
 					});
 					return p2;
-				};		
+				};
+				/*		
 				if(parent.options.testMode) {
 							// In Testmode we do a full "Self-Register" if not registered.
 							if(typeof parent.options.mpo_dir_role=="undefined") parent.options.mpo_dir_role=4;
@@ -119,6 +119,8 @@ this.mpo = function(obj_or_address) {
 				} else {	
 					resolve(instance);
 				}
+				*/
+				resolve(instance);
 			});
 			return p1;
 		};

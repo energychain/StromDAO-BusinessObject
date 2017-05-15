@@ -11,7 +11,7 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 
 	var node = new StromDAONode.Node({external_id:external_id,testMode:true});
 
-	var known_rolelookup = '0xbc723c385dB9FC5E82e301b8A7aa45819E4c3e8B';
+	var known_rolelookup = '0xCd4c500672A3A0c945462354c6A13b6a866baf17';
 
 	var my_reading_1=Math.round(Math.random()*10000000);
 	var my_reading_2=Math.round(my_reading_1+(Math.random()*100+1));
@@ -40,15 +40,9 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
     console.log("  - Reading#3:",my_reading_3);
     console.log("  - Reading#4:",my_reading_4);
     console.log("  - Reading#5:",my_reading_5);
+    console.log("  - Reading#6:",my_reading_6);
 	describe('Usecase: Connect new Meterpoint to Consensus System', function() {
-		it('Test Ownership of Consensus (deployed as prerequesit)', function(done) {			
-				node.roleLookup().then( function(roleLookup) {
-							roleLookup.owner().then( function(owner) {						
-							assert.equal(owner[0].toString(),"0x00D44194A83Affb40dB9DFded2ebb62aBE711F56");
-							done();
-							});
-						});		
-		});
+	
 		it('Ensure DSO Contract exists', function(done) {
 				node._deployContract('StromDAO-BO.sol:DSO',known_rolelookup).then(function(address) {								
 								assert.equal(address.length,42);
@@ -67,43 +61,42 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 				});
 		});	
 		it('Ensure Provider Contract exists', function(done) {
-				node._deployContract('StromDAO-BO.sol:Provider',known_rolelookup).then(function(address) {
-								
+				node._deployContract('StromDAO-BO.sol:Provider',known_rolelookup).then(function(address) {								
 								assert.equal(address.length,42);
 								my_provider=address;
 								console.log("        - My Provider:",my_provider);
 								done();
 				});
 		});			
-		it('Test if consensus is aware of MPO Role (address)', function(done) {
+		it('Test if consensus is aware of MPO Role (uint8)', function(done) {
 						node.roleLookup(known_rolelookup).then( function(roleLookup) {
 							roleLookup.roles(1).then( function(role_address) {	
-									assert.equal(role_address.length,42);
+									assert.equal(role_address,1);
 									role_mpo=role_address;
 									done();
 							});
 						});
 		});	
-		it('Test if consensus is aware of DSO Role (address)', function(done) {
+		it('Test if consensus is aware of DSO Role (uint8)', function(done) {
 						node.roleLookup(known_rolelookup).then( function(roleLookup) {
 							roleLookup.roles(2).then( function(role_address) {	
-									assert.equal(role_address.length,42);
+									assert.equal(role_address,2);
 									role_dso=role_address;
 									done();
 							});
 						});
 		});	
-		it('Test if consensus is aware of Provider Role (address)', function(done) {
+		it('Test if consensus is aware of Provider Role (uint8)', function(done) {
 						node.roleLookup(known_rolelookup).then( function(roleLookup) {
 							roleLookup.roles(3).then( function(role_address) {	
-									assert.equal(role_address.length,42);
+									assert.equal(role_address,3);
 									role_provider=role_address;
 									done();
 							});
 						});
 		});						
 		it('Let MPO become my MPO by setting contract in roles', function(done) {
-						node.roleLookup(known_rolelookup).then( function(roleLookup) {
+						node.roleLookup(known_rolelookup).then( function(roleLookup) {							
 							roleLookup.setRelation(role_mpo,my_mpo).then( function(tx_result) {	
 									assert.equal(tx_result.length,66);
 									done();
@@ -122,7 +115,7 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 		
 		it('@MPO: Approve myself as MeterPoint (Role 4)', function(done) {
 						node.mpo(my_mpo).then( function(mpo) {
-							mpo.approveMP(node.wallet.address,4).then( function(tx_result) {	
+							mpo.approveMP(node.wallet.address,4).then( function(tx_result) {									
 									assert.equal(tx_result.length,66);
 									done();
 							});
@@ -377,7 +370,24 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 									});									
 							});
 						});
-			});							
+			});		
+			it('Set my reading #6 according to MPO contract', function(done) {
+						node.mpo(my_mpo).then( function(mpo) {
+							mpo.storeReading(my_reading_6).then( function(tx_result) {	
+									assert.equal(tx_result.length,66);
+									done();
+							});
+						});
+			});			
+			it('Retrieve my last Delivery', function(done) {
+						node.mpo(my_mpo).then( function(mpo) {
+							mpo.lastDelivery(node.wallet.address).then( function(tx_result) {	
+									assert.equal(tx_result[0].length,42);
+									delivery_4=tx_result[0];
+									done();
+							});
+						});
+			});					
 			it('Let provider handle my last delivery', function(done) {
 						node.provider(my_provider).then( function(provider) {							
 							provider.handleDelivery(delivery_4).then( function(tx_result) {										
