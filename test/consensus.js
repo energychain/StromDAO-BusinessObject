@@ -11,7 +11,7 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 
 	var node = new StromDAONode.Node({external_id:external_id,testMode:true});
 
-	var known_rolelookup = '0xEC899C1B2CcAEcb3EFA6733CA249aBa58228e883';
+	var known_rolelookup = '0x7B4B8A73f08cc85De6e183deC814077347e26dAF';
 
 	var my_reading_1=Math.round(Math.random()*10000000);
 	var my_reading_2=Math.round(my_reading_1+(Math.random()*100+1));
@@ -292,7 +292,8 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 									done();
 							});
 						});
-		});		
+		});	
+		/*	
 		it('Check that DSO is owner of last Delivery', function(done) {
 						node.delivery(delivery_3).then( function(delivery) {
 							
@@ -304,6 +305,7 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 							});
 						});
 		});	
+		*/
 		it('Let TestProvider become my Provider by setting contract in roles', function(done) {
 				node.roleLookup(known_rolelookup).then( function(roleLookup) {
 					roleLookup.setRelation(role_provider,my_provider).then( function(tx_result) {	

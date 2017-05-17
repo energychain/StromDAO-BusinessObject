@@ -16,7 +16,7 @@ module.exports = {
         parent = this;
         
 		this._defaults = require("./Defaults.js").deployment;
-		
+		this._deployment = require("./Defaults.js").loadDefaults;
 		/**
 		 * Core Function to create a new key-pair.  
 		 */
@@ -208,11 +208,13 @@ module.exports = {
 		 */
 		this.roleLookup = require("./RoleLookup").rolelookup;
 		
-		var options=this._defaults(user_options);				
+						
 		
 		storage.initSync();
+		this.storage=storage;
 		
-        if(typeof options.rpc == "undefined") options.rpc='http://app.stromdao.de:8081/rpc';
+		var options=this._defaults(user_options);
+        
 
         var rpcprovider = new ethers.providers.JsonRpcProvider(options.rpc, 42);        
         
@@ -236,5 +238,6 @@ module.exports = {
 				this.objRef=storage.getItemSync("objRef");
 		}
 		this.rpcprovider=rpcprovider;
+		this.options=this._deployment(this.options);
     }
 };

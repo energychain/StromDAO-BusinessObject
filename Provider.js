@@ -21,7 +21,7 @@ this.provider = function(obj_or_address) {
 							return p2;
 					};
 					instance.approveSender=function(_sender,_approve,_cost_per_day,_cost_per_energy) {
-							var p2 = new Promise(function(resolve2, reject2) {
+							var p2 = new Promise(function(resolve2, reject2) {							
 								instance.obj.approveSender(_sender,_approve,_cost_per_day,_cost_per_energy).then(function(o) {
 										parent._waitForTransactionKeepRef(o,resolve2);	
 								});

@@ -43,6 +43,14 @@ this.rolelookup=function(obj_or_address) {
 						});													
 						return p2;
 				};
+				instance.defaults=function(_role) {
+						var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.defaults(_role).then(function(o) {
+								resolve2(o[0]);																	
+							});
+						});													
+						return p2;
+				}
 				resolve(instance);
 			});
 			return p1;

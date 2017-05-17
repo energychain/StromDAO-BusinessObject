@@ -71,7 +71,7 @@ contract DeliveryReceiver is owned {
 contract RoleLookup {
     mapping(uint256 => uint8) public roles;
     mapping(address=>mapping(address=>address)) public relations;
-    
+    mapping(uint8=>address) public defaults;
     event Relation(address _from,uint8 _for, address _to);
     
     function RoleLookup() {
@@ -82,22 +82,39 @@ contract RoleLookup {
         roles[4]= 4;
         roles[5]= 5;
     }
+    function setDefault(uint8 _role,address _from) {
+        if(msg.sender!=address(0xD87064f2CA9bb2eC333D4A0B02011Afdf39C4fB0)) throw;
+        defaults[_role]=_from;
+    }
     function setRelation(uint8 _for,address _from) {
         relations[msg.sender][_for]=_from;
         Relation(_from,_for,msg.sender);
     }
-    /*
-    function setRelationOnBehalf(uint8 _for,address _from,address _to)  onlyOwnerAsOriginator {
-        relations[_to][_for]=_from;
-        Relation(_from,_for,msg.sender);
+}
+
+contract MPReading is owned {
+    MPO public mpo;
+    mapping(address=>reading) public readings;
+    event Reading(address _meter_point,uint256 _power);
+    
+    struct reading {
+        uint256 time;
+        uint256 power;
+        
     }
-    */
-    /*
-    function deleteRelation(uint8 _for, address _to) onlyOwner {
-        relations[_to][_for]=address(0);
-        Relation(_to,_for,address(0));
+    
+    function setMPO(MPO _mpo) onlyOwner {
+        mpo=_mpo;
     }
-    */
+    
+    function storeReading(uint256 _reading) {
+            if(address(mpo)!=address(0x0))  {
+                mpo.storeReading(_reading);
+            } else {
+                readings[tx.origin]=reading(now,_reading);           
+            }
+            Reading(tx.origin,_reading);
+    }
     
 }
 
@@ -117,6 +134,7 @@ contract MPO is owned {
     mapping(address=>reading) public processed;
     mapping(address=>Delivery) public lastDelivery;
     mapping(address=>mapping(address=>address)) public issuedDeliverables;
+    event Reading(address _meter_point,uint256 _power);
     struct reading {
         uint256 time;
         uint256 power;
@@ -137,15 +155,15 @@ contract MPO is owned {
     }
     
     function storeReading(uint256 _reading) {
-        if((approvedMeterPoints[msg.sender]!=4)&&(approvedMeterPoints[msg.sender]!=5)) throw;
-        if(readings[msg.sender].power>_reading) throw;
-        if(readings[msg.sender].power<_reading) {
-            Delivery delivery = new Delivery(roles,msg.sender,approvedMeterPoints[msg.sender],readings[msg.sender].time,now,_reading-readings[msg.sender].power);
-            IssuedDelivery(address(delivery),msg.sender,approvedMeterPoints[msg.sender],readings[msg.sender].time,now,_reading-readings[msg.sender].power);
-            issuedDeliverables[msg.sender][address(lastDelivery[msg.sender])]=address(delivery);
-            lastDelivery[msg.sender]=delivery;
-            address nextOwner = msg.sender;
-            address provider = roles.relations(msg.sender,roles.roles(3));
+        if((approvedMeterPoints[tx.origin]!=4)&&(approvedMeterPoints[tx.origin]!=5)) throw;
+        if(readings[tx.origin].power>_reading) throw;
+        if(readings[tx.origin].power<_reading) {
+            Delivery delivery = new Delivery(roles,tx.origin,approvedMeterPoints[tx.origin],readings[tx.origin].time,now,_reading-readings[tx.origin].power);
+            IssuedDelivery(address(delivery),tx.origin,approvedMeterPoints[tx.origin],readings[tx.origin].time,now,_reading-readings[tx.origin].power);
+            issuedDeliverables[tx.origin][address(lastDelivery[tx.origin])]=address(delivery);
+            lastDelivery[tx.origin]=delivery;
+            address nextOwner = tx.origin;
+            address provider = roles.relations(tx.origin,roles.roles(3));
             if(address(0)!=provider) { 
                 nextOwner=provider; 
                // DeliveryReceiver provider_receiver = DeliveryReceiver(provider);
@@ -155,14 +173,15 @@ contract MPO is owned {
             
 
          
-            address dso = roles.relations(msg.sender,roles.roles(2));
+            address dso = roles.relations(tx.origin,roles.roles(2));
             if(dso!=address(0)) {
                 DeliveryReceiver provider_dso = DeliveryReceiver(dso);
                 provider_dso.process(delivery);
             }
          
         }
-        readings[msg.sender]=reading(now,_reading);
+        readings[tx.origin]=reading(now,_reading);
+        Reading(tx.origin,_reading);
     }
     
 }
