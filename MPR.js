@@ -10,10 +10,10 @@
  
 
 this.mpr = function(obj_or_address) {
-			if(typeof obj_or_address == "undefined") obj_or_address=parent.options.contracts["StromDAO-BO.sol:MPR"];
-
+			if(typeof obj_or_address == "undefined") obj_or_address=parent.options.contracts["StromDAO-BO.sol:MPReading"];
+			
 			var p1 = new Promise(function(resolve, reject) { 
-				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:MPR');			
+				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:MPReading');			
 				instance.test = {};				
 				
 				/**

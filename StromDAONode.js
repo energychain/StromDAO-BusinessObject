@@ -184,6 +184,11 @@ module.exports = {
 		this.mpo = require("./MPO.js").mpo;
 		
 		/**
+		 * Bridge to MPR Smart Contract
+		 */
+		this.mpr = require("./MPR.js").mpr;
+		
+		/**
 		 * Bridge to Provider Smart Contract
 		 */
 		this.provider = require("./Provider.js").provider;

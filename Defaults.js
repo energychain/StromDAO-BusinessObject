@@ -41,7 +41,7 @@ this.loadDefaults=function(options) {
 						contract_type["StromDAO-BO.sol_Provider"]=parent.storage.getItemSync(options.rolelookup+"_3"); 
 						
 					}								
-					contract_type["StromDAO-BO.sol_MPR"]="0x6177CeFF392b920881BE7e4789c4B7C075B7Eb64";
+					contract_type["StromDAO-BO.sol:MPReading"]="0x6177CeFF392b920881BE7e4789c4B7C075B7Eb64";
 					var roles=[];
 					roles[0]=0;
 					roles[1]=1;
