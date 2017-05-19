@@ -1,6 +1,6 @@
 {
   "name": "stromdao-businessobject",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Abstract BusinessObject for StromDAO Energy Blockchain. Abstraction layer between blockchain technology and business logic providing energy market related entities and use cases.",
   "main": "StromDAONode.js",
   "engines": {
@@ -9,7 +9,7 @@
   },
   "scripts": {
     "lint": "standard --verbose | snazzy",
-    "test": "mocha --harmony test/consensus.js;mocha --harmony test/mpr.js"
+    "test": "mocha --harmony test/consensus.js"
   },
   "repository": {
     "type": "git",

@@ -73,7 +73,54 @@ describe('StromDAO: Traceability of Generation', function() {
 							});
 						});
 		});	
-		
+		it('Let MPO become NODE_IN by setting contract in roles', function(done) {
+						node_in.roleLookup(known_rolelookup).then( function(roleLookup) {							
+							roleLookup.setRelation(1,parent.options.contracts["StromDAO-BO.sol_MPO"]).then( function(tx_result) {	
+									assert.equal(tx_result.length,66);
+									done();
+							});
+						});
+		});			
+		it('Let MPO become NODE_OUT by setting contract in roles', function(done) {
+						node_out.roleLookup(known_rolelookup).then( function(roleLookup) {							
+							roleLookup.setRelation(1,parent.options.contracts["StromDAO-BO.sol_MPO"]).then( function(tx_result) {	
+									assert.equal(tx_result.length,66);
+									done();
+							});
+						});
+		});	
+		it('Let TestProvider become NODE_IN Provider by setting contract in roles', function(done) {
+				node_in.roleLookup(known_rolelookup).then( function(roleLookup) {
+					roleLookup.setRelation(3,parent.options.contracts["StromDAO-BO.sol_Provider"]).then( function(tx_result) {	
+							assert.equal(tx_result.length,66);
+							done();
+					});
+				});
+		});		
+		it('Let TestProvider become NODE_OUT Provider by setting contract in roles', function(done) {
+				node_out.roleLookup(known_rolelookup).then( function(roleLookup) {
+					roleLookup.setRelation(3,parent.options.contracts["StromDAO-BO.sol_Provider"]).then( function(tx_result) {	
+							assert.equal(tx_result.length,66);
+							done();
+					});
+				});
+		});	
+		it('Let Provider accept deliveries from NODE_IN as sender with cost per day 0 and cost per energy 2', function(done) {
+						node_in.provider().then( function(provider) {							
+							provider.approveSender(node_in.wallet.address,true,0,2).then( function(tx_result) {	
+									assert.equal(tx_result.length,66);
+									done();
+							});
+						});
+		});		
+		it('Let Provider accept deliveries from NODE_OUT as sender with cost per day 0 and cost per energy 2', function(done) {
+						node_out.provider().then( function(provider) {							
+							provider.approveSender(node_out.wallet.address,true,0,2).then( function(tx_result) {	
+									assert.equal(tx_result.length,66);
+									done();
+							});
+						});
+		});								
 		it('@Provider: Settle Base Delivery', function(done) {
 						node_in.provider().then( function(provider) {
 							provider.deliveryMux().then( function(dm_adr) {	
