@@ -9,9 +9,9 @@
  
  
 this.provider = function(obj_or_address) {
-			if(typeof obj_or_address == "undefined") obj_or_address=parent.options.contracts["StromDAO-BO.sol:Provider"];	
+			if(typeof obj_or_address == "undefined") obj_or_address=parent.options.contracts["StromDAO-BO.sol_Provider"];	
 			var p1 = new Promise(function(resolve, reject) { 
-					var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:Provider');
+					var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol_Provider');
 					instance.handleDelivery=function(_delivery) {
 							var p2 = new Promise(function(resolve2, reject2) {
 								instance.obj.handleDelivery(_delivery).then(function(o) {
@@ -28,6 +28,14 @@ this.provider = function(obj_or_address) {
 							});
 							return p2;
 					};
+					instance.settleBaseDeliveries=function() {
+							var p2 = new Promise(function(resolve2, reject2) {							
+								instance.obj.settleBaseDeliveries().then(function(o) {
+										parent._waitForTransactionKeepRef(o,resolve2);	
+								});
+							});
+							return p2;
+					};					
 					instance.stromkonto=function() {
 							var p2 = new Promise(function(resolve2, reject2) {
 								instance.obj.stromkonto().then(function(o) {

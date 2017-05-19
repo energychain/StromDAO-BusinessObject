@@ -9,10 +9,10 @@
  
  
 this.dso=function(obj_or_address) {
-			if(typeof obj_or_address == "undefined") obj_or_address=parent.options.contracts["StromDAO-BO.sol:DSO"];
+			if(typeof obj_or_address == "undefined") obj_or_address=parent.options.contracts["StromDAO-BO.sol_DSO"];
 			var p1 = new Promise(function(resolve, reject) { 
 			
-				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:DSO');	
+				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol_DSO');	
 									
 				instance.approveConnection=function(_address,_power_limit)  {		
 		

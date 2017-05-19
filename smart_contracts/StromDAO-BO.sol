@@ -277,39 +277,30 @@ contract Billing {
     }
 }
 
-
-contract Provider is owned  {
-    RoleLookup public roles;
-    Delivery public base_delivery_out;
+contract AbstractDeliveryMux is owned {
+	 function settleBaseDeliveries() {}
+	 function handleDelivery(Delivery _delivery) {}
+	 function crossBalance() onlyOwner {}
+	  
+}
+contract DeliveryMUX is AbstractDeliveryMux {
+	 RoleLookup public roles;
+	Delivery public base_delivery_out;
     Delivery public base_delivery_in;
-    TxHandler public stromkonto;
-    
-    mapping(address=>Billing) public billings;
-    
-    function Provider(RoleLookup _roles,TxHandler _stromkonto) {
-		stromkonto=_stromkonto;
-        roles=_roles;  
-        roles.setRelation(roles.roles(1),this); 
-        roles.setRelation(roles.roles(2),this);
-        stromkonto=_stromkonto;
-        base_delivery_out=new Delivery(roles,this,5,now,now,0);
-        base_delivery_in=new Delivery(roles,this,4,now,now,0);
-    }
-    
-    function powerToMoney(Delivery _delivery) internal {
-        if(address(billings[msg.sender])!=address(0)) {
-            stromkonto.addTx(msg.sender,this,billings[msg.sender].calculate(_delivery),_delivery.deliverable_power());
-        }
-    }
-    
-    function addTx(address _from,address _to, uint256 _value,uint256 _base) onlyOwner {
-			stromkonto.addTx(_from,_to,_value,_base);
-	}
-    
-    function handleDelivery(Delivery _delivery) {
-        if(_delivery.owner()!=address(this)) throw; 
+	
+	function DeliveryMUX(RoleLookup _roles) {
+		roles=_roles;
+		settleBaseDeliveries();	  
+	 }
 
-        powerToMoney(_delivery);
+    function settleBaseDeliveries() {
+        // TODO: Requires only OWNER in Production
+      base_delivery_out=new Delivery(roles,this,5,now,now,0);
+     base_delivery_in=new Delivery(roles,this,4,now,now,0);
+        
+    }
+    
+	 function handleDelivery(Delivery _delivery) onlyOwner{
 
         if(_delivery.role()==base_delivery_in.role()) {
             _delivery.transferOwnership(address(base_delivery_in));
@@ -320,10 +311,12 @@ contract Provider is owned  {
         }
      
     }
+    
     function doCrossing(Delivery _del1,Delivery _del2) internal {
         _del1.transferOwnership(address(_del2));
 		_del2.includeDelivery(_del1);
     }
+    
     /** Crosses In And Out BaseDelivery */
     function crossBalance() onlyOwner {
 		if(base_delivery_in.deliverable_power()>base_delivery_out.deliverable_power()) {
@@ -334,6 +327,41 @@ contract Provider is owned  {
 				base_delivery_in=new Delivery(roles,this,4,now,now,0);
 		}
 	}
+}
+
+contract Provider is owned  {
+    RoleLookup public roles;
+    AbstractDeliveryMux public deliveryMux;
+    
+    TxHandler public stromkonto;
+    
+    mapping(address=>Billing) public billings;
+    
+    function Provider(RoleLookup _roles,TxHandler _stromkonto,AbstractDeliveryMux _deliveryMux) {
+		stromkonto=_stromkonto;
+        roles=_roles;  
+        roles.setRelation(roles.roles(1),this); 
+        roles.setRelation(roles.roles(2),this);
+        stromkonto=_stromkonto;
+        deliveryMux=_deliveryMux;
+    }
+   function handleDelivery(Delivery _delivery) {
+	   if(_delivery.owner()!=address(this)) throw; 
+	   powerToMoney(_delivery);
+	   deliveryMux.handleDelivery(_delivery);
+    }
+
+    function powerToMoney(Delivery _delivery) internal {
+        if(address(billings[msg.sender])!=address(0)) {
+            stromkonto.addTx(msg.sender,this,billings[msg.sender].calculate(_delivery),_delivery.deliverable_power());
+        } // else throw ... TODO
+    }
+    
+    function addTx(address _from,address _to, uint256 _value,uint256 _base) onlyOwner {
+			stromkonto.addTx(_from,_to,_value,_base);
+	}
+    
+  
 
     function approveSender(address _address,bool _approve,uint256 cost_per_day,uint256 cost_per_energy) {
         // TODO: Set onlyOwner in production
@@ -440,7 +468,7 @@ contract Delivery is owned {
         _delivery.destructWith(this);
         
     }
-    
+   
     function destructWith(Delivery _delivery) onlyOwner { 
         
         if(address(resolution)!=0) throw;
@@ -449,6 +477,30 @@ contract Delivery is owned {
         
         resolution=address(_delivery);
         transferOwnership(account);
+        
+    }
+}
+
+contract DeliverySplit is owned {
+    
+    Delivery public source;
+    Delivery public target_1;
+    Delivery public target_2;
+    
+    uint256 time_to_split;
+    function DeliverySplit(Delivery _sourceDelivery,uint256 _time_to_split) {
+        source=_sourceDelivery;
+        time_to_split = _time_to_split;
+    }
+    
+    function doSplit()   {
+        uint256 delta_time=source.deliverable_endTime()-source.deliverable_startTime();
+        uint256 delta_split=time_to_split-source.deliverable_startTime();
+        target_2 = new Delivery(source.roles(),source.account(),source.role(),source.deliverable_startTime(),time_to_split,(source.deliverable_power()/delta_time)*delta_split);
+        target_1 = new Delivery(source.roles(),source.account(),source.role(),time_to_split,source.deliverable_endTime(),(source.deliverable_power()-target_1.deliverable_power()));
+        target_1.transferOwnership(owner);
+        target_2.transferOwnership(owner);
+       
         
     }
 }

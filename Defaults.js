@@ -34,7 +34,7 @@ this.loadDefaults=function(options) {
 							*/
 						parent.storage.setItemSync(options.rolelookup+"_1","0x04f6d471bF3b17A4fCC896406A40FFC89A096474");
 						parent.storage.setItemSync(options.rolelookup+"_2","0xa7a1828060f6A83FE30b6717A877FacD049f7aDe");
-						parent.storage.setItemSync(options.rolelookup+"_3","0x99efcdFDC28DE946EbA951432ABd31aD42d21feb");
+						parent.storage.setItemSync(options.rolelookup+"_3","0x2fEFd9Ea1E7BE78594d3a7222cF9df5400A48b7a");
 					} 
 					
 					contract_type["StromDAO-BO.sol_MPO"]=parent.storage.getItemSync(options.rolelookup+"_1"); 
