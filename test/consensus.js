@@ -11,7 +11,7 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 
 	var node = new StromDAONode.Node({external_id:external_id,testMode:true});
 
-	var known_rolelookup = '0x7B4B8A73f08cc85De6e183deC814077347e26dAF';
+	var known_rolelookup = '0x0000000000000000000000000000000000000006';
 
 	var my_reading_1=Math.round(Math.random()*10000000);
 	var my_reading_2=Math.round(my_reading_1+(Math.random()*100+1));

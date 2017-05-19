@@ -70,7 +70,8 @@ contract DeliveryReceiver is owned {
  */
 contract RoleLookup {
     mapping(uint256 => uint8) public roles;
-    mapping(address=>mapping(address=>address)) public relations;
+    mapping(address=>mapping(uint8=>address)) public relations;
+     mapping(address=>mapping(address=>uint8)) public relationsFrom;
     mapping(uint8=>address) public defaults;
     event Relation(address _from,uint8 _for, address _to);
     
@@ -90,6 +91,10 @@ contract RoleLookup {
         relations[msg.sender][_for]=_from;
         Relation(_from,_for,msg.sender);
     }
+    function setRelationFrom(uint8 _for,address _from) {
+        relationsFrom[msg.sender][_from]=_for;
+        Relation(_from,_for,msg.sender);
+    }
 }
 
 contract MPReading is owned {
@@ -104,6 +109,33 @@ contract MPReading is owned {
     }
     
     function setMPO(MPO _mpo) onlyOwner {
+        mpo=_mpo;
+    }
+    
+    function storeReading(uint256 _reading) {
+            if(address(mpo)!=address(0x0))  {
+                mpo.storeReading(_reading);
+            } else {
+                readings[tx.origin]=reading(now,_reading);           
+            }
+            Reading(tx.origin,_reading);
+    }
+    
+}
+
+contract MPReadingGenesis {
+    MPO public mpo;
+    mapping(address=>reading) public readings;
+    event Reading(address _meter_point,uint256 _power);
+    
+    struct reading {
+        uint256 time;
+        uint256 power;
+        
+    }
+    
+    function setMPO(MPO _mpo) {
+        if(msg.sender!=address(0xD87064f2CA9bb2eC333D4A0B02011Afdf39C4fB0)) throw;
         mpo=_mpo;
     }
     
@@ -227,6 +259,7 @@ contract StromkontoProxy is Stromkonto {
 				allowedSenders[msg.sender]=true;
 		}
 		function modifySender(address _who,bool _allow) {
+		        if(msg.sender!=address(0xD87064f2CA9bb2eC333D4A0B02011Afdf39C4fB0)) throw;
 				allowedSenders[_who]=_allow;
 		}
 		

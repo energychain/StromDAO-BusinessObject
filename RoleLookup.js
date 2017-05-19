@@ -35,6 +35,16 @@ this.rolelookup=function(obj_or_address) {
 							});													
 					return p2;
 				};
+				instance.setRelationFrom=function(_role,_target) {					
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.setRelationFrom(_role,_target).then(function(o) {
+								parent._waitForTransaction(o.hash).then(function() {										
+												 resolve2(parent._keepHashRef(o));						
+												});																														
+										});																		
+							});													
+					return p2;
+				};
 				instance.relations=function(_account,_role) {
 						var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.relations(_account,_role).then(function(o) {
@@ -50,7 +60,7 @@ this.rolelookup=function(obj_or_address) {
 							});
 						});													
 						return p2;
-				}
+				}							
 				resolve(instance);
 			});
 			return p1;

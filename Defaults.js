@@ -5,7 +5,7 @@ this.deployment=function(options) {
 this.loadDefaults=function(options) {
 				if(typeof parent.waitForDefaults == "undefined") {
 					parent.waitForDefaults = true;
-					options.rolelookup="0x7B4B8A73f08cc85De6e183deC814077347e26dAF";
+					options.rolelookup="0x0000000000000000000000000000000000000006";
 					var contract_type=[];
 					
 					if(typeof parent.storage.getItemSync(options.rolelookup+"_1") == "undefined") {						
@@ -32,9 +32,9 @@ this.loadDefaults=function(options) {
 								)
 							});
 							*/
-						parent.storage.setItemSync(options.rolelookup+"_1","0x04f6d471bF3b17A4fCC896406A40FFC89A096474");
-						parent.storage.setItemSync(options.rolelookup+"_2","0xa7a1828060f6A83FE30b6717A877FacD049f7aDe");
-						parent.storage.setItemSync(options.rolelookup+"_3","0x2fEFd9Ea1E7BE78594d3a7222cF9df5400A48b7a");
+						parent.storage.setItemSync(options.rolelookup+"_1","0x5FB27050934DAd2Fba68ee22841Eca55dD131f57");
+						parent.storage.setItemSync(options.rolelookup+"_2","0x08f5409fdEC245ec8d52042982fb7a05fa8114A2");
+						parent.storage.setItemSync(options.rolelookup+"_3","0x47E905A8f7627FE0406922B7722e48dc8C6a6ee4");
 					} 
 					
 					contract_type["StromDAO-BO.sol_MPO"]=parent.storage.getItemSync(options.rolelookup+"_1"); 
@@ -42,7 +42,7 @@ this.loadDefaults=function(options) {
 					contract_type["StromDAO-BO.sol_Provider"]=parent.storage.getItemSync(options.rolelookup+"_3"); 
 						
 													
-					contract_type["StromDAO-BO.sol:MPReading"]="0x6177CeFF392b920881BE7e4789c4B7C075B7Eb64";
+					contract_type["StromDAO-BO.sol:MPReading"]="0x0000000000000000000000000000000000000008";
 					var roles=[];
 					roles[0]=0;
 					roles[1]=1;

@@ -16,7 +16,7 @@ contract MajorityList {
     }
     
 	// Accounts used for testing: "0".sha3() and "1".sha3()
-    address[] public validatorsList = [0x00c9233F711aE221afc2F182e248fd87675CF2AE,0x00836435050eE300B5f5a7EE59742D48A6C2aa2E];
+    address[] public validatorsList = [0x0075D14a828F22584f69B2F4cDce6877D5Bcbf7c,0x00D21AD871FE891C97Ce080f4891FD51C5A1E9F5,0x00836435050eE300B5f5a7EE59742D48A6C2aa2E];
     mapping(address => ValidatorStatus) validatorsStatus;
     
     // Each validator is initially supported by all others.

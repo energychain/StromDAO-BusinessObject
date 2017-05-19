@@ -52,6 +52,14 @@ this.provider = function(obj_or_address) {
 							});
 							return p2;
 					};
+					instance.deliveryMux=function() {
+							var p2 = new Promise(function(resolve2, reject2) {
+								instance.obj.deliveryMux().then(function(o) {
+										resolve2(o);
+								});
+							});
+							return p2;
+					};
 					resolve(instance);
 			});
 			return p1;
