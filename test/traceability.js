@@ -47,7 +47,7 @@ describe('StromDAO: Traceability of Generation', function() {
 		});	
 		
 
-		it('@MPO: Approve Node_IN as MeterPoint (Role 5)', function(done) {
+		it('@MPO: Approve Node_IN as MeterPoint (Role 4)', function(done) {
 						node_in.mpo().then( function(mpo) {
 							mpo.approveMP(node_in.wallet.address,4).then( function(tx_result) {									
 									assert.equal(tx_result.length,66);
@@ -76,9 +76,13 @@ describe('StromDAO: Traceability of Generation', function() {
 		
 		it('@Provider: Settle Base Delivery', function(done) {
 						node_in.provider().then( function(provider) {
-							provider.settleBaseDeliveries().then( function(tx_result) {	
-									assert.equal(tx_result.length,66);
-									done();
+							provider.deliveryMux().then( function(dm_adr) {	
+									node_in.deliverymux(dm_adr).then( function(dmux) {
+											dmux.settleBaseDeliveries().then( function(tx_result) {
+												assert.equal(tx_result.length,66);
+												done();
+											});										
+									});									
 							});
 						});
 		});	

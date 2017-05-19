@@ -194,6 +194,11 @@ module.exports = {
 		this.provider = require("./Provider.js").provider;
 		
 		/**
+		 * Bridge to DeliveryMux Smart Contract
+		 */
+		this.deliverymux = require("./DeliveryMux.js").provider;
+		
+		/**
 		 * Bridge to Billing Smart Contract
 		 */
 		this.billing = require("./Billing.js").billing;

@@ -28,14 +28,14 @@ this.provider = function(obj_or_address) {
 							});
 							return p2;
 					};
-					instance.settleBaseDeliveries=function() {
+					instance.deliveryMux=function() {
 							var p2 = new Promise(function(resolve2, reject2) {							
-								instance.obj.settleBaseDeliveries().then(function(o) {
-										parent._waitForTransactionKeepRef(o,resolve2);	
+								instance.obj.deliveryMux().then(function(o) {										
+										resolve2(o[0]);
 								});
 							});
 							return p2;
-					};					
+					};										
 					instance.stromkonto=function() {
 							var p2 = new Promise(function(resolve2, reject2) {
 								instance.obj.stromkonto().then(function(o) {
@@ -47,14 +47,6 @@ this.provider = function(obj_or_address) {
 					instance.billings=function(_address) {
 							var p2 = new Promise(function(resolve2, reject2) {
 								instance.obj.billings(_address).then(function(o) {
-										resolve2(o);
-								});
-							});
-							return p2;
-					};
-					instance.deliveryMux=function() {
-							var p2 = new Promise(function(resolve2, reject2) {
-								instance.obj.deliveryMux().then(function(o) {
 										resolve2(o);
 								});
 							});
