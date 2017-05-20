@@ -354,7 +354,7 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 						node.stromkonto(my_stromkonto).then( function(stromkonto) {	
 							stromkonto.balancesSoll(node.wallet.address).then( function(tx_result) {	
 								
-									assert.equal(tx_result[0].toString()*1,0);									
+									assert.equal(tx_result*1,0);									
 									done();
 							});
 						});
@@ -401,8 +401,8 @@ describe('StromDAO: Consensus System for Energy Blockchain	', function() {
 			it('Check my due is double energy on Stromkonto as cost per energy is set to 2 (reading#6-reading#4)*2', function(done) {
 						node.stromkonto(my_stromkonto).then( function(stromkonto) {	
 							stromkonto.balancesSoll(node.wallet.address).then( function(tx_result) {										
-									assert.notEqual(tx_result[0].toString()*1,0);	
-									due=tx_result[0].toString()*1;
+									assert.notEqual(tx_result*1,0);	
+									due=tx_result*1;
 									//assert.equal(due,(my_reading_5-my_reading_4)*2);		TODO ReAdd Assert after Reading 6						
 									done();
 							});

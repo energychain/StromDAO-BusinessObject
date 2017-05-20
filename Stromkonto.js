@@ -22,7 +22,7 @@ this.stromkonto = function(obj_or_address) {
 								var p2 = new Promise(function(resolve2, reject2) { 
 											//console.log(instance.obj);
 											instance.obj.balanceSoll(_address).then(function(o) {
-													resolve2(o);
+													resolve2(o[0].toString()*1);
 											});
 								});
 								return p2;
@@ -31,7 +31,7 @@ this.stromkonto = function(obj_or_address) {
 								var p2 = new Promise(function(resolve2, reject2) { 
 											//console.log(instance.obj);
 											instance.obj.balanceHaben(_address).then(function(o) {
-													resolve2(o);
+													resolve2(o[0].toString()*1);
 											});
 								});
 								return p2;

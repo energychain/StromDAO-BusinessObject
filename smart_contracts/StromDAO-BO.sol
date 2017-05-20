@@ -309,6 +309,148 @@ contract Billing {
         
     }
 }
+contract DirectConnection is owned {
+	
+	address public from;
+	address public to;
+	address public meter_point;
+	uint256 public cost_per_day;
+	uint256 public cost_per_energy;
+	
+	function setFrom(address _from) onlyOwner {
+		from=_from;
+	}
+	
+	function setTo(address _to) onlyOwner {
+		to=_to;
+	}
+	
+	function setMeterPoint(address _meter_point) onlyOwner {
+		meter_point=_meter_point;
+	}
+	
+	function setCostPerDay(uint256 _cost_per_day) onlyOwner {
+		cost_per_day=_cost_per_day;
+	}
+	
+	function setCostPerEnergy(uint256 _cost_per_energy) onlyOwner {
+		cost_per_energy=_cost_per_energy;
+	}
+}
+
+contract DirectConnectionFactory is owned {
+	event Built(address _connection,address _from,address _to,address _meter_point,uint256 _cost_per_energy,uint256 _cost_per_day,address _account);
+		
+	function DirectConnectionFactory() {			
+
+	}
+	
+	function buildConnection(address _from,address _to,address _meter_point,uint256 _cost_per_energy,uint256 _cost_per_day) returns(DirectConnection) {
+		DirectConnection connection = new DirectConnection();
+		connection.setFrom(_from);
+		connection.setTo(_to);
+		connection.setMeterPoint(_meter_point);
+		connection.setCostPerDay(_cost_per_day);
+		connection.setCostPerEnergy(_cost_per_energy);
+		connection.transferOwnership(msg.sender);
+		Built(address(connection),_from,_to,_meter_point,_cost_per_energy,_cost_per_day,msg.sender);
+		return connection;
+	}
+}
+
+contract DirectChargingFactory is owned {
+	
+	RoleLookup public roles;
+	MPReading public reader;
+	
+	event Built(address _charging,address _stromkonto,address _account);
+		
+	function DirectChargingFactory(RoleLookup _roles,MPReading _reader) {			
+			roles=_roles;
+			reader=_reader;
+	}
+	
+	function buildCharging() returns(DirectCharging) {
+		Stromkonto stromkonto=new Stromkonto();		
+		DirectCharging charging = new DirectCharging(roles,stromkonto,reader);
+		stromkonto.transferOwnership(address(charging));		
+		charging.transferOwnership(msg.sender);
+		Built(address(charging),address(stromkonto),address(msg.sender));
+		return charging;
+	}
+	
+}
+contract DirectCharging is owned {
+	RoleLookup public roles;
+	MPReading public reader;
+	TxHandler public stromkonto;
+	DirectConnection[] public connections;
+	mapping(address=>Reading) public last_reading;
+	mapping(address=>address) public meter_points;
+
+	
+	struct Reading {
+        uint256 time;
+        uint256 power;
+        
+    }
+    
+    struct Costs {
+		uint256 per_day;
+		uint256 per_energy;
+	}
+	
+	function DirectCharging(RoleLookup _roles,TxHandler _stromkonto,MPReading _reader) {
+			roles=_roles;
+			reader=_reader;
+			stromkonto=_stromkonto;
+	}  
+	
+	function addTx(address _from,address _to, uint256 _value,uint256 _base) onlyOwner {
+			stromkonto.addTx(_from,_to,_value,_base);
+	}
+	
+	
+	function addConnection(DirectConnection _connection) onlyOwner {		
+		if(meter_points[_connection.meter_point()]!=address(0)) throw;
+		meter_points[_connection.meter_point()]=address(_connection);		
+		connections.push(_connection);				
+		// we do not have to remove as this is implicit to setting costs to 0 		
+	}
+	
+	function chargeAll() {
+		for(uint i=0;i<connections.length;i++) {
+				address meter_point = connections[i].meter_point();
+				
+			    var (a,b) = reader.readings(meter_point);
+			    
+				//uint256 current_time = reader.readings(meter_point)[0];
+				var current_reading = Reading(a,b);
+				uint256 current_time=current_reading.time;
+				uint256 current_power=current_reading.power;
+				
+				//Check Prerequesistes of cost calculation
+				if(current_time>last_reading[meter_point].time) 
+				if(current_power>last_reading[meter_point].power)
+				if(last_reading[meter_point].time>0) {
+					uint256 cost=0;
+					uint256 delta_time=current_time-last_reading[meter_point].time;
+					uint256 delta_power=current_power-last_reading[meter_point].power;
+					
+					cost+=delta_power*connections[i].cost_per_energy();
+					
+					cost+=(delta_time/86400)*connections[i].cost_per_day();
+					
+					if(cost>0) {
+						addTx(connections[i].from(),connections[i].to(),cost,delta_power);
+					}
+				}
+							
+				last_reading[meter_point]=current_reading;				
+		}
+		
+	}
+}
 
 contract AbstractDeliveryMux is owned {
 	 function settleBaseDeliveries() {}
@@ -317,7 +459,7 @@ contract AbstractDeliveryMux is owned {
 	  
 }
 contract DeliveryMUX is AbstractDeliveryMux {
-	 RoleLookup public roles;
+	RoleLookup public roles;
 	Delivery public base_delivery_out;
     Delivery public base_delivery_in;
 	
@@ -327,9 +469,9 @@ contract DeliveryMUX is AbstractDeliveryMux {
 	 }
 
     function settleBaseDeliveries() {
-        // TODO: Requires only OWNER in Production
+      // TODO: Requires only OWNER in Production
       base_delivery_out=new Delivery(roles,this,5,now,now,0);
-     base_delivery_in=new Delivery(roles,this,4,now,now,0);
+      base_delivery_in=new Delivery(roles,this,4,now,now,0);
         
     }
     
@@ -337,7 +479,7 @@ contract DeliveryMUX is AbstractDeliveryMux {
 
         if(_delivery.role()==base_delivery_in.role()) {
             _delivery.transferOwnership(address(base_delivery_in));
-           base_delivery_in.includeDelivery(_delivery);    
+            base_delivery_in.includeDelivery(_delivery);    
         } else if(_delivery.role()==base_delivery_out.role()) {
             _delivery.transferOwnership(address(base_delivery_out));
             base_delivery_out.includeDelivery(_delivery);    
@@ -380,6 +522,7 @@ contract Provider is owned  {
     }
    function handleDelivery(Delivery _delivery) {
 	   if(_delivery.owner()!=address(this)) throw; 
+	   _delivery.transferOwnership(address(deliveryMux));
 	   powerToMoney(_delivery);
 	   deliveryMux.handleDelivery(_delivery);
     }
@@ -394,7 +537,9 @@ contract Provider is owned  {
 			stromkonto.addTx(_from,_to,_value,_base);
 	}
     
-  
+	function setDeliveryMux(AbstractDeliveryMux _deliveryMux) onlyOwner {
+		deliveryMux=_deliveryMux;
+	}
 
     function approveSender(address _address,bool _approve,uint256 cost_per_day,uint256 cost_per_energy) {
         // TODO: Set onlyOwner in production

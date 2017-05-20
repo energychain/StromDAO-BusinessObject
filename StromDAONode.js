@@ -189,6 +189,21 @@ module.exports = {
 		this.mpr = require("./MPR.js").mpr;
 		
 		/**
+		 * Bridge to DirectConnectionFactory Smart Contract
+		 */
+		this.directconnectionfactory = require("./DirectConnectionFactory.js").directconnectionfactory;
+		
+		/**
+		 * Bridge to DirectChargingFactory Smart Contract
+		 */
+		this.directchargingfactory = require("./DirectChargingFactory.js").directchargingfactory;
+		
+		/**
+		 * Bridge to DirectCharging Smart Contract
+		 */
+		this.directcharging = require("./DirectCharging.js").directcharging;
+		
+		/**
 		 * Bridge to Provider Smart Contract
 		 */
 		this.provider = require("./Provider.js").provider;
