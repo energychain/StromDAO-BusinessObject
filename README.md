@@ -1,4 +1,6 @@
 # StromDAO-BusinessObject
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/energychain/StromDAO-BusinessObject.svg)](https://greenkeeper.io/)
 Abstract BusinessObject for StromDAO Energy Blockchain. Abstraction layer between blockchain technology and business logic providing energy market related entities and use cases.
 
 The StromDAO BusinessObject comes ready-to-use in custom applications. 
