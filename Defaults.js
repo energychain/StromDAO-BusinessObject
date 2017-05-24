@@ -10,7 +10,7 @@ this.loadDefaults=function(options) {
 					
 					parent.storage.setItemSync(options.rolelookup+"_1","0x08f5409fdEC245ec8d52042982fb7a05fa8114A2");
 					parent.storage.setItemSync(options.rolelookup+"_2","0x5FB27050934DAd2Fba68ee22841Eca55dD131f57");
-					parent.storage.setItemSync(options.rolelookup+"_3","0x47E905A8f7627FE0406922B7722e48dc8C6a6ee4");
+					parent.storage.setItemSync(options.rolelookup+"_3","0x267F094383b5e9E124FC04F0d0aaA364B0D6527D");
 					
 					contract_type["StromDAO-BO.sol_MPO"]=parent.storage.getItemSync(options.rolelookup+"_1"); 
 					contract_type["StromDAO-BO.sol_DSO"]=parent.storage.getItemSync(options.rolelookup+"_2"); 
