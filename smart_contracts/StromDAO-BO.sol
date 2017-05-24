@@ -443,10 +443,10 @@ contract DirectBalancingGroup is owned {
 				// close Balance 
 				current_balance_in.chargeAll();
 				StartCharge(current_balance_in.total_cost());
-				if(current_balance_in.total_cost()>0) {							
-					uint256 current_energy_cost=current_balance_in.total_cost()/current_balance_in.total_power();
-					EnergyCost(current_energy_cost);
-				}
+					if(current_balance_in.total_cost()>0) {							
+						uint256 current_energy_cost=current_balance_in.total_cost()/current_balance_in.total_power();
+						EnergyCost(current_energy_cost);
+					}
 					// TODO: Add costs from Delta Balancing
 					
 					// Set Current Energy Cost of feedin to feedout
@@ -455,17 +455,13 @@ contract DirectBalancingGroup is owned {
 					}
 					current_balance_out.chargeAll();
 					
-					
-					
 					for(i=0;i<feedOut.length;i++) {
 						delta_balance.addTx(feedOut[i].from(),address(stromkontoOut),stromkontoOut.balanceSoll(feedOut[i].from()),stromkontoOut.baseSoll(feedOut[i].from()));
 						//delta_balance.addTx(feedOut[i].from(),address(stromkontoOut),stromkontoOut.balanceHaben(feedOut[i].from()),stromkontoOut.baseHaben(feedOut[i].from()));
 					}
 					
-					
-					
 					for(i=0;i<feedIn.length;i++) {
-						if(stromkontoIn.balanceHaben(feedIn[i].to())>0)  delta_balance.addTx(address(stromkontoIn),feedIn[i].to(),stromkontoIn.balanceHaben(feedIn[i].to()),stromkontoIn.baseHaben(feedIn[i].to()));
+						delta_balance.addTx(address(stromkontoIn),feedIn[i].to(),stromkontoIn.balanceHaben(feedIn[i].to()),stromkontoIn.baseHaben(feedIn[i].to()));
 						//if(stromkontoIn.balanceSoll(feedIn[i].to())>0) delta_balance.addTx(feedIn[i].to(),address(stromkontoIn),stromkontoIn.balanceSoll(feedIn[i].to()),stromkontoIn.baseSoll(feedIn[i].to()));
 					}					
 										
@@ -639,7 +635,7 @@ contract Provider is owned  {
    function handleDelivery(Delivery _delivery) {
 	   if(_delivery.owner()!=address(this)) throw; 
 	   _delivery.transferOwnership(address(deliveryMux));
-	   powerToMoney(_delivery);
+	   powerToMoney(_delivery); // TODO Re-Enable!
 	   deliveryMux.handleDelivery(_delivery);
 	}
 
