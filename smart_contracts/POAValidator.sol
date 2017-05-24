@@ -16,7 +16,7 @@
 		}
 		
 		// Accounts used for testing: "0".sha3() and "1".sha3()
-		address[] public validatorsList = [0x0075D14a828F22584f69B2F4cDce6877D5Bcbf7c,0x00D21AD871FE891C97Ce080f4891FD51C5A1E9F5,0x00836435050eE300B5f5a7EE59742D48A6C2aa2E];
+		address[] public validatorsList = [0x0075D14a828F22584f69B2F4cDce6877D5Bcbf7c,0x00D21AD871FE891C97Ce080f4891FD51C5A1E9F5,0xD87064f2CA9bb2eC333D4A0B02011Afdf39C4fB0];
 		mapping(address => ValidatorStatus) validatorsStatus;
 		
 		// Each validator is initially supported by all others.

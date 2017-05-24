@@ -228,13 +228,19 @@ contract TxHandler is owned  {
 contract Stromkonto is TxHandler {
  
 	event Transfer(address indexed _from, address indexed _to, uint256 _value);
-	event Tx(address _from,address _to, uint256 _value,uint256 _base);
+	event Tx(address _from,address _to, uint256 _value,uint256 _base,uint256 _from_soll,uint256 _from_haben,uint256 _to_soll,uint256 _to_haben);
 	
 	mapping (address => uint256) public balancesHaben;
 	mapping (address => uint256) public balancesSoll;
 	
+	mapping (address => uint256) public baseHaben;
+	mapping (address => uint256) public baseSoll;
+	uint256 public sumTx;
+	uint256 public sumBase;
+	
 	function transfer(address _to, uint256 _value) returns (bool success) { return false; throw;}
 	
+
 	function balanceHaben(address _owner) constant returns (uint256 balance) {
 		return balancesHaben[_owner];
 	}
@@ -242,11 +248,16 @@ contract Stromkonto is TxHandler {
 	function balanceSoll(address _owner) constant returns (uint256 balance) {
 		return balancesSoll[_owner];
 	}
+
 	
 	function addTx(address _from,address _to, uint256 _value,uint256 _base) onlyOwner {
 		balancesSoll[_from]+=_value;
+		baseSoll[_from]+=_value;
 		balancesHaben[_to]+=_value;
-		Tx(_from,_to,_value,_base);
+		baseHaben[_to]+=_value;
+		sumTx+=_value;
+		sumBase+=_base;
+		Tx(_from,_to,_value,_base,balancesSoll[_from],balancesHaben[_from],balancesSoll[_to],balancesHaben[_to]);
 	}
 	
 }
@@ -266,8 +277,10 @@ contract StromkontoProxy is Stromkonto {
 		function addTx(address _from,address _to, uint256 _value,uint256 _base)  {
 			if(allowedSenders[msg.sender]) {
 				balancesSoll[_from]+=_value;
+				baseSoll[_from]+=_value;
 				balancesHaben[_to]+=_value;
-				Tx(_from,_to,_value,_base);
+				baseHaben[_to]+=_value;
+				Tx(_from,_to,_value,_base,balancesSoll[_from],balancesHaben[_from],balancesSoll[_to],balancesHaben[_to]);
 			}
 		}
 		
@@ -317,6 +330,8 @@ contract DirectConnection is owned {
 	uint256 public cost_per_day;
 	uint256 public cost_per_energy;
 	
+	event CostPerEnergy(uint256 _cost);
+	
 	function setFrom(address _from) onlyOwner {
 		from=_from;
 	}
@@ -335,6 +350,7 @@ contract DirectConnection is owned {
 	
 	function setCostPerEnergy(uint256 _cost_per_energy) onlyOwner {
 		cost_per_energy=_cost_per_energy;
+		CostPerEnergy(cost_per_energy);
 	}
 }
 
@@ -428,34 +444,33 @@ contract DirectBalancingGroup is owned {
 				current_balance_in.chargeAll();
 				StartCharge(current_balance_in.total_cost());
 				if(current_balance_in.total_cost()>0) {							
-					uint256 current_energy_cost=current_balance_in.total_power()/current_balance_in.total_cost();
+					uint256 current_energy_cost=current_balance_in.total_cost()/current_balance_in.total_power();
 					EnergyCost(current_energy_cost);
 				}
 					// TODO: Add costs from Delta Balancing
 					
 					// Set Current Energy Cost of feedin to feedout
 					for(var i=0;i<feedOut.length;i++) {
-						//feedOut[i].setCostPerEnergy(current_energy_cost);
+						feedOut[i].setCostPerEnergy(current_energy_cost);
 					}
 					current_balance_out.chargeAll();
 					
-					// TODO: Set Base Value!
-					Stromkonto stromkonto  = current_balance_out.stromkonto();
+					
+					
 					for(i=0;i<feedOut.length;i++) {
-						if(stromkonto.balanceSoll(feedOut[i].to())>0)  delta_balance.addTx(address(stromkonto),feedOut[i].from(),stromkonto.balanceSoll(feedOut[i].from()),0);
-						if(stromkonto.balanceHaben(feedOut[i].to())>0)  delta_balance.addTx(feedOut[i].from(),address(stromkonto),stromkonto.balanceHaben(feedOut[i].from()),0);
+						delta_balance.addTx(feedOut[i].from(),address(stromkontoOut),stromkontoOut.balanceSoll(feedOut[i].from()),stromkontoOut.baseSoll(feedOut[i].from()));
+						//delta_balance.addTx(feedOut[i].from(),address(stromkontoOut),stromkontoOut.balanceHaben(feedOut[i].from()),stromkontoOut.baseHaben(feedOut[i].from()));
 					}
-					Stromkonto balance_out = stromkonto;
 					
-					stromkonto  = current_balance_in.stromkonto();
+					
+					
 					for(i=0;i<feedIn.length;i++) {
-						if(stromkonto.balanceHaben(feedIn[i].to())>0)  delta_balance.addTx(address(stromkonto),feedIn[i].to(),stromkonto.balanceHaben(feedIn[i].to()),0);
-						if(stromkonto.balanceSoll(feedIn[i].to())>0) delta_balance.addTx(feedIn[i].to(),address(stromkonto),stromkonto.balanceSoll(feedIn[i].to()),0);
+						if(stromkontoIn.balanceHaben(feedIn[i].to())>0)  delta_balance.addTx(address(stromkontoIn),feedIn[i].to(),stromkontoIn.balanceHaben(feedIn[i].to()),stromkontoIn.baseHaben(feedIn[i].to()));
+						//if(stromkontoIn.balanceSoll(feedIn[i].to())>0) delta_balance.addTx(feedIn[i].to(),address(stromkontoIn),stromkontoIn.balanceSoll(feedIn[i].to()),stromkontoIn.baseSoll(feedIn[i].to()));
 					}					
-					
-					Stromkonto balance_in = stromkonto;
+										
 				
-					balancesheets.push(BalanceSheet(address(current_balance_in.stromkonto),address(current_balance_out.stromkonto)));
+					balancesheets.push(BalanceSheet(address(stromkontoIn),address(stromkontoOut)));
 						
 		}
 		current_balance_in=directchargingfactory.buildCharging();
@@ -539,11 +554,11 @@ contract DirectCharging is owned {
 					
 					cost+=(delta_time/86400)*connections[i].cost_per_day();
 					
-					if(cost>0) {
+					//if(cost>0) {
 						addTx(connections[i].from(),connections[i].to(),cost,delta_power);
 						total_power+=delta_power;
 						total_cost+=cost;
-					}
+					//}
 				}
 							
 				last_reading[meter_point]=current_reading;				
