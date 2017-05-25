@@ -8,8 +8,20 @@
  * */
 const fs = require("fs");
 var ethers = require('ethers');
-var storage = require('node-persist');
 
+if(typeof window == "undefined") {
+var storage = require('node-persist');
+} else {
+var storage = {	
+		initSync:function() {},
+		getItemSync:function(key) {
+				return window.localStorage.getItem(key);
+		},
+		setItemSync:function(key,value) {
+				return window.localStorage.setItem(key,value);
+		}
+	};	
+}
 module.exports = {
 	
     Node:function(user_options) {
@@ -244,8 +256,10 @@ module.exports = {
         var rpcprovider = new ethers.providers.JsonRpcProvider(options.rpc, 42);        
         
         if(typeof options.external_id !="undefined") {
-              options.privateKey=storage.getItemSync("ext:"+options.external_id);      
-              if(typeof options.privateKey=="undefined") {
+              options.privateKey=storage.getItemSync("ext:"+options.external_id);
+              
+              if((typeof options.privateKey=="undefined")||(options.privateKey==null)) {
+				  
                   this.options=options;
                   //this.wallet = new ethers.Wallet.createRandom(this.options);				  
                   options.privateKey=this._createNewPK();					  			  
@@ -254,6 +268,7 @@ module.exports = {
         } else
         if(typeof options.privateKey == "undefined") options.privateKey='0x1471693ac4ae1646256c6a96edf2d808ad2dc6b75df69aa2709c4140e16bc7c4';
         this.options=options;
+        console.log(options);        
         this.wallet = new ethers.Wallet(options.privateKey,rpcprovider);
         this.options.address = this.wallet.address;
         
