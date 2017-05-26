@@ -8,6 +8,7 @@
  * */
 const fs = require("fs");
 var ethers = require('ethers');
+var srequest = require('sync-request');
 
 if(typeof window == "undefined") {
 var storage = require('node-persist');
@@ -110,19 +111,24 @@ module.exports = {
 			
 			var abi="";
 			contract_type=contract_type.replace(":","_");
-			
-			if(fs.existsSync("smart_contracts/"+contract_type+".abi")) {
-					 abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
-				} else {
-					 abi = JSON.parse(fs.readFileSync("node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi"));
+			if(typeof window == "undefined") {
+				if(fs.existsSync("smart_contracts/"+contract_type+".abi")) {
+						 abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
+					} else {
+						 abi = JSON.parse(fs.readFileSync("node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi"));
+				}
+			} else {
+					console.log("Fetch","js/node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi");
+					var raw = srequest('GET',"js/node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi");				   
+					abi =JSON.parse(raw.body);
 			}
-			
 			if(address!="0x0") {				
 				contract = new ethers.Contract(address, abi, this.wallet);
 				parent._keepObjRef(address,contract_type);
 			} else {
 				// Deploy new?
 			}
+			contract.abi=abi;
             return contract;
         };
         
@@ -146,11 +152,17 @@ module.exports = {
 				var abi="";
 					contract_type=contract_type.replace(":","_");
 					
-				if(fs.existsSync("smart_contracts/"+contract_type+".abi")) {
-					abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
-				} else if(fs.existsSync("node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi")) {
-					abi = JSON.parse(fs.readFileSync("node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi"));
-				} 
+				if(typeof window == "undefined") {
+					if(fs.existsSync("smart_contracts/"+contract_type+".abi")) {
+							 abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
+						} else {
+							 abi = JSON.parse(fs.readFileSync("node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi"));
+					}
+				} else {
+					console.log("Fetch","js/node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi");
+					var raw = srequest('GET',"js/node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi");				   
+					abi =JSON.parse(raw.body);
+				}
 				
 				var p1 = new Promise(function(resolve, reject) { 	
 					if(parent.options.testMode===true) { 
@@ -252,9 +264,11 @@ module.exports = {
 		
 		var options=this._defaults(user_options);
         
-
-        var rpcprovider = new ethers.providers.JsonRpcProvider(options.rpc, 42);        
-        
+		if(typeof web3 != "undefined") {
+			var rpcprovider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8080/rpc", 42)
+		} else { 
+			var rpcprovider = new ethers.providers.JsonRpcProvider(options.rpc, 42);        
+		}
         if(typeof options.external_id !="undefined") {
               options.privateKey=storage.getItemSync("ext:"+options.external_id);
               
@@ -273,9 +287,9 @@ module.exports = {
         this.options.address = this.wallet.address;
         
         this.objRef = storage.getItemSync("objRef");
-		if((typeof this.objRef == "undefined")||(typeof this.options.clearRefCache != "undefined")) {
+		if((typeof this.objRef == "undefined")||(typeof this.options.clearRefCache != "undefined")||(typeof window != "undefined")) {
 				storage.setItemSync("objRef",{}); 
-				this.objRef=storage.getItemSync("objRef");
+				this.objRef={};
 		}
 		this.rpcprovider=rpcprovider;
 		this.options=this._deployment(this.options);
