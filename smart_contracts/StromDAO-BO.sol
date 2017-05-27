@@ -395,7 +395,30 @@ contract DirectChargingFactory is owned {
 		return charging;
 	}	
 }
-
+contract DirectBalancingGroupFactory is owned {
+	
+	RoleLookup public roles;
+	MPReading public reader;
+	
+	event Built(address _balancinggroup,address _chargingFactory,address _connectionFactory,address _account);
+	
+	
+	function DirectBalancingGroupFactory(RoleLookup _roles,MPReading _reader){
+		roles=_roles;
+		reader=_reader;
+	}
+	
+	function build() returns(DirectBalancingGroup) {
+		DirectConnectionFactory directconnectionfactory = new DirectConnectionFactory();
+		directconnectionfactory.transferOwnership(msg.sender);
+		DirectChargingFactory directchargingfactory = new DirectChargingFactory(roles,reader);
+		directchargingfactory.transferOwnership(msg.sender);
+		DirectBalancingGroup dblg = new DirectBalancingGroup(directconnectionfactory,directchargingfactory);
+		dblg.transferOwnership(msg.sender);
+		Built(address(dblg),address(directchargingfactory),address(directconnectionfactory),address(msg.sender));
+		return dblg;
+	}
+}
 contract DirectBalancingGroup is owned {
 	
 	DirectConnectionFactory public directconnectionfactory;
@@ -405,6 +428,7 @@ contract DirectBalancingGroup is owned {
 	Stromkonto public stromkontoIn;
 	Stromkonto public stromkontoOut;
 	Stromkonto public stromkontoDelta;
+	uint256 public balancesheets_cnt;
 	
 	BalanceSheet[] public balancesheets;
 	
@@ -424,6 +448,7 @@ contract DirectBalancingGroup is owned {
 			directchargingfactory = _dcharf;
 			delta_balance=_dcharf.buildCharging();
 			stromkontoDelta=delta_balance.stromkonto();
+			balancesheets_cnt=0;
 	}
 	
 	function addFeedIn(address account,address meter_point,uint256 _cost_per_energy,uint256 _cost_per_day) {
@@ -467,6 +492,7 @@ contract DirectBalancingGroup is owned {
 										
 				
 					balancesheets.push(BalanceSheet(address(stromkontoIn),address(stromkontoOut)));
+					balancesheets_cnt++;
 						
 		}
 		current_balance_in=directchargingfactory.buildCharging();

@@ -89,6 +89,21 @@ module.exports = {
 			}					
 		};	
 		
+		/** Stores Simple Labels for addresses
+		 */
+		 
+		this._saveLabel=function(address_type,address) {
+				storage.setItemSync("label_"+address,address_type+" "+address.substring(5,10));
+		} 
+		this._label=function(address) {
+				
+				var label = storage.getItemSync("label_"+address);
+				if((typeof label =="undefined")||(label==null)) {
+						label = "tbd "+address.substring(5,10);
+				}
+				console.log("Nice",address,label);
+				return label;
+		}
 		/**
 		 * Keeps transaction receipt for in local persistance store (Key=Hash, Value=Receipt)
 		 */
@@ -223,9 +238,18 @@ module.exports = {
 		this.directchargingfactory = require("./DirectChargingFactory.js").directchargingfactory;
 		
 		/**
+		 * Bridge to DirectChargingFactory Smart Contract
+		 */
+		this.directbalancinggroupfactory = require("./DirectBalancingGroupFactory.js").blgfactory;
+		
+		/**
 		 * Bridge to DirectCharging Smart Contract
 		 */
 		this.directcharging = require("./DirectCharging.js").directcharging;
+		/**
+		 * Bridge to DirectBalancigGroup Smart Contract
+		 */
+		this.blg = require("./BLG.js").blg;
 		
 		/**
 		 * Bridge to Provider Smart Contract
@@ -293,5 +317,6 @@ module.exports = {
 		}
 		this.rpcprovider=rpcprovider;
 		this.options=this._deployment(this.options);
+		this._saveLabel('EXT '+options.external_id,this.wallet.address);	
     }
 };

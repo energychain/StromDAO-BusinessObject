@@ -49,7 +49,10 @@ this.mpr = function(obj_or_address) {
 				 */
 				instance.readings=function(_meterpoint) {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
-							instance.obj.readings(_meterpoint).then(function(o) {									
+							instance.obj.readings(_meterpoint).then(function(o) {		
+								if((o.power.toString()*1)>0) {
+										parent._saveLabel('MPR',_meterpoint);
+								}						
 								 resolve2(o);									
 							});									
 					});

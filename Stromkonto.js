@@ -35,7 +35,25 @@ this.stromkonto = function(obj_or_address) {
 											});
 								});
 								return p2;
-						};					
+						};		
+						instance.sumBase=function() {
+								var p2 = new Promise(function(resolve2, reject2) { 
+											//console.log(instance.obj);
+											instance.obj.sumBase().then(function(o) {
+													resolve2(o[0].toString()*1);
+											});
+								});
+								return p2;
+						};		
+						instance.sumTx=function() {
+								var p2 = new Promise(function(resolve2, reject2) { 
+											//console.log(instance.obj);
+											instance.obj.sumTx().then(function(o) {
+													resolve2(o[0].toString()*1);
+											});
+								});
+								return p2;
+						};	
 						resolve(instance);
 			});
 			return p1;

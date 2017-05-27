@@ -20,6 +20,7 @@ this.loadDefaults=function(options) {
 					contract_type["StromDAO-BO.sol:MPReading"]="0x0000000000000000000000000000000000000008";
 					contract_type["StromDAO-BO.sol_DirectChargingFactory"]="0x6B24c0ea21f4002d35E850bf0f132EeBEb191b7d";
 					contract_type["StromDAO-BO.sol_DirectConnectionFactory"]="0x2bb4Aa9b328633C28B5ad797995E2bA91177D2b7";
+					contract_type["StromDAO-BO.sol_DirectBalancingGroupFactory"]="0x853c478C2ecc83D1BCa274D00a8D2dff0fAf1304";
 					var roles=[];
 					roles[0]=0;
 					roles[1]=1;
