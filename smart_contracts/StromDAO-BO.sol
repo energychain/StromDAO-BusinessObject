@@ -461,7 +461,15 @@ contract DirectBalancingGroup is owned {
 		feedOut.push(dcon);
 	}
 	
-	function charge()  {
+	function setCostPerEnergy(DirectConnection connection,uint256 cost_per_energy) onlyOwner {
+			connection.setCostPerEnergy(cost_per_energy);			
+	}
+	
+	function setCostPerDay(DirectConnection connection,uint256 cost_per_day) onlyOwner {
+			connection.setCostPerDay(cost_per_day);			
+	}
+	
+	function charge()  onlyOwner {
 		//TODO Re-Add OnlyOwner
 		if(address(current_balance_in)==address(0x0)) {
 				
