@@ -452,12 +452,12 @@ contract DirectBalancingGroup is owned {
 	}
 	
 	function addFeedIn(address account,address meter_point,uint256 _cost_per_energy,uint256 _cost_per_day) {
-		DirectConnection dcon = directconnectionfactory.buildConnection(address(this),account,meter_point,_cost_per_energy,_cost_per_day);
+		DirectConnection dcon = directconnectionfactory.buildConnection(address(delta_balance),account,meter_point,_cost_per_energy,_cost_per_day);
 		feedIn.push(dcon);
 	}
 	
 	function addFeedOut(address account,address meter_point,uint256 _cost_per_energy,uint256 _cost_per_day) {
-		DirectConnection dcon = directconnectionfactory.buildConnection(account,address(this),meter_point,_cost_per_energy,_cost_per_day);
+		DirectConnection dcon = directconnectionfactory.buildConnection(account,address(delta_balance),meter_point,_cost_per_energy,_cost_per_day);
 		feedOut.push(dcon);
 	}
 	
@@ -490,13 +490,11 @@ contract DirectBalancingGroup is owned {
 					current_balance_out.chargeAll();
 					
 					for(i=0;i<feedOut.length;i++) {
-						delta_balance.addTx(feedOut[i].from(),address(stromkontoOut),stromkontoOut.balanceSoll(feedOut[i].from()),stromkontoOut.baseSoll(feedOut[i].from()));
-						//delta_balance.addTx(feedOut[i].from(),address(stromkontoOut),stromkontoOut.balanceHaben(feedOut[i].from()),stromkontoOut.baseHaben(feedOut[i].from()));
+						delta_balance.addTx(feedOut[i].from(),address(stromkontoDelta),stromkontoOut.balanceSoll(feedOut[i].from()),stromkontoOut.baseSoll(feedOut[i].from()));						
 					}
 					
 					for(i=0;i<feedIn.length;i++) {
-						delta_balance.addTx(address(stromkontoIn),feedIn[i].to(),stromkontoIn.balanceHaben(feedIn[i].to()),stromkontoIn.baseHaben(feedIn[i].to()));
-						//if(stromkontoIn.balanceSoll(feedIn[i].to())>0) delta_balance.addTx(feedIn[i].to(),address(stromkontoIn),stromkontoIn.balanceSoll(feedIn[i].to()),stromkontoIn.baseSoll(feedIn[i].to()));
+						delta_balance.addTx(address(stromkontoDelta),feedIn[i].to(),stromkontoIn.balanceHaben(feedIn[i].to()),stromkontoIn.baseHaben(feedIn[i].to()));						
 					}					
 										
 				

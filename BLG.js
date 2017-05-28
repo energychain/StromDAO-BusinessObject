@@ -103,6 +103,22 @@ this.blg=function(obj_or_address) {
 					});
 					return p2;
 				}
+				instance.setCostPerEnergy=function(connection,cost_per_energy) {
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.setCostPerEnergy(connection,cost_per_energy).then(function(o) {
+								parent._waitForTransactionKeepRef(o,resolve2);													
+							});									
+					});
+					return p2;
+				}
+				instance.setCostPerDay=function(connection,cost_per_day) {
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.setCostPerDay(connection,cost_per_day).then(function(o) {
+								parent._waitForTransactionKeepRef(o,resolve2);													
+							});									
+					});
+					return p2;
+				}			
 				instance.balancesheets_cnt=function() {
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.balancesheets_cnt().then(function(o) {									
