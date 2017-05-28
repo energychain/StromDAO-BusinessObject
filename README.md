@@ -144,6 +144,13 @@ What this Hello-World does is creating a new MeterPoint derived from a random id
 ## Test-Cases
 https://github.com/energychain/StromDAO-BusinessObject/blob/master/test/rolelookup.js
 
+For personal tests we are updating several Meter Point Readings every 15 Minutes:
+- 0x6e23cCf78dD844cf6bb07022D8B95fa8E3994844
+- 0x7f70FE6c18012B9e41D646804B19960fABa49F0A
+- 0x83F8B15eb816284ddcF2ff005Db7a19196d86ae1
+
+They are all updated in Genesis MPR Contract ( 0x0000000000000000000000000000000000000008 )
+
 ## Contributing
 - https://stromdao.de/
 - https://gitter.im/stromdao/Lobby
