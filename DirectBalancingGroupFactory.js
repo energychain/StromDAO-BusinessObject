@@ -25,7 +25,9 @@ this.blgfactory = function(obj_or_address) {
 									resolve2(cb);						
 							};	
 							
-							instance.obj.build().then(function(o) {	
+							instance.obj.build({value:"0x0",gasPrice:"0x0"}).then(function(o) {	
+								console.log(o);
+								//{value:"0x0",gasPrice:"0x0",gas:"2974441329"}
 								//parent._waitForTransactionKeepRef(o,resolve2);			
 							});									
 					});

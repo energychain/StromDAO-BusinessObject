@@ -19,9 +19,9 @@ this.blg=function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 
 			
 				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol_DirectBalancingGroup');	
-									
+				parent._saveLabel('BLG',obj_or_address);					
 				instance.addFeedIn=function(account,meter_point,cost_per_energy,cost_per_day)  {		
-		
+					
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.addFeedIn(account,meter_point,cost_per_energy,cost_per_day).then(function(o) {									
 								parent._waitForTransactionKeepRef(o,resolve2);												
@@ -56,6 +56,24 @@ this.blg=function(obj_or_address) {
 					});
 					return p2;
 				}	
+				instance.feedIn=function(idx) {
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.feedIn(idx).then(function(o) {	
+								parent._saveLabel('CON',o[0]);								
+								resolve2(o[0]);											
+							});									
+					});
+					return p2;
+				}	
+				instance.feedOut=function(idx) {
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.feedOut(idx).then(function(o) {	
+								parent._saveLabel('CON',o[0]);								
+								resolve2(o[0]);											
+							});									
+					});
+					return p2;
+				}				
 				instance.stromkontoIn=function() {
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.stromkontoIn().then(function(o) {	

@@ -461,7 +461,8 @@ contract DirectBalancingGroup is owned {
 		feedOut.push(dcon);
 	}
 	
-	function charge() onlyOwner {
+	function charge()  {
+		//TODO Re-Add OnlyOwner
 		if(address(current_balance_in)==address(0x0)) {
 				
 		} else {

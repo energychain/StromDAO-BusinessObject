@@ -92,16 +92,15 @@ module.exports = {
 		/** Stores Simple Labels for addresses
 		 */
 		 
-		this._saveLabel=function(address_type,address) {
-				storage.setItemSync("label_"+address,address_type+" "+address.substring(5,10));
+		this._saveLabel=function(address_type,address) {				
+				storage.setItemSync("label_"+address.toLowerCase(),address_type+" "+address.substring(5,10));
 		} 
 		this._label=function(address) {
-				
+				address=address.toLowerCase();
 				var label = storage.getItemSync("label_"+address);
 				if((typeof label =="undefined")||(label==null)) {
 						label = "tbd "+address.substring(5,10);
-				}
-				console.log("Nice",address,label);
+				}				
 				return label;
 		}
 		/**
@@ -246,6 +245,11 @@ module.exports = {
 		 * Bridge to DirectCharging Smart Contract
 		 */
 		this.directcharging = require("./DirectCharging.js").directcharging;
+		
+		/**
+		 * Bridge to DirectCharging Smart Contract
+		 */
+		this.directconnection = require("./DirectConnection.js").directconnection;
 		/**
 		 * Bridge to DirectBalancigGroup Smart Contract
 		 */
@@ -309,7 +313,8 @@ module.exports = {
         console.log(options);        
         this.wallet = new ethers.Wallet(options.privateKey,rpcprovider);
         this.options.address = this.wallet.address;
-        
+        this._saveLabel('EXT '+options.external_id,this.wallet.address);		
+		
         this.objRef = storage.getItemSync("objRef");
 		if((typeof this.objRef == "undefined")||(typeof this.options.clearRefCache != "undefined")||(typeof window != "undefined")) {
 				storage.setItemSync("objRef",{}); 
@@ -317,6 +322,6 @@ module.exports = {
 		}
 		this.rpcprovider=rpcprovider;
 		this.options=this._deployment(this.options);
-		this._saveLabel('EXT '+options.external_id,this.wallet.address);	
+		
     }
 };
