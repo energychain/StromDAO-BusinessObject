@@ -452,12 +452,12 @@ contract DirectBalancingGroup is owned {
 	}
 	
 	function addFeedIn(address account,address meter_point,uint256 _cost_per_energy,uint256 _cost_per_day) {
-		DirectConnection dcon = directconnectionfactory.buildConnection(address(delta_balance),account,meter_point,_cost_per_energy,_cost_per_day);
+		DirectConnection dcon = directconnectionfactory.buildConnection(address(stromkontoDelta),account,meter_point,_cost_per_energy,_cost_per_day);
 		feedIn.push(dcon);
 	}
 	
 	function addFeedOut(address account,address meter_point,uint256 _cost_per_energy,uint256 _cost_per_day) {
-		DirectConnection dcon = directconnectionfactory.buildConnection(account,address(delta_balance),meter_point,_cost_per_energy,_cost_per_day);
+		DirectConnection dcon = directconnectionfactory.buildConnection(account,address(stromkontoDelta),meter_point,_cost_per_energy,_cost_per_day);
 		feedOut.push(dcon);
 	}
 	
@@ -484,8 +484,10 @@ contract DirectBalancingGroup is owned {
 					// TODO: Add costs from Delta Balancing
 					
 					// Set Current Energy Cost of feedin to feedout
-					for(var i=0;i<feedOut.length;i++) {
-						feedOut[i].setCostPerEnergy(current_energy_cost);
+					if(current_energy_cost>0) {
+						for(var i=0;i<feedOut.length;i++) {
+							feedOut[i].setCostPerEnergy(current_energy_cost);
+						}
 					}
 					current_balance_out.chargeAll();
 					
@@ -511,6 +513,9 @@ contract DirectBalancingGroup is owned {
 		current_balance_out.setConnections(feedOut);
 		current_balance_out.chargeAll();
 		stromkontoOut=current_balance_out.stromkonto();
+		uint256 my_reading = stromkontoDelta.sumBase();
+		MPReading mpr = MPReading("0x0000000000000000000000000000000000000008");
+		mpr.storeReading(my_reading);
 	}
 }
 
