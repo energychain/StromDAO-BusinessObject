@@ -442,6 +442,7 @@ contract DirectBalancingGroup is owned {
 	struct BalanceSheet {
 			address balanceIn;			
 			address balanceOut;
+			uint256 blockNumber;
 	}
 	function DirectBalancingGroup(DirectConnectionFactory _dconf,DirectChargingFactory _dcharf) {
 			directconnectionfactory = _dconf;			
@@ -500,7 +501,7 @@ contract DirectBalancingGroup is owned {
 					}					
 										
 				
-					balancesheets.push(BalanceSheet(address(stromkontoIn),address(stromkontoOut)));
+					balancesheets.push(BalanceSheet(address(stromkontoIn),address(stromkontoOut),block.number));
 					balancesheets_cnt++;
 						
 		}
