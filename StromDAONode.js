@@ -293,7 +293,11 @@ module.exports = {
 		var options=this._defaults(user_options);
         
 		if(typeof web3 != "undefined") {
-			var rpcprovider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8080/rpc", 42)
+			// set default provider to same host as we are comming from (if available)
+			var rpcprovider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8080/rpc", 42);
+			if(typeof window != "undefined") {
+					var rpcprovider = new ethers.providers.JsonRpcProvider(location.host+"/rpc", 42);
+			}
 		} else { 
 			var rpcprovider = new ethers.providers.JsonRpcProvider(options.rpc, 42);        
 		}
