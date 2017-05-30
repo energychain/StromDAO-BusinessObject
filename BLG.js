@@ -41,7 +41,7 @@ this.blg=function(obj_or_address) {
 				instance.charge=function()  {		
 		
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.charge().then(function(o) {									
+							instance.obj.charge({gasLimit:5499819,gasPrice:0}).then(function(o) {									
 								parent._waitForTransactionKeepRef(o,resolve2);												
 							});									
 					});
