@@ -1,5 +1,12 @@
 this.deployment=function(options) {
-				if(typeof options.rpc == "undefined") options.rpc='http://app.stromdao.de:8081/rpc';
+				if(typeof options.rpc == "undefined") {
+					if(typeof window != "undefined") {
+						options.rpc=location.origin+"/rpc";
+						} else {
+						options.rpc='http://app.stromdao.de:8081/rpc';
+					}
+				}
+						
 				return options;
 		};
 this.loadDefaults=function(options) {
