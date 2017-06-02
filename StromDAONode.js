@@ -292,7 +292,15 @@ module.exports = {
 		 */
 		this.roleLookup = require("./RoleLookup").rolelookup;
 		
-						
+		/**
+		 * Bridge to String Storage (Reader)
+		 */
+		 this.stringstorage = require("./StringStorage").stringstorage;		
+		 
+		 /**
+		 * Bridge to String Storage (Factory)
+		 */
+		 this.stringstoragefactory = require("./StringStorageFactory").stringstoragefactory;		
 		
 		storage.initSync();
 		this.storage=storage;

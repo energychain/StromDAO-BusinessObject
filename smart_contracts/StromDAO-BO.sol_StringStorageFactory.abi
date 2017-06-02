@@ -1,0 +1,1 @@
+[{"constant":false,"inputs":[{"name":"_str","type":"string"}],"name":"build","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_stringStorage","type":"address"}],"name":"Built","type":"event"}]

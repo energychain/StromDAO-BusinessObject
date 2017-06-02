@@ -33,6 +33,24 @@ contract owned {
 	}
 }
 
+contract StringStorage {
+	string public str;
+	
+	function StringStorage(string _str) {
+		str=_str;
+	}
+}
+
+contract StringStorageBuilder {
+	event Built(address _stringStorage);
+	
+	function build(string _str) returns(address) {
+			StringStorage ss = new StringStorage(_str);
+			Built(address(ss));
+			return address(ss);
+	}
+}
+
 
 contract DeliveryReceiver is owned {
 	RoleLookup public roles;
@@ -460,6 +478,24 @@ contract DirectBalancingGroup is owned {
 	function addFeedOut(address account,address meter_point,uint256 _cost_per_energy,uint256 _cost_per_day) {
 		DirectConnection dcon = directconnectionfactory.buildConnection(account,address(stromkontoDelta),meter_point,_cost_per_energy,_cost_per_day);
 		feedOut.push(dcon);
+	}
+	
+	function removeConnection(address _dcon) onlyOwner {
+			DirectConnection[] feedIn_new; //= new DirectConnection[];
+			DirectConnection[] feedOut_new; //= new DirectConnection[];
+			
+			for(uint i=0;i<feedIn.length;i++) {
+					if(address(feedIn[i])!=_dcon) {
+							feedIn_new.push(feedIn[i]);
+					}
+			}
+			for(i=0;i<feedOut.length;i++) {
+					if(address(feedOut[i])!=_dcon) {
+							feedOut_new.push(feedOut[i]);
+					}
+			}
+			feedIn=feedIn_new;
+			feedOut=feedOut_new;
 	}
 	
 	function setCostPerEnergy(DirectConnection connection,uint256 cost_per_energy) onlyOwner {
