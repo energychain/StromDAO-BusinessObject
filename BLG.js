@@ -94,12 +94,21 @@ this.blg=function(obj_or_address) {
 				}	
 				instance.balancesheets=function(idx) {
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.balancesheets(idx).then(function(o) {
-								o.idx=idx;	
-								parent._saveLabel('BAL',o.balanceIn);									
-								parent._saveLabel('BAL',o.balanceOut);
-								resolve2(o);											
-							});									
+							// Save as it is unmutbale
+							var stored = parent.storage.getItemSync(obj_or_address+"_"+idx);
+							if((typeof stored == "undefined")||(stored==null)) {						
+								instance.obj.balancesheets(idx).then(function(o) {
+									o.idx=idx;	
+									parent._saveLabel('BAL',o.balanceIn);									
+									parent._saveLabel('BAL',o.balanceOut);
+									parent.storage.setItemSync(obj_or_address+"_"+idx,JSON.stringify(o));
+									resolve2(o);											
+								});									
+							} else {		
+								var o = JSON.parse(stored);						
+								o.blockNumber=parent._utils.bigNumberify("0x"+o.blockNumber._bn);						
+								resolve2(o);
+							}
 					});
 					return p2;
 				}
