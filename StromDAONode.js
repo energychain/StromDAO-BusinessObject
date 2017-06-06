@@ -217,7 +217,24 @@ module.exports = {
 				} 
 				return instance;
 		};
-		
+		/**
+		 * Binding for Log Cache from BC
+		 */		
+		this._txlog = function(address,blockNumber) {
+			var p1 = new Promise(function(resolve, reject) { 	
+					var stored = parent.storage.getItemSync("log_"+address+"_"+blockNumber);
+					if((typeof stored == "undefined")||(stored==null)) {		
+						parent.wallet.provider.getLogs({address:address,fromBlock:blockNumber,toBlock:blockNumber}).then(function(logs) {		
+								parent.storage.setItemSync("log_"+address+"_"+blockNumber,JSON.stringify(logs));				
+								resolve(logs);
+						});										
+					} else {
+							resolve(JSON.parse(stored));
+					}			
+			});
+			return p1;	
+		}
+
 		/**
 		 * Bridge to DSO Smart Contract
 		 */
