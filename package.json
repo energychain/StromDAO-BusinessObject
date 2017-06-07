@@ -35,6 +35,7 @@
     "ethers": "^2.0.3",
     "get-random-values": "^1.2.0",
     "node-persist": "^2.0.11",
+    "request": "^2.81.0",
     "sync-request": "^4.0.3"
   },
   "devDependencies": {
