@@ -315,6 +315,12 @@ module.exports = {
 		 this.stringstorage = require("./StringStorage").stringstorage;		
 		 
 		 /**
+		  * Bridge to Meta Data Publish
+		  */
+		  
+		 this.metaset = require("./MetaPublish").metaset;
+		 
+		 /**
 		 * Bridge to String Storage (Factory)
 		 */
 		 this.stringstoragefactory = require("./StringStorageFactory").stringstoragefactory;		

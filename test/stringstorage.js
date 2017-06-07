@@ -5,7 +5,7 @@
 var assert = require('assert');
 var StromDAONode = require("../StromDAONode.js");    
 
-describe('StromDAO: StringStorag for OffChain Data', function() {
+describe('StromDAO: StringStorage	 for OffChain Data', function() {
 	var external_id = Math.random()*10000000; 
 	this.timeout(300000);
 	var node = new StromDAONode.Node({external_id:external_id,testMode:true});
@@ -17,8 +17,8 @@ describe('StromDAO: StringStorag for OffChain Data', function() {
 	console.log("  - Private Key:",node.wallet.privateKey);
     console.log("  - RandomString#1:",my_str);
     
-    
-	describe('Storage an retrieve String', function() {
+ 
+	describe('Store and retrieve String', function() {
 	
 		it('Save String and get Address', function(done) {
 						node.stringstoragefactory().then( function(ssf) {
@@ -38,5 +38,33 @@ describe('StromDAO: StringStorag for OffChain Data', function() {
 							});
 						});
 		});			
+	});
+
+	describe('Let String become Role 99', function() {
+	
+		it('Save String and get Address', function(done) {
+						node.metaset(99).then( function(metaset) {
+							var obj = {};
+							obj.my_str = my_str;
+							metaset.put(obj).then( function(tx_result) {								
+									//console.log(tx_result);
+									assert.equal(tx_result.length,42);
+									done();
+								
+							});							
+						});
+		});	
+		it('Check if String for Role 99 equals', function(done) {
+						node.metaset(99).then( function(metaset) {
+							var obj = {};
+							obj.my_str = my_str;
+							metaset.get(node.wallet.address).then( function(tx_result) {								
+									var o=JSON.parse(tx_result);
+									assert.equal(o.my_str,my_str);
+									done();
+								
+							});							
+						});
+		});		
 	});
 });
