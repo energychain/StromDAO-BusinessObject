@@ -280,6 +280,19 @@ contract Stromkonto is TxHandler {
 	
 }
 
+contract StromkontoProxyFactory {
+	event Built(address _sp,address _account);
+	
+	function build() returns(StromkontoProxy) {
+		StromkontoProxy sp = new StromkontoProxy();
+		sp.modifySender(msg.sender,true);
+		sp.transferOwnership(msg.sender);
+		Built(address(sp),msg.sender);
+		return sp;
+	}
+	
+}
+
 contract StromkontoProxy is Stromkonto {
 		
 		mapping(address=>bool) public allowedSenders;
@@ -287,8 +300,8 @@ contract StromkontoProxy is Stromkonto {
 		function StromkontoProxy() {
 				allowedSenders[msg.sender]=true;
 		}
-		function modifySender(address _who,bool _allow) {
-				if(msg.sender!=address(0xD87064f2CA9bb2eC333D4A0B02011Afdf39C4fB0)) throw;
+		function modifySender(address _who,bool _allow) onlyOwner {
+				//if(msg.sender!=address(0xD87064f2CA9bb2eC333D4A0B02011Afdf39C4fB0)) throw;
 				allowedSenders[_who]=_allow;
 		}
 		
@@ -339,6 +352,277 @@ contract Billing {
 		return cost;
 		
 	}
+}
+
+contract Connection {
+	address public from;
+	address public to;
+	
+	function Connection(address _from,address _to) {
+			from=_from;
+			to=_to;
+	}	
+}
+
+contract PricingEnergy {
+	uint256 public cost_per_energy;
+	
+	function PricingEnergy(uint256 _cost_per_energy) {			
+			cost_per_energy=_cost_per_energy;
+	}	
+}
+
+contract PricingDay {
+	uint256 public cost_per_day;
+	
+	function PricingDay(uint256 _cost_per_day) {			
+			cost_per_day=_cost_per_day;
+	}	
+}
+
+contract MPSetFactory {
+		event Built(address _mpset,address _account);
+	
+		function build() returns(address) {			
+				MPset mpset = new MPset();
+				mpset.transferOwnership(msg.sender);
+				Built(address(mpset),msg.sender);
+				return address(mpset);
+		}
+	
+}
+contract MPset is owned {
+	
+	address[] public meterpoints;
+	
+	function addMeterPoint(address _meterpoint) onlyOwner {
+		meterpoints.push(_meterpoint);
+	}
+	
+	function length() returns(uint256) {
+			return meterpoints.length;
+	}
+	/*
+	 function copy(address[] storage mps) {
+		 //address[] storage mps=new address[meterpoints.length];
+		 for(uint i=0;i<meterpoints.length;i++) {
+			mps.push(meterpoints[i]);	 
+		 }			
+	}
+	*/
+}
+
+contract MPR {
+	mapping(address=>uint256) public mpr;
+}
+
+contract MPRSetFactory {
+	event Built(address _mpset,address _account);
+	
+	function build(MPset _mpset,MPReading _reading) returns(MPRset) {
+		MPRset mprset = new MPRset(_mpset,_reading);
+		Built(address(mprset),msg.sender);
+		return mprset;
+	}
+	
+}
+contract MPRset is MPR {
+	address[] public meterpoints;
+	
+	function MPRset(MPset _mpset,MPReading _reading) {	
+		for(uint i=0; i<_mpset.length();i++) {
+					meterpoints.push(_mpset.meterpoints(i));
+		}		
+				
+		for(i=0;i<meterpoints.length;i++) {				
+				uint256 time;
+				(time,mpr[meterpoints[i]])=_reading.readings(meterpoints[i]);
+		}		
+	}		
+}
+
+contract MPRsum {
+	uint256 public sum;
+	
+	function MPRsum(address[] meterpoints,MPR mpr) {
+		for(uint i=0;i<meterpoints.length;i++) {
+			sum+=mpr.mpr(meterpoints[i]);
+		}	
+	}	
+}
+
+contract MPRDecorateFactory {
+	
+	event Built(address _mpset,address _account);
+	
+	function build(MPset _mpset,MPR _set_start,MPR _set_end) returns(MPRdecorate) {
+		MPRdecorate mprd = new MPRdecorate(_mpset,_set_start,_set_end);
+		mprd.transferOwnership(msg.sender);
+		Built(address(mprd),msg.sender);
+		return mprd;
+	}
+	
+}
+contract MPRdecorate is MPR, owned {
+	address[] public meterpoints;	
+	
+	function MPRdecorate(MPset _mpset,MPR _set_start,MPR _set_end) {
+			for(uint i=0; i<_mpset.length();i++) {
+					meterpoints.push(_mpset.meterpoints(i));
+			}		
+			
+			for( i=0;i<meterpoints.length;i++) {					
+					if(_set_start.mpr(meterpoints[i])<_set_end.mpr(meterpoints[i])) {
+						mpr[meterpoints[i]]=_set_end.mpr(meterpoints[i])-_set_start.mpr(meterpoints[i]);
+					} else {
+						mpr[meterpoints[i]]=_set_end.mpr(meterpoints[i]);
+					}
+			}											
+	}
+	
+	
+	function ChargeEnergy(uint256 amount) onlyOwner {
+		for(uint i=0;i<meterpoints.length;i++) {
+				mpr[meterpoints[i]]+=mpr[meterpoints[i]]*amount;
+		}
+	}	
+	
+	function ChargeFix(uint256 amount) onlyOwner {
+		for(uint i=0;i<meterpoints.length;i++) {
+				mpr[meterpoints[i]]+=amount;
+		}
+	}	
+	
+	function Add(MPR mpr2) onlyOwner {
+		for(uint i=0;i<meterpoints.length;i++) {
+			mpr[meterpoints[i]]+=mpr2.mpr(meterpoints[i]);
+		}
+	}
+	
+	function SplitWeighted(uint256 amount) onlyOwner {
+		MPRsum ctr_sum = new MPRsum(meterpoints,this);
+		uint256 sum = ctr_sum.sum();
+		
+		for(uint i=0;i<meterpoints.length;i++) {
+				mpr[meterpoints[i]]+=amount*(mpr[meterpoints[i]]/sum);
+		}
+	}	
+	
+	function SplitEqual(uint256 amount) onlyOwner {
+		for(uint i=0;i<meterpoints.length;i++) {
+				mpr[meterpoints[i]]+=amount/meterpoints.length;
+		}
+	}			
+	
+}
+
+contract TXCache is owned {
+	
+	struct TX {
+			address from;
+			address to;
+			uint256 base;
+			uint256 value;
+	}
+	
+	TX[] public txs;
+	
+	function addTx(address _from,address _to,uint256 _base,uint256 _value) onlyOwner {
+			txs.push(TX(_from,_to,_base,_value));
+	}
+	function length() returns(uint256) {
+			return txs.length;
+	}
+	
+	function from(uint i) returns(address) {
+			return txs[i].from;
+	}
+	function to(uint i) returns(address) {
+			return txs[i].to;
+	}
+	function base(uint i) returns(uint256) {
+			return txs[i].base;
+	}
+	function value(uint i) returns(uint256) {
+			return txs[i].value;
+	}
+}
+
+contract SettlementFactory {
+	
+	event Built(address _mpset,address _account);
+	
+	function build(MPset _mpset,MPR _tx,MPR _base,bool _toOwner) returns(Settlement) {
+		Settlement settlement = new Settlement(_mpset,_tx,_base,_toOwner);
+		settlement.transferOwnership(msg.sender);
+		Built(address(settlement),msg.sender);
+		return settlement;
+	}
+	
+}
+contract Settlement is MPR, owned {
+		address[] public meterpoints;	
+	    TXCache public txcache;
+	    MPR _tx;
+	    MPR _base;
+		bool _toOwner;
+		
+	    event Settled(address txcache,address tx, address base,bool toOwner);
+	    
+		function Settlement(MPset _mpset,MPR tx,MPR base,bool toOwner) {
+			for(uint i=0; i<_mpset.length();i++) {
+					meterpoints.push(_mpset.meterpoints(i));
+			}	
+			_tx=tx;
+			_base=base;
+			_toOwner=toOwner;
+			txcache = new TXCache();
+		}	
+		
+		function settle() onlyOwner {
+			//if(address(txcache.owner)!=address(this)) return;
+			
+			for(uint i=0;i<meterpoints.length;i++) {
+				if(_toOwner) {
+						txcache.addTx(meterpoints[i],address(this),_tx.mpr(meterpoints[i]),_base.mpr(meterpoints[i]));					
+						mpr[address(owner)]+=_tx.mpr(meterpoints[i]);
+				} else {
+						txcache.addTx(address(this),meterpoints[i],_tx.mpr(meterpoints[i]),_base.mpr(meterpoints[i]));
+						mpr[meterpoints[i]]+=_tx.mpr(meterpoints[i]);
+				}
+				
+			}
+			Settled(address(txcache),address(_tx),address(_base),_toOwner);
+			//txcache.transferOwnership(msg.sender);
+		}
+}
+contract ClearingFactory {
+	
+	event Built(address _mpset,address _account);
+	
+	function build(TxHandler _stromkonto) returns(Clearing) {
+		Clearing clearing = new Clearing(_stromkonto);
+		clearing.transferOwnership(msg.sender);
+		Built(address(clearing),msg.sender);
+		return clearing;
+	}
+	
+}
+contract Clearing is owned {
+	TxHandler public stromkonto;
+	event cleared(address _from,address _to,uint256 _base,uint256 _value);
+	
+	function Clearing(TxHandler _stromkonto) {
+			stromkonto=_stromkonto;
+	}
+	
+	function clear(TXCache cache) onlyOwner {
+		for(uint i=0;i<cache.length();i++) {		
+			stromkonto.addTx(cache.from(i),cache.to(i),cache.base(i),cache.value(i));	
+			cleared(cache.from(i),cache.to(i),cache.base(i),cache.value(i));		
+		}		
+	}
+	
 }
 contract DirectConnection is owned {
 	
@@ -394,44 +678,40 @@ contract DirectConnectionFactory is owned {
 
 contract DirectChargingFactory is owned {
 	
-	RoleLookup public roles;
 	MPReading public reader;
 	
 	event Built(address _charging,address _stromkonto,address _account);
 		
-	function DirectChargingFactory(RoleLookup _roles,MPReading _reader) {			
-			roles=_roles;
+	function DirectChargingFactory(MPReading _reader) {						
 			reader=_reader;
 	}
 	
-	function buildCharging() returns(DirectCharging) {
+	function buildCharging() returns(Chargable) {
 		Stromkonto stromkonto=new Stromkonto();		
-		DirectCharging charging = new DirectCharging(roles,stromkonto,reader);
+		DirectCharging charging = new DirectCharging(stromkonto,reader);
 		stromkonto.transferOwnership(address(charging));		
 		charging.transferOwnership(msg.sender);
 		Built(address(charging),address(stromkonto),address(msg.sender));
-		return charging;
+		return Chargable(charging);
 	}	
 }
 contract DirectBalancingGroupFactory is owned {
 	
-	RoleLookup public roles;
 	MPReading public reader;
 	
 	event Built(address _balancinggroup,address _chargingFactory,address _connectionFactory,address _account);
 	
 	
-	function DirectBalancingGroupFactory(RoleLookup _roles,MPReading _reader){
-		roles=_roles;
+	function DirectBalancingGroupFactory(MPReading _reader){
 		reader=_reader;
 	}
 	
 	function build() returns(DirectBalancingGroup) {
 		DirectConnectionFactory directconnectionfactory = new DirectConnectionFactory();
 		directconnectionfactory.transferOwnership(msg.sender);
-		DirectChargingFactory directchargingfactory = new DirectChargingFactory(roles,reader);
+		DirectChargingFactory directchargingfactory = new DirectChargingFactory(reader);
 		directchargingfactory.transferOwnership(msg.sender);
-		DirectBalancingGroup dblg = new DirectBalancingGroup(directconnectionfactory,directchargingfactory);
+		DirectBalancingGroup dblg = new DirectBalancingGroup(directconnectionfactory,directchargingfactory,true);
 		dblg.transferOwnership(msg.sender);
 		Built(address(dblg),address(directchargingfactory),address(directconnectionfactory),address(msg.sender));
 		return dblg;
@@ -447,13 +727,15 @@ contract DirectBalancingGroup is owned {
 	Stromkonto public stromkontoOut;
 	Stromkonto public stromkontoDelta;
 	uint256 public balancesheets_cnt;
-	
+	mapping(address=>address) public accountInfo;
 	BalanceSheet[] public balancesheets;
+	bool public isDynamicPricing;
 	
-	DirectCharging public current_balance_in;
-	DirectCharging public current_balance_out;
-	DirectCharging public delta_balance;
-	
+	Chargable public current_balance_in;
+	Chargable public current_balance_out;
+	Chargable public delta_balance;
+	uint public cnt_feedin=0;
+	uint public cnt_feedout=0;
 	event StartCharge(uint256 _total_cost_in);
 	event EnergyCost(uint256 _cost_per_energy);
 	
@@ -462,42 +744,31 @@ contract DirectBalancingGroup is owned {
 			address balanceOut;
 			uint256 blockNumber;
 	}
-	function DirectBalancingGroup(DirectConnectionFactory _dconf,DirectChargingFactory _dcharf) {
+	function DirectBalancingGroup(DirectConnectionFactory _dconf,DirectChargingFactory _dcharf,bool _isDynamicPricing) {
 			directconnectionfactory = _dconf;			
 			directchargingfactory = _dcharf;
 			delta_balance=_dcharf.buildCharging();
 			stromkontoDelta=delta_balance.stromkonto();
 			balancesheets_cnt=0;
+			isDynamicPricing=_isDynamicPricing;
 	}
 	
 	function addFeedIn(address account,address meter_point,uint256 _cost_per_energy,uint256 _cost_per_day) {
-		DirectConnection dcon = directconnectionfactory.buildConnection(address(stromkontoDelta),account,meter_point,_cost_per_energy,_cost_per_day);
-		feedIn.push(dcon);
+		DirectConnection dcon = directconnectionfactory.buildConnection(address(stromkontoDelta),account,meter_point,_cost_per_energy,_cost_per_day);			
+		feedIn.push(dcon);			
+		cnt_feedin++;
 	}
 	
 	function addFeedOut(address account,address meter_point,uint256 _cost_per_energy,uint256 _cost_per_day) {
 		DirectConnection dcon = directconnectionfactory.buildConnection(account,address(stromkontoDelta),meter_point,_cost_per_energy,_cost_per_day);
-		feedOut.push(dcon);
+		feedOut.push(dcon);			
+		cnt_feedout++;
 	}
 	
-	function removeConnection(address _dcon) onlyOwner {
-			DirectConnection[] feedIn_new; //= new DirectConnection[];
-			DirectConnection[] feedOut_new; //= new DirectConnection[];
-			
-			for(uint i=0;i<feedIn.length;i++) {
-					if(address(feedIn[i])!=_dcon) {
-							feedIn_new.push(feedIn[i]);
-					}
-			}
-			for(i=0;i<feedOut.length;i++) {
-					if(address(feedOut[i])!=_dcon) {
-							feedOut_new.push(feedOut[i]);
-					}
-			}
-			feedIn=feedIn_new;
-			feedOut=feedOut_new;
+	function setAccountInfo(address _account,address _infoset) onlyOwner {
+		accountInfo[_account]=_infoset;
 	}
-	
+
 	function setCostPerEnergy(DirectConnection connection,uint256 cost_per_energy) onlyOwner {
 			connection.setCostPerEnergy(cost_per_energy);			
 	}
@@ -506,33 +777,30 @@ contract DirectBalancingGroup is owned {
 			connection.setCostPerDay(cost_per_day);			
 	}
 	
-	function charge()  onlyOwner {
-		//TODO Re-Add OnlyOwner
+	function setStromkontoDelta(Stromkonto _delta) onlyOwner {
+		delta_balance.setStromkonto(_delta);
+	}
+	function charge()  onlyOwner {			
 		if(address(current_balance_in)==address(0x0)) {
 				
 		} else {
 				// close Balance 
-				current_balance_in.chargeAll();
+				current_balance_in.chargeAll(0);
 				StartCharge(current_balance_in.total_cost());
 					if(current_balance_in.total_cost()>0) {							
 						uint256 current_energy_cost=current_balance_in.total_cost()/current_balance_in.total_power();
 						EnergyCost(current_energy_cost);
+					}				
+					if(isDynamicPricing) {
+						current_balance_out.chargeAll(current_energy_cost);
+					} else {
+						current_balance_out.chargeAll(0);
 					}
-					// TODO: Add costs from Delta Balancing
-					
-					// Set Current Energy Cost of feedin to feedout
-					if(current_energy_cost>0) {
-						for(var i=0;i<feedOut.length;i++) {
-							feedOut[i].setCostPerEnergy(current_energy_cost);
-						}
-					}
-					current_balance_out.chargeAll();
-					
-					for(i=0;i<feedOut.length;i++) {
+					for(uint i=0;i<cnt_feedout;i++) {
 						delta_balance.addTx(feedOut[i].from(),address(stromkontoDelta),stromkontoOut.balanceSoll(feedOut[i].from()),stromkontoOut.baseSoll(feedOut[i].from()));						
 					}
 					
-					for(i=0;i<feedIn.length;i++) {
+					for(i=0;i<cnt_feedin;i++) {
 						delta_balance.addTx(address(stromkontoDelta),feedIn[i].to(),stromkontoIn.balanceHaben(feedIn[i].to()),stromkontoIn.baseHaben(feedIn[i].to()));						
 					}					
 										
@@ -543,12 +811,12 @@ contract DirectBalancingGroup is owned {
 		}
 		current_balance_in=directchargingfactory.buildCharging();
 		current_balance_in.setConnections(feedIn);
-		current_balance_in.chargeAll();
+		current_balance_in.chargeAll(0);
 		stromkontoIn=current_balance_in.stromkonto();
 		
 		current_balance_out=directchargingfactory.buildCharging();
 		current_balance_out.setConnections(feedOut);
-		current_balance_out.chargeAll();
+		current_balance_out.chargeAll(0);
 		stromkontoOut=current_balance_out.stromkonto();
 		uint256 my_reading = stromkontoDelta.sumBase();
 		MPReading mpr = MPReading("0x0000000000000000000000000000000000000008");
@@ -556,8 +824,22 @@ contract DirectBalancingGroup is owned {
 	}
 }
 
-contract DirectCharging is owned {
-	RoleLookup public roles;
+contract Chargable is owned {
+	Stromkonto public stromkonto;
+	event Charged(uint256 total_power,uint256 total_cost);
+	event Charging(address meter_point);
+	uint256 public total_power;
+	uint256 public total_cost;
+	
+	function addTx(address _from,address _to, uint256 _value,uint256 _base) {}
+	function addConnection(DirectConnection _connection) {}
+	function setConnections(DirectConnection[] _connections) onlyOwner {}
+	function chargeAll(uint256 dyn_cost) {}
+	function setStromkonto(Stromkonto _stromkonto) onlyOwner {}
+}
+
+contract DirectCharging is Chargable {
+	
 	MPReading public reader;
 	Stromkonto public stromkonto;
 	DirectConnection[] public connections;
@@ -579,8 +861,7 @@ contract DirectCharging is owned {
 		uint256 per_energy;
 	}
 	
-	function DirectCharging(RoleLookup _roles,Stromkonto _stromkonto,MPReading _reader) {
-			roles=_roles;
+	function DirectCharging(Stromkonto _stromkonto,MPReading _reader) {			
 			reader=_reader;
 			stromkonto=_stromkonto;
 	}  
@@ -589,6 +870,9 @@ contract DirectCharging is owned {
 			stromkonto.addTx(_from,_to,_value,_base);
 	}
 	
+	function setStromkonto(Stromkonto _stromkonto) onlyOwner {
+			stromkonto=_stromkonto;
+	}
 	
 	function addConnection(DirectConnection _connection) onlyOwner {		
 		if(meter_points[_connection.meter_point()]!=address(0)) throw;
@@ -601,7 +885,7 @@ contract DirectCharging is owned {
 			connections=_connections;
 	}
 	
-	function chargeAll() {
+	function chargeAll(uint256 dyn_cost) {
 		for(uint i=0;i<connections.length;i++) {
 								
 				address meter_point = connections[i].meter_point();
@@ -620,9 +904,11 @@ contract DirectCharging is owned {
 					uint256 cost=0;
 					uint256 delta_time=current_time-last_reading[meter_point].time;
 					uint256 delta_power=current_power-last_reading[meter_point].power;
-					
-					cost+=delta_power*connections[i].cost_per_energy();
-					
+					if(dyn_cost==0) {
+						cost+=delta_power*connections[i].cost_per_energy();
+					} else {
+						cost+=delta_power*dyn_cost;
+					}
 					cost+=(delta_time/86400)*connections[i].cost_per_day();
 					
 					//if(cost>0) {

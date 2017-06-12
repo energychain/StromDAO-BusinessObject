@@ -12,7 +12,7 @@
  * @author Thorsten Zoerner thorsten.zoerner@stromdao.de 
  * 
  */
- 
+ var request = require('request');
  
 this.blg=function(obj_or_address) {
 			if(typeof obj_or_address == "undefined") obj_or_address=parent.options.contracts["StromDAO-BO.sol_DirectBalancingGroup"];
@@ -38,15 +38,31 @@ this.blg=function(obj_or_address) {
 					});
 					return p2;
 				};
+				instance.setFixedEnergyCost=function(cost_per_energy)  {				
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.setFixedEnergyCost(cost_per_energy).then(function(o) {									
+								parent._waitForTransactionKeepRef(o,resolve2);												
+							});									
+					});
+					return p2;
+				};				
 				instance.charge=function()  {		
 		
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.charge({gasLimit:5499819,gasPrice:0}).then(function(o) {									
+							instance.obj.charge({gasLimit:5120000,gasPrice:0}).then(function(o) {									
 								parent._waitForTransactionKeepRef(o,resolve2);												
 							});									
 					});
 					return p2;
 				};
+				instance.emptyConnections=function()  {				
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.emptyConnections().then(function(o) {									
+								parent._waitForTransactionKeepRef(o,resolve2);												
+							});									
+					});
+					return p2;
+				};				
 				instance.stromkontoDelta=function() {
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.stromkontoDelta().then(function(o) {	
@@ -92,6 +108,23 @@ this.blg=function(obj_or_address) {
 					});
 					return p2;
 				}	
+				//cnt_feedin
+				instance.cnt_feedin=function() {
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.cnt_feedin().then(function(o) {																
+								resolve2(o[0]*1);											
+							});									
+					});
+					return p2;
+				}
+				instance.cnt_feedout=function() {
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.cnt_feedout().then(function(o) {																
+								resolve2(o[0]*1);											
+							});									
+					});
+					return p2;
+				}		
 				instance.balancesheets=function(idx) {
 					var p2 = new Promise(function(resolve2, reject2) { 
 							// Save as it is unmutbale
@@ -120,6 +153,38 @@ this.blg=function(obj_or_address) {
 					});
 					return p2;
 				}
+				instance.setAccountInfo=function(account,data_obj) {
+					var p2 = new Promise(function(resolve2, reject2) { 
+							request.post("http://l2.stromdao.de:8001/put", {form:data_obj}).on('data', function(data) { 
+								var multihash=data.toString();								
+								parent.stringstoragefactory().then( function(ssf) {
+									ssf.build(multihash).then(function(adr) {
+										console.log("Adr",adr,"Multihash",multihash,"Account",account);
+										instance.obj.setAccountInfo(account,adr).then(function(o) {
+											parent._waitForTransactionKeepRef(o,resolve2);													
+										});										
+									});
+								});
+							});																
+					});
+					return p2;
+				}	
+				instance.accountInfo=function(account) {
+					var p2 = new Promise(function(resolve2, reject2) { 
+						instance.obj.accountInfo(account).then(function(o) {	
+							parent.stringstorage(o[0]).then(function(ss) {
+												ss.str().then(function(multihash) {
+													request.post("http://l2.stromdao.de:8001/get",{form:{key:multihash}}).on('data',	function(d) {
+														string = d.toString();
+														resolve2(string);
+													});;
+													
+												});
+											});																																		
+							});											
+					});
+					return p2;
+				}			
 				instance.setCostPerDay=function(connection,cost_per_day) {
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.setCostPerDay(connection,cost_per_day).then(function(o) {

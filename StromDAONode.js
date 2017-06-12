@@ -251,6 +251,22 @@ module.exports = {
 		this.mpr = require("./MPR.js").mpr;
 		
 		/**
+		 * Bridge to MP Clearing (Mieterstrom, Kostenverrechnung..)
+		 */
+		 
+		
+		this.mpset = require("./MPSet.js").mpset;
+		this.mpsetfactory = require("./MPSetFactory.js").factory;
+		this.mprsetfactory = require("./MPRSetFactory.js").factory;
+		this.mprdecoratefactory = require("./MPRDecorateFactory.js").factory;
+		this.settlementfactory = require("./SettlementFactory.js").factory;
+		this.stromkontoproxyfactory = require("./StromkontoProxyFactory.js").factory;
+		this.clearingfactory = require("./ClearingFactory.js").factory;
+		this.clearing = require("./Clearing.js").clearing;
+		this.settlement = require("./Settlement.js").settlement;
+		this.mprdecorate = require("./MPRDecorate.js").mprdecorate;
+		
+		/**
 		 * Bridge to DirectConnectionFactory Smart Contract
 		 */
 		this.directconnectionfactory = require("./DirectConnectionFactory.js").directconnectionfactory;
@@ -303,7 +319,7 @@ module.exports = {
 		 * Bridge to Stromkonto Smart Contract
 		 */
 		this.stromkonto = require("./Stromkonto.js").stromkonto;		
-		
+		this.stromkontoproxy = require("./StromkontoProxy.js").stromkontoproxy;	
 		/**
 		 * Bridge to RoleLookup Smart Contract
 		 */
