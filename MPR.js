@@ -21,7 +21,7 @@ this.mpr = function(obj_or_address) {
 				 * @see approveMP()
 				 */
 				instance.storeReading=function(_reading) {
-					_reading=Math.round(_reading);
+					//_reading=Math.round(_reading);
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.storeReading(_reading).then(function(o) {	
 								parent._waitForTransactionKeepRef(o,resolve2);			

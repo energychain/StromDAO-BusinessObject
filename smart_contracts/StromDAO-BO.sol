@@ -394,9 +394,16 @@ contract MPSetFactory {
 contract MPset is owned {
 	
 	address[] public meterpoints;
+	mapping(address=>bool) public mps;
+	event added(address _meterpoint);
 	
-	function addMeterPoint(address _meterpoint) onlyOwner {
-		meterpoints.push(_meterpoint);
+	function addMeterPoint(address _meterpoint)  {
+		//TODO Allow Selfregister only in DEV - add onlyOwner in Production
+		if(!mps[_meterpoint]) {
+			meterpoints.push(_meterpoint);
+			mps[_meterpoint]=true;
+			added(_meterpoint);
+		}
 	}
 	
 	function length() returns(uint256) {
@@ -429,15 +436,28 @@ contract MPRSetFactory {
 contract MPRset is MPR {
 	address[] public meterpoints;
 	
-	function MPRset(MPset _mpset,MPReading _reading) {	
+	function MPRset(MPset _mpset,MPReading _reading) {
+		uint i=0;
+		while(_mpset.meterpoints(i)!=address(0x0)) {
+			meterpoints.push(_mpset.meterpoints(i));
+			uint256 time;
+			uint256 reading;
+			
+			(time,reading)=_reading.readings(meterpoints[i]);
+			mpr[_mpset.meterpoints(i)]=reading;
+			i++;	
+			
+		}
+		/*	
 		for(uint i=0; i<_mpset.length();i++) {
 					meterpoints.push(_mpset.meterpoints(i));
 		}		
-				
+		/*		
 		for(i=0;i<meterpoints.length;i++) {				
 				uint256 time;
 				(time,mpr[meterpoints[i]])=_reading.readings(meterpoints[i]);
-		}		
+		}
+		*/		
 	}		
 }
 
@@ -465,7 +485,7 @@ contract MPRDecorateFactory {
 }
 contract MPRdecorate is MPR, owned {
 	address[] public meterpoints;	
-	
+	event Decorated(uint _cnt);
 	function MPRdecorate(MPset _mpset,MPR _set_start,MPR _set_end) {
 			for(uint i=0; i<_mpset.length();i++) {
 					meterpoints.push(_mpset.meterpoints(i));
@@ -477,7 +497,8 @@ contract MPRdecorate is MPR, owned {
 					} else {
 						mpr[meterpoints[i]]=_set_end.mpr(meterpoints[i]);
 					}
-			}											
+			}
+			Decorated(meterpoints.length);											
 	}
 	
 	
@@ -485,18 +506,21 @@ contract MPRdecorate is MPR, owned {
 		for(uint i=0;i<meterpoints.length;i++) {
 				mpr[meterpoints[i]]+=mpr[meterpoints[i]]*amount;
 		}
+		Decorated(meterpoints.length);
 	}	
 	
 	function ChargeFix(uint256 amount) onlyOwner {
 		for(uint i=0;i<meterpoints.length;i++) {
 				mpr[meterpoints[i]]+=amount;
 		}
+		Decorated(meterpoints.length);
 	}	
 	
 	function Add(MPR mpr2) onlyOwner {
 		for(uint i=0;i<meterpoints.length;i++) {
 			mpr[meterpoints[i]]+=mpr2.mpr(meterpoints[i]);
 		}
+		Decorated(meterpoints.length);
 	}
 	
 	function SplitWeighted(uint256 amount) onlyOwner {
@@ -506,12 +530,14 @@ contract MPRdecorate is MPR, owned {
 		for(uint i=0;i<meterpoints.length;i++) {
 				mpr[meterpoints[i]]+=amount*(mpr[meterpoints[i]]/sum);
 		}
+		Decorated(meterpoints.length);
 	}	
 	
 	function SplitEqual(uint256 amount) onlyOwner {
 		for(uint i=0;i<meterpoints.length;i++) {
 				mpr[meterpoints[i]]+=amount/meterpoints.length;
 		}
+		Decorated(meterpoints.length);
 	}			
 	
 }
@@ -525,10 +551,13 @@ contract TXCache is owned {
 			uint256 value;
 	}
 	
+	event addedTx(address _from,address _to,uint256 _base,uint256 _value);
+	
 	TX[] public txs;
 	
 	function addTx(address _from,address _to,uint256 _base,uint256 _value) onlyOwner {
 			txs.push(TX(_from,_to,_base,_value));
+			addedTx(_from,_to,_base,_value);
 	}
 	function length() returns(uint256) {
 			return txs.length;
@@ -550,45 +579,40 @@ contract TXCache is owned {
 
 contract SettlementFactory {
 	
-	event Built(address _mpset,address _account);
+	event Built(address _settlement,address _account);
 	
-	function build(MPset _mpset,MPR _tx,MPR _base,bool _toOwner) returns(Settlement) {
-		Settlement settlement = new Settlement(_mpset,_tx,_base,_toOwner);
-		settlement.transferOwnership(msg.sender);
+	function build(MPset _mpset,bool _toOwner) returns(Settlement) {
+		Settlement settlement = new Settlement(_mpset,_toOwner);
+		//settlement.transferOwnership(msg.sender);
 		Built(address(settlement),msg.sender);
 		return settlement;
 	}
 	
 }
-contract Settlement is MPR, owned {
+contract Settlement {
 		address[] public meterpoints;	
 	    TXCache public txcache;
-	    MPR _tx;
-	    MPR _base;
 		bool _toOwner;
 		
 	    event Settled(address txcache,address tx, address base,bool toOwner);
 	    
-		function Settlement(MPset _mpset,MPR tx,MPR base,bool toOwner) {
+		function Settlement(MPset _mpset,bool toOwner) {
 			for(uint i=0; i<_mpset.length();i++) {
 					meterpoints.push(_mpset.meterpoints(i));
-			}	
-			_tx=tx;
-			_base=base;
+			}				
 			_toOwner=toOwner;
 			txcache = new TXCache();
+			//settle();
 		}	
 		
-		function settle() onlyOwner {
+		function settle(MPR _tx,MPR _base) {
 			//if(address(txcache.owner)!=address(this)) return;
 			
 			for(uint i=0;i<meterpoints.length;i++) {
 				if(_toOwner) {
-						txcache.addTx(meterpoints[i],address(this),_tx.mpr(meterpoints[i]),_base.mpr(meterpoints[i]));					
-						mpr[address(owner)]+=_tx.mpr(meterpoints[i]);
+						txcache.addTx(meterpoints[i],address(this),_tx.mpr(meterpoints[i]),_base.mpr(meterpoints[i]));									
 				} else {
-						txcache.addTx(address(this),meterpoints[i],_tx.mpr(meterpoints[i]),_base.mpr(meterpoints[i]));
-						mpr[meterpoints[i]]+=_tx.mpr(meterpoints[i]);
+						txcache.addTx(address(this),meterpoints[i],_tx.mpr(meterpoints[i]),_base.mpr(meterpoints[i]));			
 				}
 				
 			}
@@ -596,6 +620,7 @@ contract Settlement is MPR, owned {
 			//txcache.transferOwnership(msg.sender);
 		}
 }
+
 contract ClearingFactory {
 	
 	event Built(address _mpset,address _account);

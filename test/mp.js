@@ -318,10 +318,10 @@ describe('StromDAO: Meter Point Operating and Clearing', function() {
 						});							
 				});						
 		});		
-		it('Check for resolution of settlement. Node should have 12 in In', function(done) {
+		it('Check for resolution of settlement. Node should have 0 in In', function(done) {
 				node.settlement(settlement_in).then(function(mprd) {
 						mprd.mpr(node.wallet.address).then(function(o) {
-							assert.equal(o,12);					
+							assert.equal(o,0);					
 							done();
 						});							
 				});						
@@ -329,7 +329,7 @@ describe('StromDAO: Meter Point Operating and Clearing', function() {
 		it('Check for resolution of settlement. MP1_IN should have 3', function(done) {
 				node.settlement(settlement_in).then(function(mprd) {
 						mprd.mpr(mp1_in.wallet.address).then(function(o) {
-							assert.equal(o,0);								
+							assert.equal(o,3);								
 							done();
 						});							
 				});						

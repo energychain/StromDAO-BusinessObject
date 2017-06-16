@@ -11,11 +11,20 @@ this.mprdecorate=function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 
 			
 				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol_MPRDecorate');	
-									
+																
 				instance.ChargeFix=function(_amount)  {		
 		
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.ChargeFix(_amount).then(function(o) {									
+								parent._waitForTransactionKeepRef(o,resolve2);												
+							});									
+					});
+					return p2;
+				};
+				instance.ChargeEnergy=function(_amount)  {		
+		
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.ChargeEnergy(_amount).then(function(o) {									
 								parent._waitForTransactionKeepRef(o,resolve2);												
 							});									
 					});

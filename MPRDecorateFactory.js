@@ -22,17 +22,20 @@ this.factory = function(obj_or_address) {
 							
 					var p2 = new Promise(function(resolve2, reject2) { 
 							var bdx="";
-						   
+							
 							instance.obj.onbuilt=function(cb) {						
-									var p3=new Promise(function(resolve3, reject3) {									
-									parent._waitForTransaction(bdx.hash).then(resolve3(cb));
+								
+									var p3=new Promise(function(resolve3, reject3) {					
+										parent._waitForTransaction(bdx.hash).then(resolve3(cb));
 									});
 									p3.then(function() {
 											resolve2(cb);
 									});							
 							};		
-							instance.obj.build(_mpset,_set_start,_set_end).then(function(o) {	
+							instance.obj.build(_mpset,_set_start,_set_end,{value:"0x0",gasPrice:"0x0",gasLimit:3903918}).then(function(o) {									
 									bdx=o;	
+									//{value:"0x0",gasPrice:"0x0",gasLimit:3803918}
+									
 							});									
 					});
 					return p2;

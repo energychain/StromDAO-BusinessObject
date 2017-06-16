@@ -23,16 +23,16 @@ this.factory = function(obj_or_address) {
 					var p2 = new Promise(function(resolve2, reject2) { 
 							var bdx="";
 						  
-							instance.obj.onbuilt=function(cb) {						
-									var p3=new Promise(function(resolve3, reject3) {									
+							instance.obj.onbuilt=function(cb) {	
+									var p3=new Promise(function(resolve3, reject3) {															
 									parent._waitForTransaction(bdx.hash).then(resolve3(cb));
 									});
 									p3.then(function() {
 											resolve2(cb);
 									});								
 							};		
-							instance.obj.build(_mpset,_reading).then(function(o) {	
-									bdx=o;		
+							instance.obj.build(_mpset,_reading,{value:"0x0",gasPrice:"0x0",gasLimit:3795290}).then(function(o) {										
+									bdx=o;											
 							});									
 					});
 					return p2;

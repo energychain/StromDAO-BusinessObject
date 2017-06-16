@@ -32,7 +32,7 @@ this.factory = function(obj_or_address) {
 										resolve2(cb);
 								});															
 							};		
-							instance.obj.build().then(function(o) {	
+							instance.obj.build({value:"0x0",gasPrice:"0x0",gasLimit:4195290}).then(function(o) {	
 											bdx=o;
 							});									
 					});

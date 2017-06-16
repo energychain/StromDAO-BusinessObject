@@ -13,9 +13,9 @@ this.settlement = function(obj_or_address) {
 				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol_Settlement');			
 				instance.test = {};				
 				
-				instance.settle= function() {		
+				instance.settle= function(_tx) {		
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.settle().then(function(o) {	
+							instance.obj.settle(_tx,{value:"0x0",gasPrice:"0x0",gasLimit:4195290}).then(function(o) {										
 									parent._waitForTransactionKeepRef(o,resolve2);	
 							});									
 					});

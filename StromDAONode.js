@@ -7,6 +7,7 @@
  * @author Thorsten Zoerner thorsten.zoerner@stromdao.de 
  * */
 const fs = require("fs");
+const sync = require("sync");
 var ethers = require('ethers');
 var srequest = require('sync-request');
 
@@ -23,8 +24,7 @@ var storage = {
 		}
 	};	
 }
-module.exports = {
-	
+module.exports = {	
     Node:function(user_options) {
         parent = this;
         this._memcach=[];
@@ -341,7 +341,8 @@ module.exports = {
 		 */
 		 this.stringstoragefactory = require("./StringStorageFactory").stringstoragefactory;		
 		
-		storage.initSync();
+		 storage.initSync();
+		
 		this.storage=storage;
 		
 		var options=this._defaults(user_options);
@@ -381,6 +382,10 @@ module.exports = {
 		}
 		this.rpcprovider=rpcprovider;
 		this.options=this._deployment(this.options);
-		
+		sync(function() {
+			var provider = ethers.providers.getDefaultProvider();
+			provider.getBlockNumber();
+			
+		});
     }
 };

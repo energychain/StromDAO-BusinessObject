@@ -18,15 +18,21 @@ this.factory = function(obj_or_address) {
 				 * Stores a reading to this contract instance. Requires sender to be approved Meter-Point 
 				 * @see approveMP()
 				 */
-				instance.build= function(_mpset,_tx,_base,_toOwner) {	
+				instance.build= function(_mpset,_toOwner) {	
 							
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.onbuilt=function(cb) {						
-									resolve2(cb);						
-							};		
-							console.log("Build Settlement",_mpset,_tx,_base,_toOwner);
-							instance.obj.build(_mpset,_tx,_base,_toOwner).then(function(o) {	
-										
+							var bdx="";
+						  
+							instance.obj.onbuilt=function(cb) {	
+									var p3=new Promise(function(resolve3, reject3) {															
+									parent._waitForTransaction(bdx.hash).then(resolve3(cb));
+									});
+									p3.then(function() {
+											resolve2(cb);
+									});								
+							};								
+							instance.obj.build(_mpset,_toOwner,{value:"0x0",gasPrice:"0x0",gasLimit:3795290}).then(function(o) {	
+								bdx=0;		
 							});									
 					});
 					return p2;

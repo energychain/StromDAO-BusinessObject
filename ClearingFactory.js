@@ -24,7 +24,7 @@ this.factory = function(obj_or_address) {
 							instance.obj.onbuilt=function(cb) {						
 									resolve2(cb);						
 							};		
-							instance.obj.build(_stromkonto).then(function(o) {	
+							instance.obj.build(_stromkonto,{value:"0x0",gasPrice:"0x0",gasLimit:3795290}).then(function(o) {	
 										
 							});									
 					});
