@@ -505,7 +505,56 @@ contract Settlement {
 		}
 }
 
+contract Clearing is owned {
+	TxHandler public stromkonto;
+	event cleared(address _from,address _to,uint256 _base,uint256 _value);
+	
+	function Clearing(TxHandler _stromkonto) {
+			stromkonto=_stromkonto;
+	}
+	
+	function clear(TXCache cache) onlyOwner {
+		for(uint i=0;i<cache.length();i++) {		
+			stromkonto.addTx(cache.from(i),cache.to(i),cache.base(i),cache.value(i));	
+			cleared(cache.from(i),cache.to(i),cache.base(i),cache.value(i));		
+		}		
+	}
+	
+}
 
-
+contract DirectClearing is owned{
+	    TxHandler public stromkonto;
+		event cleared(address _from,address _to,uint256 _base,uint256 _value);
+		TXCache public cache;
+		SettlementFactory sf;
+		Settlement public settlement;
+		
+		function DirectClearing(TxHandler _stromkonto,SettlementFactory _sf) {
+			stromkonto=_stromkonto;	
+			sf=_sf;						
+		}
+	
+		function preSettle(MPset mpset) onlyOwner{
+			Settlement settlement = sf.build(mpset,true);							
+			cache = settlement.txcache();			
+		}
+		
+		function setSettlement(Settlement _settlement) {
+				settlement=_settlement;
+				cache = settlement.txcache();
+		}
+		function settle(MPR _readings) onlyOwner {
+			settlement.settle(_readings);
+		}
+		
+		function clear() onlyOwner {			
+				for(uint i=0;i<cache.length();i++) {		
+						stromkonto.addTx(cache.from(i),cache.to(i),cache.base(i),cache.value(i));	
+						cleared(cache.from(i),cache.to(i),cache.base(i),cache.value(i));		
+				}
+				
+		}
+	
+}
 
 

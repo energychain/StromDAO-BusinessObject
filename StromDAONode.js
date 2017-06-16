@@ -265,6 +265,7 @@ module.exports = {
 		this.clearing = require("./Clearing.js").clearing;
 		this.settlement = require("./Settlement.js").settlement;
 		this.mprdecorate = require("./MPRDecorate.js").mprdecorate;
+		this.directclearing=require("./DirectClearing.js").directclearing;
 		
 		/**
 		 * Bridge to DirectConnectionFactory Smart Contract
