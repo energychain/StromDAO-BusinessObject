@@ -7,7 +7,7 @@
  * @author Thorsten Zoerner thorsten.zoerner@stromdao.de 
  * */
 const fs = require("fs");
-const sync = require("sync");
+//const sync = require("sync");
 var ethers = require('ethers');
 var srequest = require('sync-request');
 
