@@ -5,6 +5,7 @@ sudo: false
 before_script:
   - git config --global user.email "smuemd@gmail.com"
   - git config --global user.name "smuemd"
+  - /home/travis/.nvm/versions/node/v7.6.0/bin/node /home/travis/build/energychain/StromDAO-BusinessObject/node_modules/fibers/build
 env:
   - CXX=g++-4.8
 addons:
