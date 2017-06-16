@@ -382,10 +382,12 @@ module.exports = {
 		}
 		this.rpcprovider=rpcprovider;
 		this.options=this._deployment(this.options);
-		sync(function() {
-			var provider = ethers.providers.getDefaultProvider();
-			provider.getBlockNumber();
-			
-		});
+		if(typeof sync != "undefined") {
+			sync(function() {
+				var provider = ethers.providers.getDefaultProvider();
+				provider.getBlockNumber();
+				
+			});
+		}
     }
 };
