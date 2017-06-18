@@ -353,12 +353,10 @@ contract MPRsum {
 }
 
 contract MPRtoMP is owned {
-	
-	
+		
 		function update(MPset _mpset,MPR _mpr) onlyOwner {
 			for(uint i=0; i<_mpset.length();i++) {
-					MP
-					meterpoints.push();
+				
 			}				
 		} 
 }
@@ -388,8 +386,8 @@ contract MPRdecorate is MPR, owned {
 						mpr[meterpoints[i]]=_set_end.mpr(meterpoints[i])-_set_start.mpr(meterpoints[i]);
 						mpr_base[meterpoints[i]]=_set_end.mpr(meterpoints[i])-_set_start.mpr(meterpoints[i]);
 					} else {
-						mpr[meterpoints[i]]=_set_end.mpr(meterpoints[i]);
-						mpr_base[meterpoints[i]]=_set_end.mpr(meterpoints[i]);
+						mpr[meterpoints[i]]=_set_start.mpr(meterpoints[i])-_set_end.mpr(meterpoints[i]);
+						mpr_base[meterpoints[i]]=_set_start.mpr(meterpoints[i])-_set_end.mpr(meterpoints[i]);
 					}
 			}
 			Decorated(meterpoints.length);											

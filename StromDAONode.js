@@ -93,8 +93,12 @@ module.exports = {
 		/** Stores Simple Labels for addresses
 		 */
 		 
-		this._saveLabel=function(address_type,address) {				
+		this._saveLabel=function(address_type,address) {	
+			console.log("LABEL",address_type,address);			
 				if(address_type.length<2) {address_type=address_type+" "+address.substring(5,10);}
+				if(window) {
+						window.localStorage.removeItem("label_"+address.toLowerCase());
+				}
 				storage.setItemSync("label_"+address.toLowerCase(),address_type);
 		} 
 		this._label=function(address) {
@@ -231,6 +235,17 @@ module.exports = {
 					} else {
 							resolve(JSON.parse(stored));
 					}			
+			});
+			return p1;	
+		}
+		this._txlogfull = function(address) {
+			var p1 = new Promise(function(resolve, reject) { 	
+				
+				
+						parent.wallet.provider.getLogs({address:address,fromBlock:0,toBlock:1000000}).then(function(logs) {										
+								resolve(logs);
+						});										
+				
 			});
 			return p1;	
 		}
