@@ -256,6 +256,7 @@ module.exports = {
 		 
 		
 		this.mpset = require("./MPSet.js").mpset;
+		this.mprset = require("./MPRSet.js").mprset;
 		this.mpsetfactory = require("./MPSetFactory.js").factory;
 		this.mprsetfactory = require("./MPRSetFactory.js").factory;
 		this.mprdecoratefactory = require("./MPRDecorateFactory.js").factory;
@@ -264,6 +265,7 @@ module.exports = {
 		this.clearingfactory = require("./ClearingFactory.js").factory;
 		this.clearing = require("./Clearing.js").clearing;
 		this.settlement = require("./Settlement.js").settlement;
+		this.txcache = require("./TXcache.js").txcache;
 		this.mprdecorate = require("./MPRDecorate.js").mprdecorate;
 		this.directclearing=require("./DirectClearing.js").directclearing;
 		

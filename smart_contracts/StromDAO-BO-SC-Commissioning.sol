@@ -352,6 +352,16 @@ contract MPRsum {
 	}	
 }
 
+contract MPRtoMP is owned {
+	
+	
+		function update(MPset _mpset,MPR _mpr) onlyOwner {
+			for(uint i=0; i<_mpset.length();i++) {
+					MP
+					meterpoints.push();
+			}				
+		} 
+}
 contract MPRDecorateFactory {
 	
 	event Built(address _mpset,address _account);

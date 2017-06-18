@@ -11,7 +11,31 @@ this.mprdecorate=function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 
 			
 				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol_MPRDecorate');	
-																
+						
+				instance.meterpoints=function(idx) {
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.meterpoints(idx).then(function(o) {									
+								resolve2(o[0]);											
+							});									
+					});
+					return p2;
+				};
+				instance.mpr=function(address) {
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.mpr(address).then(function(o) {									
+								resolve2(o[0]);											
+							});									
+					});
+					return p2;
+				};	
+				instance.mpr_base=function(address) {
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.mpr_base(address).then(function(o) {									
+								resolve2(o[0]);											
+							});									
+					});
+					return p2;
+				};	
 				instance.ChargeFix=function(_amount)  {		
 		
 					var p2 = new Promise(function(resolve2, reject2) { 
