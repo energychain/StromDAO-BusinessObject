@@ -46,6 +46,15 @@ this.directclearing=function(obj_or_address) {
 					});
 					return p2;
 				};
+				instance.setSettlement=function(settlement)  {		
+		
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.setSettlement(settlement).then(function(o) {									
+								parent._waitForTransactionKeepRef(o,resolve2);												
+							});									
+					});
+					return p2;
+				};
 
 				resolve(instance);
 			});

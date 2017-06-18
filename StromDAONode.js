@@ -96,7 +96,7 @@ module.exports = {
 		this._saveLabel=function(address_type,address) {	
 			console.log("LABEL",address_type,address);			
 				if(address_type.length<2) {address_type=address_type+" "+address.substring(5,10);}
-				if(typeof window != undefined) {
+				if(typeof window != "undefined") {
 						window.localStorage.removeItem("label_"+address.toLowerCase());
 				}
 				storage.setItemSync("label_"+address.toLowerCase(),address_type);
