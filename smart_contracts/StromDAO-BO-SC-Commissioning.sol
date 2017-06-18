@@ -530,6 +530,19 @@ contract Clearing is owned {
 	
 }
 
+contract DirectClearingFactory {
+	
+	event Built(address _settlement,address _account);
+	
+	function build(TxHandler _stromkonto,SettlementFactory _sf) returns(DirectClearing) {
+		DirectClearing dc = new DirectClearing(_stromkonto,_sf);
+		dc.transferOwnership(msg.sender);
+		Built(address(dc),msg.sender);
+		return dc;
+	}
+		
+}
+
 contract DirectClearing is owned{
 	    TxHandler public stromkonto;
 		event cleared(address _from,address _to,uint256 _base,uint256 _value);

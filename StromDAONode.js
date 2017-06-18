@@ -96,7 +96,7 @@ module.exports = {
 		this._saveLabel=function(address_type,address) {	
 			console.log("LABEL",address_type,address);			
 				if(address_type.length<2) {address_type=address_type+" "+address.substring(5,10);}
-				if(window) {
+				if(typeof window != undefined) {
 						window.localStorage.removeItem("label_"+address.toLowerCase());
 				}
 				storage.setItemSync("label_"+address.toLowerCase(),address_type);
@@ -278,6 +278,8 @@ module.exports = {
 		this.settlementfactory = require("./SettlementFactory.js").factory;
 		this.stromkontoproxyfactory = require("./StromkontoProxyFactory.js").factory;
 		this.clearingfactory = require("./ClearingFactory.js").factory;
+		this.directclearingfactory = require("./DirectClearingFactory.js").factory;
+		this.directclearing = require("./DirectClearing.js").directclearing;
 		this.clearing = require("./Clearing.js").clearing;
 		this.settlement = require("./Settlement.js").settlement;
 		this.txcache = require("./TXcache.js").txcache;
