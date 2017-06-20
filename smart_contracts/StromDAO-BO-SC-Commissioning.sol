@@ -341,8 +341,8 @@ contract SingleMeterClearing is owned {
 	uint256 public energyCost;
 	bool public becomeTo;
 	
-	event Cleared(uint256 _power);
-	
+	event Cleared(uint256 _power,uint256 _num_accounts);
+	event Booking(address _account,uint256 factor,uint256 share,uint256 value); 
 	function SingleMeterClearing(TxHandler _stromkonto,MPReading _reading,address _meterpoint,uint256 _cost,bool _becomeTo) {
 		stromkonto=_stromkonto;
 		meterpoint=_meterpoint;
@@ -373,16 +373,17 @@ contract SingleMeterClearing is owned {
 			uint256 time;
 			uint256 power;		
 			(time,power)=reading.readings(meterpoint);
-			for(uint i=0;i<accounts.length;i++) {
-				var factor=share[accounts[i]]/total_shares;
+			for(uint256 i=0;i<accounts.length;i++) {
+				uint256 factor=share[accounts[i]];
 				if(becomeTo) {
 					stromkonto.addTx(accounts[i],address(this),((power-last_reading)*energyCost)*factor,(power-last_reading)*factor);
 				} else {
 					stromkonto.addTx(address(this),accounts[i],((power-last_reading)*energyCost)*factor,(power-last_reading)*factor);
 				}
+				Booking(accounts[i],factor,share[accounts[i]],((power-last_reading)*energyCost)*factor);
 			}
 			last_reading=power;
-			Cleared(power);
+			Cleared(power,accounts.length);
 	}
 	
 }
