@@ -312,6 +312,80 @@ contract MPRSetFactory {
 	}
 	
 }
+
+contract SingleMeterClearingFactory {
+	event Built(address _mpset,address _account);
+	MPReading public reading;
+	
+	function SingleMeterClearingFactory(MPReading _reading) {
+		reading=_reading;		
+	}
+	
+	function build(TxHandler _stromkonto,address _meterpoint,uint256 _cost,bool _becomeTo) returns(SingleMeterClearing) {
+			SingleMeterClearing smc = new SingleMeterClearing(_stromkonto,reading,_meterpoint,_cost,_becomeTo);
+			smc.transferOwnership(msg.sender);
+			Built(address(smc),msg.sender);
+			return smc;		
+	}
+	
+}
+contract SingleMeterClearing is owned {
+	
+	mapping(address=>uint256) public share;
+	address[] public accounts;
+	uint256 public total_shares=0;
+	TxHandler public stromkonto;
+	MPReading public reading;
+	address public meterpoint;
+	uint256 public last_reading;
+	uint256 public energyCost;
+	bool public becomeTo;
+	
+	event Cleared(uint256 _power);
+	
+	function SingleMeterClearing(TxHandler _stromkonto,MPReading _reading,address _meterpoint,uint256 _cost,bool _becomeTo) {
+		stromkonto=_stromkonto;
+		meterpoint=_meterpoint;
+		reading=_reading;
+		energyCost=_cost;
+		becomeTo=_becomeTo;
+	}
+	
+	function setAccount(address _account,uint256 _shares) onlyOwner {
+		if(share[_account]==0) {
+				accounts.push(_account);
+				total_shares+=_shares;				
+		} else {
+				total_shares-=share[_account];
+				total_shares+=_shares;
+		}
+		share[_account]=_shares;		
+	}
+	
+	function addTx(address _from,address _to,uint256 value,uint256 base) onlyOwner {
+			stromkonto.addTx(_from,_to,value,base);		
+	}
+	
+	function setEnergyCost(uint256 _cost) onlyOwner {
+			energyCost=_cost;
+	}
+	function clearing() onlyOwner {
+			uint256 time;
+			uint256 power;		
+			(time,power)=reading.readings(meterpoint);
+			for(uint i=0;i<accounts.length;i++) {
+				var factor=share[accounts[i]]/total_shares;
+				if(becomeTo) {
+					stromkonto.addTx(accounts[i],address(this),((power-last_reading)*energyCost)*factor,(power-last_reading)*factor);
+				} else {
+					stromkonto.addTx(address(this),accounts[i],((power-last_reading)*energyCost)*factor,(power-last_reading)*factor);
+				}
+			}
+			last_reading=power;
+			Cleared(power);
+	}
+	
+}
 contract MPRset is MPR {
 	address[] public meterpoints;
 	
