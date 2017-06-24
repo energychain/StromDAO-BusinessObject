@@ -17,7 +17,7 @@ this.metaset=function(role_id) {
 					obj.put=function(data_obj) {
 						var p2 = new Promise(function(resolve2, reject2) { 
 							// First Publish Data and get MultiHash			
-							request.post("http://l2.stromdao.de:8001/put", {form:data_obj}).on('data', function(data) { 
+							request.post("https://demo.stromdao.de/put", {form:data_obj}).on('data', function(data) { 
 								
 								var multihash=data.toString();
 								
@@ -33,7 +33,7 @@ this.metaset=function(role_id) {
 							});
 						});
 						return p2;
-						// Second set in Roles and return Promise											
+						// Second set in Role	s and return Promise											
 					}
 					
 					obj.get=function(address) {
@@ -42,7 +42,7 @@ this.metaset=function(role_id) {
 								rl.relations(address,role_id).then(function(roler) {
 											parent.stringstorage(roler).then(function(ss) {
 												ss.str().then(function(multihash) {
-													request.post("http://l2.stromdao.de:8001/get",{form:{key:multihash}}).on('data',	function(d) {
+													request.post("https://demo.stromdao.de/get",{form:{key:multihash}}).on('data',	function(d) {
 		
 														string = d.toString();
 														//console.log(roler,multihash,string);
