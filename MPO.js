@@ -35,7 +35,7 @@ this.mpo = function(obj_or_address) {
 				 * @see approveMP()
 				 */
 				instance.storeReading=function(uint256_reading) {
-					_reading=Math.round(_reading);
+					uint256_reading=Math.round(uint256_reading);
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.storeReading(uint256_reading).then(function(o) {	
 								parent._waitForTransactionKeepRef(o,resolve2);			
@@ -48,7 +48,7 @@ this.mpo = function(obj_or_address) {
 				 * Allows a test commit to check if it fails. Promise that might be used to validate a Meter-Point is fully connected.
 				 */
 				instance.test.storeReading=function(uint256_reading) {
-					_reading=Math.round(_reading);
+					uint256_reading=Math.round(uint256_reading);
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.estimate.storeReading(uint256_reading).then(function(cost) {									
 								resolve2(cost.toString());								
