@@ -20,10 +20,10 @@ this.singleclearing=function(obj_or_address) {
 			
 				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol_SingleClearing');	
 									
-				instance.setAccount=function(_account,_shares)  {		
+				instance.setAccount=function(address_account,uint256_shares)  {		
 		
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.setAccount(_account,_shares).then(function(o) {									
+							instance.obj.setAccount(address_account,uint256_shares).then(function(o) {									
 								parent._waitForTransactionKeepRef(o,resolve2);												
 							});									
 					});
@@ -37,27 +37,27 @@ this.singleclearing=function(obj_or_address) {
 					});
 					return p2;
 				};
-				instance.setEnergyCost=function(_cost)  {		
+				instance.setEnergyCost=function(uint256_cost)  {		
 		
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.setEnergyCost(_cost).then(function(o) {									
+							instance.obj.setEnergyCost(uint256_cost).then(function(o) {									
 								parent._waitForTransactionKeepRef(o,resolve2);												
 							});									
 					});
 					return p2;
 				};
-				instance.addTx=function(_from,_to,value,base)  {		
+				instance.addTx=function(address_from,address_to,uint256_value,uint256_base)  {		
 		
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.addTx(_from,_to,value,base).then(function(o) {									
+							instance.obj.addTx(address_from,address_to,uint256_value,uint256_base).then(function(o) {									
 								parent._waitForTransactionKeepRef(o,resolve2);												
 							});									
 					});
 					return p2;
 				};
-				instance.accounts=function(idx) {
+				instance.accounts=function(uint256_idx) {
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.accounts(idx).then(function(o) {									
+							instance.obj.accounts(uint256_idx).then(function(o) {									
 								resolve2(o[0]);											
 							});									
 					});
@@ -95,9 +95,9 @@ this.singleclearing=function(obj_or_address) {
 					});
 					return p2;
 				};
-				instance.share=function(address) {
+				instance.share=function(address_account) {
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.share(address).then(function(o) {									
+							instance.obj.share(address_account).then(function(o) {									
 								resolve2(o[0].toString());											
 							});									
 					});

@@ -21,42 +21,42 @@ this.txcache = function(obj_or_address) {
 					});
 					return p2;
 				};
-				instance.txs=function(idx) {					
+				instance.txs=function(uint256_idx) {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
-							instance.obj.txs(idx).then(function(o) {									
+							instance.obj.txs(uint256_idx).then(function(o) {									
 								 resolve2(o);									
 							});									
 					});
 					return p2;
 				};
-				instance.from=function(idx) {					
+				instance.from=function(uint256_idx) {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
-							instance.obj.from(idx).then(function(o) {	
+							instance.obj.from(uint256_idx).then(function(o) {	
 								console.log("FROM",o);	
 								 resolve2(o[0].toString());									
 							});									
 					});
 					return p2;
 				};
-				instance.to=function(idx) {					
+				instance.to=function(uint256_idx) {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
-							instance.obj.to(idx).then(function(o) {		
+							instance.obj.to(uint256_idx).then(function(o) {		
 								 resolve2(o[0].toString());									
 							});									
 					});
 					return p2;
 				};
-				instance.base=function(idx) {					
+				instance.base=function(uint256_idx) {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
-							instance.obj.base(idx).then(function(o) {		
+							instance.obj.base(uint256_idx).then(function(o) {		
 								 resolve2(o[0].toString());									
 							});									
 					});
 					return p2;
 				};
-				instance.value=function(idx) {					
+				instance.value=function(uint256_idx) {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
-							instance.obj.value(idx).then(function(o) {		
+							instance.obj.value(uint256_idx).then(function(o) {		
 								 resolve2(o[0].toString());									
 							});									
 					});

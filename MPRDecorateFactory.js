@@ -18,7 +18,7 @@ this.factory = function(obj_or_address) {
 				 * Stores a reading to this contract instance. Requires sender to be approved Meter-Point 
 				 * @see approveMP()
 				 */
-				instance.build= function(_mpset,_set_start,_set_end) {	
+				instance.build= function(address_mpset,address_mprset_start,address_mprset_end) {	
 							
 					var p2 = new Promise(function(resolve2, reject2) { 
 							var bdx="";
@@ -32,7 +32,7 @@ this.factory = function(obj_or_address) {
 											resolve2(cb);
 									});							
 							};		
-							instance.obj.build(_mpset,_set_start,_set_end,{value:"0x0",gasPrice:"0x0",gasLimit:3903918}).then(function(o) {									
+							instance.obj.build(address_mpset,address_mprset_start,address_mprset_end,{value:"0x0",gasPrice:"0x0",gasLimit:3903918}).then(function(o) {									
 									bdx=o;	
 									//{value:"0x0",gasPrice:"0x0",gasLimit:3803918}
 									

@@ -10,47 +10,47 @@
 this.stromkontoproxy = function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 					
 						var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:StromkontoProxy');
-						instance.addTx=function(_from,_to,_value,_base) {
+						instance.addTx=function(address_from,address_to,uint256_value,uint256_base) {
 								var p2 = new Promise(function(resolve2, reject2) { 
-											instance.obj.addTx(_from,_to,_value,_base).then(function(o) {
+											instance.obj.addTx(address_from,address_to,uint256_value,uint256_base).then(function(o) {
 													parent._waitForTransactionKeepRef(o,resolve2);	
 											});
 								});
 								return p2;
 						};
-						instance.modifySender=function(_account,_allow) {
+						instance.modifySender=function(address_account,bool_allow) {
 								var p2 = new Promise(function(resolve2, reject2) { 
-											instance.obj.modifySender(_account,_allow).then(function(o) {
+											instance.obj.modifySender(address_account,bool_allow).then(function(o) {
 													parent._waitForTransactionKeepRef(o,resolve2);	
 											});
 								});
 								return p2;
 						};
-						instance.balancesSoll=function(_address) {
+						instance.balancesSoll=function(address_acount) {
 								var p2 = new Promise(function(resolve2, reject2) { 
 											//console.log(instance.obj);
-											instance.obj.balanceSoll(_address).then(function(o) {
+											instance.obj.balanceSoll(address_acount).then(function(o) {
 													resolve2(o[0].toString()*1);
 											});
 								});
 								return p2;
 						};	
-						instance.balancesHaben=function(_address) {
+						instance.balancesHaben=function(address_acount) {
 								var p2 = new Promise(function(resolve2, reject2) { 
 											//console.log(instance.obj);
-											instance.obj.balanceHaben(_address).then(function(o) {
+											instance.obj.balanceHaben(address_acount).then(function(o) {
 													resolve2(o[0].toString()*1);
 											});
 								});
 								return p2;
 						};		
-						instance.balancesCachedSoll=function(_address) {
+						instance.balancesCachedSoll=function(address_acount) {
 								var p2 = new Promise(function(resolve2, reject2) { 
 											//console.log(instance.obj);
-											var stored = parent.storage.getItemSync(obj_or_address+"_"+_address+"_soll");
+											var stored = parent.storage.getItemSync(obj_or_address+"_"+address_acount+"_soll");
 											if((typeof stored == "undefined")||(stored==null)) {
-												instance.obj.balanceSoll(_address).then(function(o) {
-														parent.storage.setItemSync(obj_or_address+"_"+_address+"_soll",o[0].toString()*1);
+												instance.obj.balanceSoll(address_acount).then(function(o) {
+														parent.storage.setItemSync(obj_or_address+"_"+address_acount+"_soll",o[0].toString()*1);
 														resolve2(o[0].toString()*1);
 												});
 											} else {
@@ -60,13 +60,13 @@ this.stromkontoproxy = function(obj_or_address) {
 								});
 								return p2;
 						};	
-						instance.balancesCachedHaben=function(_address) {
+						instance.balancesCachedHaben=function(address_acount) {
 								var p2 = new Promise(function(resolve2, reject2) { 
 											//console.log(instance.obj);
-											var stored = parent.storage.getItemSync(obj_or_address+"_"+_address+"_haben");
+											var stored = parent.storage.getItemSync(obj_or_address+"_"+address_acount+"_haben");
 											if((typeof stored == "undefined")||(stored==null)) {
-												instance.obj.balanceHaben(_address).then(function(o) {
-														parent.storage.setItemSync(obj_or_address+"_"+_address+"_haben",o[0].toString()*1);
+												instance.obj.balanceHaben(address_acount).then(function(o) {
+														parent.storage.setItemSync(obj_or_address+"_"+address_acount+"_haben",o[0].toString()*1);
 														resolve2(o[0].toString()*1);
 												});
 											} else {

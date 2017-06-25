@@ -20,10 +20,10 @@ this.mpr = function(obj_or_address) {
 				 * Stores a reading to this contract instance. Requires sender to be approved Meter-Point 
 				 * @see approveMP()
 				 */
-				instance.storeReading=function(_reading) {
+				instance.storeReading=function(uint256_reading) {
 					//_reading=Math.round(_reading);
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.storeReading(_reading).then(function(o) {	
+							instance.obj.storeReading(uint256_reading).then(function(o) {	
 								parent._waitForTransactionKeepRef(o,resolve2);			
 							});									
 					});
@@ -31,12 +31,12 @@ this.mpr = function(obj_or_address) {
 				};
 				
 				/**
-				 * Allows a test commit to check if it fails. Promise that might be used to validate a Meter-Point is fully connected.
+				 * Allows a test commit to check if it fails. Prominse that might be used to validate a Meter-Point is fully connected.
 				 */
-				instance.test.storeReading=function(_reading) {
-					_reading=Math.round(_reading);
+				instance.test.storeReading=function(uint256_reading) {
+					_reading=Math.round(uint256_reading);
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.estimate.storeReading(_reading).then(function(cost) {									
+							instance.obj.estimate.storeReading(uint256_reading).then(function(cost) {									
 								resolve2(cost.toString());		
 								// We now know  that this is a meter point ... remember it (localy)
 														
@@ -49,9 +49,9 @@ this.mpr = function(obj_or_address) {
 				/**
 				 * Returns last reading for a Meter-Point 
 				 */
-				instance.readings=function(_meterpoint) {					
+				instance.readings=function(address_meterpoint) {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
-							instance.obj.readings(_meterpoint).then(function(o) {		
+							instance.obj.readings(address_meterpoint).then(function(o) {		
 													
 								 resolve2(o);									
 							});									

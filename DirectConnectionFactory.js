@@ -18,13 +18,13 @@ this.directconnectionfactory = function(obj_or_address) {
 				 * Stores a reading to this contract instance. Requires sender to be approved Meter-Point 
 				 * @see approveMP()
 				 */
-				instance.buildConnection= function(_from,_to,_meter_point,_cost_per_energy,_cost_per_day) {	
+				instance.buildConnection= function(address_from,address_to,address_meterpoint,uint256_costperenergy,uint256_costperday) {	
 							
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.onbuilt=function(cb) {						
 									resolve2(cb);						
 							};		
-							instance.obj.buildConnection(_from,_to,_meter_point,_cost_per_energy,_cost_per_day).then(function(o) {	
+							instance.obj.buildConnection(address_from,address_to,address_meterpoint,uint256_costperenergy,uint256_costperday).then(function(o) {	
 										
 							});									
 					});

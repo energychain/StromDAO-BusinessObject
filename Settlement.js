@@ -13,17 +13,17 @@ this.settlement = function(obj_or_address) {
 				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol_Settlement');			
 				instance.test = {};				
 				
-				instance.settle= function(_tx) {		
+				instance.settle= function(address_txcache) {		
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.settle(_tx,{value:"0x0",gasPrice:"0x0",gasLimit:4195290}).then(function(o) {										
+							instance.obj.settle(address_txcache,{value:"0x0",gasPrice:"0x0",gasLimit:4195290}).then(function(o) {										
 									parent._waitForTransactionKeepRef(o,resolve2);	
 							});									
 					});
 					return p2;
 				};
-				instance.mpr=function(_meterpoint) {					
+				instance.mpr=function(address_mprset) {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
-							instance.obj.mpr(_meterpoint).then(function(o) {		
+							instance.obj.mpr(address_mprset).then(function(o) {		
 								 resolve2(o[0].toString());									
 							});									
 					});

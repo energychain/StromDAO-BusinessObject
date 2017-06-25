@@ -14,18 +14,18 @@ this.dso=function(obj_or_address) {
 			
 				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol_DSO');	
 									
-				instance.approveConnection=function(_address,_power_limit)  {		
+				instance.approveConnection=function(address_meterpoint,uint256_powerlimit)  {		
 		
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.approveConnection(_address,_power_limit).then(function(o) {									
+							instance.obj.approveConnection(address_meterpoint,uint256_powerlimit).then(function(o) {									
 								parent._waitForTransactionKeepRef(o,resolve2);												
 							});									
 					});
 					return p2;
 				};
-				instance.approvedConnections=function(_address) {
+				instance.approvedConnections=function(address_meterpoint) {
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.approvedConnections(_address).then(function(o) {									
+							instance.obj.approvedConnections(address_meterpoint).then(function(o) {									
 								 resolve2(o);												
 							});									
 					});

@@ -12,10 +12,10 @@ this.mpset=function(obj_or_address) {
 			
 				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol_MPset');	
 									
-				instance.addMeterPoint=function(_address)  {		
+				instance.addMeterPoint=function(address_meterpoint)  {		
 		
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.addMeterPoint(_address).then(function(o) {	
+							instance.obj.addMeterPoint(address_meterpoint).then(function(o) {	
 								parent._waitForTransactionKeepRef(o,function() {console.log("MP Added"); });		
 								resolve2(o);							
 																			
@@ -24,9 +24,9 @@ this.mpset=function(obj_or_address) {
 					return p2;
 				};
 		
-				instance.meterpoints=function(idx) {
+				instance.meterpoints=function(uint256_idx) {
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.meterpoints(idx).then(function(o) {									
+							instance.obj.meterpoints(uint256_idx).then(function(o) {									
 								resolve2(o[0]);											
 							});									
 					});

@@ -12,18 +12,18 @@ this.mprset=function(obj_or_address) {
 			
 				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol_MPRset');	
 											
-				instance.meterpoints=function(idx) {
+				instance.meterpoints=function(uint256_idx) {
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.meterpoints(idx).then(function(o) {									
+							instance.obj.meterpoints(uint256_idx).then(function(o) {									
 								resolve2(o[0]);											
 							});									
 					});
 					return p2;
 				};
 				
-				instance.mpr=function(address) {
+				instance.mpr=function(address_meterpoint) {
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.mpr(address).then(function(o) {									
+							instance.obj.mpr(address_meterpoint).then(function(o) {									
 								resolve2(o[0]);											
 							});									
 					});

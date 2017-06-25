@@ -18,14 +18,14 @@
 				 * Stores a reading to this contract instance. Requires sender to be approved Meter-Point 
 				 * @see approveMP()
 				 */
-				instance.build= function(str) {
+				instance.build= function(string_str) {
 					
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.onbuilt=function(cb) {						
 									resolve2(cb);						
 							};	
 							
-							instance.obj.build(str,{value:"0x0",gasPrice:"0x0"}).then(function(o) {	
+							instance.obj.build(string_str,{value:"0x0",gasPrice:"0x0"}).then(function(o) {	
 								
 								//{value:"0x0",gasPrice:"0x0",gas:"2974441329"}
 								//parent._waitForTransactionKeepRef(o,resolve2);			

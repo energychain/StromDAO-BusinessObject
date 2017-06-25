@@ -25,9 +25,9 @@ this.rolelookup=function(obj_or_address) {
 				
 					return p2;
 				};
-				instance.setRelation=function(_role,_target) {					
+				instance.setRelation=function(uint256_role,address_target) {					
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.setRelation(_role,_target).then(function(o) {
+							instance.obj.setRelation(uint256_role,address_target).then(function(o) {
 								parent._waitForTransaction(o.hash).then(function() {										
 												 resolve2(parent._keepHashRef(o));						
 												});																														
@@ -35,9 +35,9 @@ this.rolelookup=function(obj_or_address) {
 							});													
 					return p2;
 				};
-				instance.setRelationFrom=function(_role,_target) {					
+				instance.setRelationFrom=function(uint256_role,address_target) {					
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.setRelationFrom(_role,_target).then(function(o) {
+							instance.obj.setRelationFrom(uint256_role,address_target).then(function(o) {
 								parent._waitForTransaction(o.hash).then(function() {										
 												 resolve2(parent._keepHashRef(o));						
 												});																														
@@ -45,17 +45,17 @@ this.rolelookup=function(obj_or_address) {
 							});													
 					return p2;
 				};
-				instance.relations=function(_account,_role) {
+				instance.relations=function(address_target,uint256_role) {
 						var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.relations(_account,_role).then(function(o) {
+							instance.obj.relations(address_target,uint256_role).then(function(o) {
 								resolve2(o[0]);																	
 							});
 						});													
 						return p2;
 				};
-				instance.defaults=function(_role) {
+				instance.defaults=function(uint256_role) {
 						var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.defaults(_role).then(function(o) {
+							instance.obj.defaults(uint256_role).then(function(o) {
 								resolve2(o[0]);																	
 							});
 						});													

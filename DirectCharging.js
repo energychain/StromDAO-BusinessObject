@@ -20,10 +20,10 @@ this.directcharging=function(obj_or_address) {
 			
 				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol_DirectCharging');	
 									
-				instance.addConnection=function(_address)  {		
+				instance.addConnection=function(address_meterpoint)  {		
 		
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.addConnection(_address).then(function(o) {									
+							instance.obj.addConnection(address_meterpoint).then(function(o) {									
 								parent._waitForTransactionKeepRef(o,resolve2);												
 							});									
 					});

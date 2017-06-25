@@ -21,9 +21,9 @@ this.mpo = function(obj_or_address) {
 				 * @param _meter address
 				 * @param _role Eq. to 4= Consumer or 5= Producer
 				 */
-				instance.approveMP=function(_meter,_role) {								
+				instance.approveMP=function(address_meterpoint,uint256_role) {								
 					var p2 = new Promise(function(resolve2, reject2) { 						
-							instance.obj.approveMP(_meter,_role).then(function(o) {
+							instance.obj.approveMP(address_meterpoint,uint256_role).then(function(o) {
 								parent._waitForTransactionKeepRef(o,resolve2);											
 							});									
 					});
@@ -34,10 +34,10 @@ this.mpo = function(obj_or_address) {
 				 * Stores a reading to this contract instance. Requires sender to be approved Meter-Point 
 				 * @see approveMP()
 				 */
-				instance.storeReading=function(_reading) {
+				instance.storeReading=function(uint256_reading) {
 					_reading=Math.round(_reading);
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.storeReading(_reading).then(function(o) {	
+							instance.obj.storeReading(uint256_reading).then(function(o) {	
 								parent._waitForTransactionKeepRef(o,resolve2);			
 							});									
 					});
@@ -47,10 +47,10 @@ this.mpo = function(obj_or_address) {
 				/**
 				 * Allows a test commit to check if it fails. Promise that might be used to validate a Meter-Point is fully connected.
 				 */
-				instance.test.storeReading=function(_reading) {
+				instance.test.storeReading=function(uint256_reading) {
 					_reading=Math.round(_reading);
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.estimate.storeReading(_reading).then(function(cost) {									
+							instance.obj.estimate.storeReading(uint256_reading).then(function(cost) {									
 								resolve2(cost.toString());								
 							}).catch(function() { reject2(-1); });
 					});
@@ -60,9 +60,9 @@ this.mpo = function(obj_or_address) {
 				/**
 				 * Returns last delivery issued for a Meter-Point 
 				 */
-				instance.lastDelivery=function(_meterpoint) {					
+				instance.lastDelivery=function(address_meterpoint) {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
-							instance.obj.lastDelivery(_meterpoint).then(function(o) {									
+							instance.obj.lastDelivery(address_meterpoint).then(function(o) {									
 								 resolve2(o);									
 							});									
 					});
@@ -72,54 +72,15 @@ this.mpo = function(obj_or_address) {
 				/**
 				 * Returns last reading for a Meter-Point 
 				 */
-				instance.readings=function(_meterpoint) {					
+				instance.readings=function(address_meterpoint) {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
-							instance.obj.readings(_meterpoint).then(function(o) {									
+							instance.obj.readings(address_meterpoint).then(function(o) {									
 								 resolve2(o);									
 							});									
 					});
 					return p2;
 				};
-				/*		
-				if(parent.options.testMode) {
-							// In Testmode we do a full "Self-Register" if not registered.
-							if(typeof parent.options.mpo_dir_role=="undefined") parent.options.mpo_dir_role=4;
-							parent.roleLookup().then( function(roleLookup) {
-								roleLookup.relations(parent.wallet.address,parent.options.roles[1]).then( function(tx_result) {						
-									if(tx_result=="0x0000000000000000000000000000000000000000") {
-										roleLookup.setRelation(parent.options.roles[1],parent.options.contracts["StromDAO-BO.sol:MPO"]).then( 
-										        function() {
-													return new Promise(function(resolve2, reject2) { resolve2(instance.approveMP(parent.wallet.address,parent.options.mpo_dir_role));	});
-												}
-										 )
-										 .then( function() {
-											  return new Promise(function(resolve2, reject2) { 
-													resolve2(parent.dso(parent.options.contracts["StromDAO-BO.sol:DSO"]));
-													})})
-										 .then(function(dso) {
-											   return new Promise(function(resolve2, reject2) { 
-													resolve2(dso.approveConnection(parent.wallet.address,100000000));
-													})})
-										 .then(function() {
-											  return new Promise(function(resolve2, reject2) { 
-													resolve2(roleLookup.setRelation(parent.options.roles[2],parent.options.contracts["StromDAO-BO.sol:DSO"]));
-												})})
-										 .then(function() {
-											  return new Promise(function(resolve2, reject2) { 
-												  resolve2(roleLookup.setRelation(parent.options.roles[2],parent.options.contracts["StromDAO-BO.sol:DSO"])); 
-											  })})										  	 
-										 .then(function() {
-											 resolve(instance);
-									     });
-									} else {
-										resolve(instance);
-									}
-								});
-							});
-				} else {	
-					resolve(instance);
-				}
-				*/
+			
 				resolve(instance);
 			});
 			return p1;

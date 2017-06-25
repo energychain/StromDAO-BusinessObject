@@ -12,71 +12,71 @@ this.mprdecorate=function(obj_or_address) {
 			
 				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol_MPRDecorate');	
 						
-				instance.meterpoints=function(idx) {
+				instance.meterpoints=function(uint256_idx) {
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.meterpoints(idx).then(function(o) {									
+							instance.obj.meterpoints(uint256_idx).then(function(o) {									
 								resolve2(o[0]);											
 							});									
 					});
 					return p2;
 				};
-				instance.mpr=function(address) {
+				instance.mpr=function(address_mpr) {
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.mpr(address).then(function(o) {									
-								resolve2(o[0]);											
-							});									
-					});
-					return p2;
-				};	
-				instance.mpr_base=function(address) {
-					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.mpr_base(address).then(function(o) {									
+							instance.obj.mpr(address_mpr).then(function(o) {									
 								resolve2(o[0]);											
 							});									
 					});
 					return p2;
 				};	
-				instance.ChargeFix=function(_amount)  {		
+				instance.mpr_base=function(address_mpr) {
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.mpr_base(address_mpr).then(function(o) {									
+								resolve2(o[0]);											
+							});									
+					});
+					return p2;
+				};	
+				instance.ChargeFix=function(uint256_amount)  {		
 		
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.ChargeFix(_amount).then(function(o) {									
+							instance.obj.ChargeFix(uint256_amount).then(function(o) {									
 								parent._waitForTransactionKeepRef(o,resolve2);												
 							});									
 					});
 					return p2;
 				};
-				instance.ChargeEnergy=function(_amount)  {		
+				instance.ChargeEnergy=function(uint256_amount)  {		
 		
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.ChargeEnergy(_amount).then(function(o) {									
+							instance.obj.ChargeEnergy(uint256_amount).then(function(o) {									
 								parent._waitForTransactionKeepRef(o,resolve2);												
 							});									
 					});
 					return p2;
 				};
 		
-				instance.SplitWeighted=function(_amount)  {		
+				instance.SplitWeighted=function(uint256_amount)  {		
 		
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.SplitWeighted(_amount).then(function(o) {									
+							instance.obj.SplitWeighted(uint256_amount).then(function(o) {									
 								parent._waitForTransactionKeepRef(o,resolve2);												
 							});									
 					});
 					return p2;
 				};
 		
-				instance.SplitEqual=function(_amount)  {		
+				instance.SplitEqual=function(uint256_amount)  {		
 		
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.SplitEqual(_amount).then(function(o) {									
+							instance.obj.SplitEqual(uint256_amount).then(function(o) {									
 								parent._waitForTransactionKeepRef(o,resolve2);												
 							});									
 					});
 					return p2;
 				};
-				instance.mpr=function(_meterpoint) {					
+				instance.mpr=function(address_meterpoint) {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
-							instance.obj.mpr(_meterpoint).then(function(o) {		
+							instance.obj.mpr(address_meterpoint).then(function(o) {		
 								 resolve2(o[0].toString());									
 							});									
 					});
