@@ -6,7 +6,7 @@
 PROJECT = "StromDAO Business Object"
 
 
-all: commit test origin publish
+all: test origin publish
 
 commit: ;git commit -a -m "Updated General";
     
