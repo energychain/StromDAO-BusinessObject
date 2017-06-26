@@ -8,7 +8,7 @@ PROJECT = "StromDAO Business Object"
 
 all: test origin publish
 
-commit: ;git commit -a -m "Updated General";
+commit: ;browserify browser_loader.js > dist/loader.js && git commit -a -m "Updated General";
     
 test: ;npm test;
 

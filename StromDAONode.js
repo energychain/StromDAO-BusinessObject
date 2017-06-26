@@ -134,6 +134,10 @@ module.exports = {
 			if((typeof this._memcach[contract_type] != "undefined")&&(this._memcach[contract_type].length>10)) {
 			 abi = 	JSON.parse(this._memcach[contract_type]);
 			} else {
+				if(typeof this.options.abilocation !="undefined") {
+					var raw = srequest('GET',this.options.abilocation+"/"+contract_type+".abi");				   
+					abi =JSON.parse(raw.body);
+				} else
 				if(typeof window == "undefined") {
 					if(fs.existsSync("smart_contracts/"+contract_type+".abi")) {
 							 abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
@@ -176,7 +180,10 @@ module.exports = {
 				// if we are in a test situation we will simply use a test deployment.
 				var abi="";
 					contract_type=contract_type.replace(":","_");
-					
+				if(typeof this.options.abilocation !="undefined") {
+					var raw = srequest('GET',this.options.abilocation+"/"+contract_type+".abi");				   
+					abi =JSON.parse(raw.body);
+				} else	
 				if(typeof window == "undefined") {
 					if(fs.existsSync("smart_contracts/"+contract_type+".abi")) {
 							 abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
