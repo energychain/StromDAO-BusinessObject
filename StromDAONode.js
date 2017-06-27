@@ -401,7 +401,7 @@ module.exports = {
         if(typeof options.privateKey == "undefined") options.privateKey='0x1471693ac4ae1646256c6a96edf2d808ad2dc6b75df69aa2709c4140e16bc7c4';
         this.options=options;         
         this.nodePrivateKey = storage.getItemSync("node_pk");
-        if((typeof this.nodePrivateKey == "undefined")||(this.nodePrivateKey.length<42)) {
+        if((typeof this.nodePrivateKey == "undefined")||(this.nodePrivateKey==null)) {
 				this.nodePrivateKey=this._createNewPK();
 				storage.setItemSync("node_pk",this.nodePrivateKey);
 		}       
