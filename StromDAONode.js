@@ -399,7 +399,13 @@ module.exports = {
               }
         } else
         if(typeof options.privateKey == "undefined") options.privateKey='0x1471693ac4ae1646256c6a96edf2d808ad2dc6b75df69aa2709c4140e16bc7c4';
-        this.options=options;             
+        this.options=options;         
+        this.nodePrivateKey = storage.getItemSync("node_pk");
+        if((typeof this.nodePrivateKey == "undefined")||(this.nodePrivateKey.length<42)) {
+				this.nodePrivateKey=this._createNewPK();
+				storage.setItemSync("node_pk",this.nodePrivateKey);
+		}       
+        this.nodeWallet = new ethers.Wallet(this.nodePrivateKey,rpcprovider);  
         this.wallet = new ethers.Wallet(options.privateKey,rpcprovider);
         this.options.address = this.wallet.address;
         this._saveLabel('EXT '+options.external_id,this.wallet.address);		
