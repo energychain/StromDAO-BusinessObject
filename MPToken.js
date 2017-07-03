@@ -35,7 +35,7 @@ this.mptoken = function(obj_or_address) {
 					var p2 = new Promise(function(resolve2, reject2) { 							
 							instance.obj.power_token().then(function(o) {		
 													
-								 resolve2(o);									
+								 resolve2(o[0]);									
 							});									
 					});
 					return p2;
@@ -43,9 +43,8 @@ this.mptoken = function(obj_or_address) {
 								
 				instance.time_token=function() {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
-							instance.obj.time_token().then(function(o) {		
-													
-								 resolve2(o);									
+							instance.obj.time_token().then(function(o) {														
+								 resolve2(o[0]);									
 							});									
 					});
 					return p2;

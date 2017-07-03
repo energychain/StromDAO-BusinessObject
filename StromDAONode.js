@@ -296,7 +296,7 @@ module.exports = {
 		this.directclearing=require("./DirectClearing.js").directclearing;
 		this.mptokenfactory = require("./MPTokenFactory.js").factory;
 		this.mptoken = require("./MPToken.js").mptoken;
-		
+		this.erc20token = require("./ERC20Token.js").erc20token;
 		/**
 		 * Bridge to DirectConnectionFactory Smart Contract
 		 */
