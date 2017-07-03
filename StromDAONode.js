@@ -294,6 +294,8 @@ module.exports = {
 		this.txcache = require("./TXcache.js").txcache;
 		this.mprdecorate = require("./MPRDecorate.js").mprdecorate;
 		this.directclearing=require("./DirectClearing.js").directclearing;
+		this.mptokenfactory = require("./MPTokenFactory.js").factory;
+		this.mptoken = require("./MPToken.js").mptoken;
 		
 		/**
 		 * Bridge to DirectConnectionFactory Smart Contract

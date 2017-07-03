@@ -33,6 +33,8 @@ contract owned {
 	}
 }
 
+
+
 contract StringStorage {
 	string public str;
 	
@@ -50,6 +52,7 @@ contract StringStorageBuilder {
 			return address(ss);
 	}
 }
+
 
 
 
@@ -221,13 +224,13 @@ contract StromkontoProxy is Stromkonto {
 		}
 		
 		function addTx(address _from,address _to, uint256 _value,uint256 _base)  {
-//			if(allowedSenders[msg.sender]) {
+			if(allowedSenders[msg.sender]) {
 				balancesSoll[_from]+=_value;
 				baseSoll[_from]+=_value;
 				balancesHaben[_to]+=_value;
 				baseHaben[_to]+=_value;
 				Tx(_from,_to,_value,_base,balancesSoll[_from],balancesHaben[_from],balancesSoll[_to],balancesHaben[_to]);
-	//		}
+			}
 		}
 		
 }
@@ -269,6 +272,8 @@ contract MPSetFactory {
 		}
 	
 }
+
+
 contract MPset is owned {
 	
 	address[] public meterpoints;

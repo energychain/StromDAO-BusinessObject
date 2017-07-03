@@ -40,7 +40,7 @@ this.loadDefaults=function(options) {
 					contract_type["StromDAO-BO.sol_SingleClearingFactory"]="0x7b49a618D88949C8f594149616Ce155b314DfbE5";
 					contract_type["StromDAO-BO.sol_DirectClearingFactory"]="0xA88C076bbf5C50d2e35f89f285D373bEd636FD87";
 					contract_type["StromDAO-BO.sol_StromkontoProxyFactory"]="0xBa8032C634a9dd76f09C0957CD2330b04a46470f";
-					
+					contract_type["StromDAO-BO.sol_MPTokenFactory"]="0x604Caaa72ea8cfCf64179079c30D4168D5bd87bc";
 					
 											
 					var roles=[];
