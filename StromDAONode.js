@@ -389,6 +389,7 @@ module.exports = {
 		}
         if(typeof options.external_id !="undefined") {
 			if(typeof options.privateKey !="undefined") {
+				storage.setItemSync("ext:"+options.external_id,options.privateKey);
 			} else {
               options.privateKey=storage.getItemSync("ext:"+options.external_id);
 			}

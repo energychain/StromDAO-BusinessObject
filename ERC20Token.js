@@ -29,7 +29,7 @@ this.erc20token = function(obj_or_address) {
 				instance.totalSupply=function() {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
 							instance.obj.totalSupply().then(function(o) {														
-								 resolve2(o[0]);									
+								 resolve2(o[0].toString()*1);									
 							});									
 					});
 					return p2;
