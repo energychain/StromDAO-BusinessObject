@@ -82,6 +82,7 @@ this.mpr = function(obj_or_address) {
 												}
 											}
 									}
+									resolve2(entries);
 							});
 						});
 					});
