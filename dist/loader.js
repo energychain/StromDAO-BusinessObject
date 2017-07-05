@@ -1079,7 +1079,7 @@ this.mpr = function(obj_or_address) {
 												_meter_point ="0x"+ split64(data).substr(26);								
 												data=data.substr(64);
 												_power =split64(data);								
-												if(address_meterpoint.toLowerCase()==grep) {
+												if(address_meterpoint.toLowerCase()==_meter_point.toLowerCase()) {
 													var entry = {};
 													entry.blockNumber=logs[i].blockNumber;
 													entry.power=_power;
