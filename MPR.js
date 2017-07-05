@@ -59,6 +59,18 @@ this.mpr = function(obj_or_address) {
 					return p2;
 				};
 	
+				instance.history=function(address_meterpoint) {
+					var p2 = new Promise(function(resolve2, reject2) { 
+						parent.rpcprovider.getBlockNumber().then(function(latest_block) {
+							parent.wallet.provider.getLogs({address:obj_or_address,fromBlock:latest_block-10000,toBlock:latest_block}).then(
+							function(logs) {															
+									resolve2(logs);
+							});
+						});
+					});
+					return p2;
+				};
+				
 				resolve(instance);
 			});
 			return p1;
