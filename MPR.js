@@ -8,6 +8,8 @@
  * @author Thorsten Zoerner thorsten.zoerner@stromdao.de 
  * */
  
+function split64(data) { return "0x"+data.substr(0,64);}
+function remain64(data) { return data.substr(64);}
 
 this.mpr = function(obj_or_address) {
 			if(typeof obj_or_address == "undefined") obj_or_address=parent.options.contracts["StromDAO-BO.sol:MPReading"];
@@ -62,9 +64,24 @@ this.mpr = function(obj_or_address) {
 				instance.history=function(address_meterpoint) {
 					var p2 = new Promise(function(resolve2, reject2) { 
 						parent.rpcprovider.getBlockNumber().then(function(latest_block) {
-							parent.wallet.provider.getLogs({address:obj_or_address,fromBlock:latest_block-10000,toBlock:latest_block}).then(
+							parent.wallet.provider.getLogs({address:obj_or_address,fromBlock:latest_block-10000,toBlock:latest_block}).then(							
 							function(logs) {															
-									resolve2(logs);
+									entries=[];
+									for(var i=0;i<logs.length;i++) {
+											var data = logs[i].data;
+											if(data.length>64) {
+												data=data.substr(2);
+												_meter_point ="0x"+ split64(data).substr(26);								
+												data=data.substr(64);
+												_power =split64(data);								
+												if(address_meterpoint.toLowerCase()==grep) {
+													var entry = {};
+													entry.blockNumber=logs[i].blockNumber;
+													entry.power=_power;
+													entries.push(entry);
+												}
+											}
+									}
 							});
 						});
 					});
