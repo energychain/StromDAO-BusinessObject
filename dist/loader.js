@@ -2491,6 +2491,8 @@ module.exports = {
  * @author Thorsten Zoerner thorsten.zoerner@stromdao.de 
  * */
  
+function split64(data) { return "0x"+data.substr(0,64);}
+function remain64(data) { return data.substr(64);}
  
 this.stromkonto = function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 					
@@ -2572,6 +2574,54 @@ this.stromkonto = function(obj_or_address) {
 								});
 								return p2;
 						};	
+						instance.history=function(address_meterpoint,length) {
+							var p2 = new Promise(function(resolve2, reject2) { 
+								parent.rpcprovider.getBlockNumber().then(function(latest_block) {
+									parent.wallet.provider.getLogs({address:obj_or_address,fromBlock:latest_block-length,toBlock:latest_block}).then(							
+									function(logs) {															
+											entries=[];
+											for(var i=0;i<logs.length;i++) {
+													var data = logs[i].data;
+													if(data.length>256) {
+														data=data.substr(2);
+														_from ="0x"+ split64(data).substr(26);
+														data=data.substr(64);
+														_to ="0x"+split64(data).substr(26);
+														data=data.substr(64);
+															
+														_value =(split64(data));
+														data=data.substr(64);
+														_base =(split64(data));
+														data=data.substr(64);
+														_fromSoll =(split64(data));
+														data=data.substr(64);
+														_fromHaben =(split64(data));
+														data=data.substr(64);
+														_toSoll =(split64(data));
+														data=data.substr(64);
+														_toHaben =(split64(data));
+														data=data.substr(64);
+														if((_from.toLowerCase()==address_meterpoint.toLowerCase())||(_to.toLowerCase()==address_meterpoint.toLowerCase())) {
+															var entry={};
+															entry.from=_from;
+															entry.to=_to;
+															entry.base=_base;
+															entry.value=_value;
+															entry.toSoll=_toSoll;
+															entry.toHaben=_toHaben;
+															entry.fromSoll=_fromSoll;
+															entry.fromHaben=_fromHaben;
+															entry.blockNumber=logs[i].blockNumber;
+															entries.push(entry);
+														}
+													}
+											}
+											resolve2(entries);
+									});
+								});
+							});
+							return p2;
+						};
 						resolve(instance);
 			});
 			return p1;
