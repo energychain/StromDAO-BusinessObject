@@ -81,6 +81,95 @@ contract MPToken is owned {
 	}
 }
 
+contract MPDeltaFactory {
+	event Built(address _mpd,address _account);
+
+	function build(MPReading _reading,address _meterpoint) returns(MPDelta) {
+		MPDelta mpdelta = new MPDelta(_reading,_meterpoint);
+		Built(address(mpdelta),msg.sender);
+		mpdelta.transferOwnership(msg.sender);
+		return mpdelta;
+	}
+	
+}
+
+contract MPDelta is owned {
+	uint256 public lastReadingTime;
+	uint256 public lastReadingPower;
+	
+	address public meterpoint;
+	MPReading public reading;
+	uint256 public lastDeltaTime;
+	uint256 public lastDeltaPower;
+	
+	function MPDelta(MPReading _reading,address _meterpoint) {
+		meterpoint=_meterpoint;
+		reading=_reading;
+		(lastReadingTime,lastReadingPower)=reading.readings(meterpoint);
+	}
+	
+	function delta() onlyOwner returns(uint256) {
+		uint256 time;
+		uint256 power;
+		(time,power)=reading.readings(meterpoint);
+		lastDeltaTime=time-lastReadingTime;
+		lastDeltaPower=power-lastReadingPower;
+		lastReadingTime=time;
+		lastReadingPower=power;
+		return lastDeltaPower;
+	}
+}
+
+contract CUToken is owned {
+    string public standard = 'Token 0.1';
+    string public name='CapacityUtilization';
+    string public symbol='*';
+    uint8 public decimals=0;
+    uint256 public totalSupply;
+    MPReading public reading;
+	MPDelta public source;
+	MPDelta[] targets;
+	uint256 cnt_targets=0;
+
+    mapping (address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
+
+    event Transfer(address indexed from, address indexed to, uint256 value);
+
+    function CUToken(MPReading _reading,address _meterpoint) {
+        balanceOf[msg.sender] = 0;              // Give the creator all initial tokens
+        totalSupply = 0;                        // Update total supply          
+        reading=_reading;
+		source=new MPDelta(reading,_meterpoint);	
+    }
+
+	function addMeterpoint(address _meterpoint) onlyOwner {
+		MPDelta target = new MPDelta(reading,_meterpoint);
+		targets.push(target);
+		cnt_targets++;
+	}
+	
+	function issue() onlyOwner {		
+		uint256 sum_source=source.delta();
+		for(uint256 i=0;i<cnt_targets;i++) {
+				uint256 delta = targets[i].delta();				
+				totalSupply+=delta*sum_source;
+				balanceOf[targets[i].meterpoint()]+=delta*sum_source;	
+				Transfer(msg.sender,targets[i],delta*sum_source);  	
+		}				
+	}
+	
+    function transfer(address _to, uint256 _value) {
+			// NOP ... we are a capacity utilization ... you can not transfer!
+    }
+
+    /* This unnamed function is called whenever someone tries to send ether to it */
+    function () {
+        throw;     // Prevents accidental sending of ether
+    }
+}
+
+
 contract tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData); }
 
 contract token is owned {
@@ -125,36 +214,6 @@ contract token is owned {
         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
     }
 
-    /* Allow another contract to spend some tokens in your behalf */
-    function approve(address _spender, uint256 _value)
-        returns (bool success) {
-        allowance[msg.sender][_spender] = _value;
-        return true;
-    }
-
-    /* Approve and then communicate the approved contract in a single tx */
-    function approveAndCall(address _spender, uint256 _value, bytes _extraData)
-        returns (bool success) {    
-        tokenRecipient spender = tokenRecipient(_spender);
-        if (approve(_spender, _value)) {
-            spender.receiveApproval(msg.sender, _value, this, _extraData);
-            return true;
-        }
-    }
-
-    /* A contract attempts to get the coins */
-    function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
-        if (balanceOf[_from] < _value) throw;                 // Check if the sender has enough
-        if (balanceOf[_to] + _value < balanceOf[_to]) throw;  // Check for overflows
-        if (_value > allowance[_from][msg.sender]) throw;   // Check allowance
-        balanceOf[_from] -= _value;                          // Subtract from the sender
-        balanceOf[_to] += _value;                            // Add the same to the recipient
-        allowance[_from][msg.sender] -= _value;
-        Transfer(_from, _to, _value);
-        return true;
-    }
-
-    /* This unnamed function is called whenever someone tries to send ether to it */
     function () {
         throw;     // Prevents accidental sending of ether
     }
