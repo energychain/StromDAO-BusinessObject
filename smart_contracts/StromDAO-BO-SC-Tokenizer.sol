@@ -112,10 +112,12 @@ contract MPDelta is owned {
 		uint256 time;
 		uint256 power;
 		(time,power)=reading.readings(meterpoint);
-		lastDeltaTime=time-lastReadingTime;
-		lastDeltaPower=power-lastReadingPower;
-		lastReadingTime=time;
-		lastReadingPower=power;
+		if(power>lastReadingPower) {
+			lastDeltaTime=time-lastReadingTime;
+			lastDeltaPower=power-lastReadingPower;
+			lastReadingTime=time;
+			lastReadingPower=power;
+		}
 		return lastDeltaPower;
 	}
 }
@@ -128,7 +130,7 @@ contract CUToken is owned {
     uint256 public totalSupply;
     MPReading public reading;
 	MPDelta public source;
-	MPDelta[] targets;
+	MPDelta[] public targets;
 	uint256 cnt_targets=0;
 
     mapping (address => uint256) public balanceOf;
@@ -155,7 +157,7 @@ contract CUToken is owned {
 				uint256 delta = targets[i].delta();				
 				totalSupply+=delta*sum_source;
 				balanceOf[targets[i].meterpoint()]+=delta*sum_source;	
-				Transfer(msg.sender,targets[i],delta*sum_source);  	
+				Transfer(msg.sender,targets[i].meterpoint(),delta*sum_source);  	
 		}				
 	}
 	

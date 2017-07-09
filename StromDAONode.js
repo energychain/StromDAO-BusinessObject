@@ -297,6 +297,7 @@ module.exports = {
 		this.mptokenfactory = require("./MPTokenFactory.js").factory;
 		this.mptoken = require("./MPToken.js").mptoken;
 		this.erc20token = require("./ERC20Token.js").erc20token;
+		this.cutoken = require("./CUToken.js").cutoken;
 		/**
 		 * Bridge to DirectConnectionFactory Smart Contract
 		 */
