@@ -131,6 +131,7 @@ module.exports = {
 			
 			var abi="";
 			contract_type=contract_type.replace(":","_");
+			contract_type=contract_type.replace("/","");
 			if((typeof this._memcach[contract_type] != "undefined")&&(this._memcach[contract_type].length>10)) {
 			 abi = 	JSON.parse(this._memcach[contract_type]);
 			} else {
