@@ -142,7 +142,7 @@ node mytest.js
 What this Hello-World does is creating a new MeterPoint derived from a random id (external_id). Signs conract for Meter-Point-Operations and confirms (counter-sign by MPO). 
 
 ## Test-Cases
-https://github.com/energychain/StromDAO-BusinessObject/blob/master/test/rolelookup.js
+https://github.com/energychain/StromDAO-BusinessObject/blob/master/test
 
 For personal tests we are updating several Meter Point Readings every 15 Minutes:
 - 0x6e23cCf78dD844cf6bb07022D8B95fa8E3994844
