@@ -37,7 +37,25 @@ this.stromkonto = function(obj_or_address) {
 											});
 								});
 								return p2;
-						};		
+						};	
+						instance.baseSoll=function(address_account) {
+								var p2 = new Promise(function(resolve2, reject2) { 
+											//console.log(instance.obj);
+											instance.obj.baseSoll(address_account).then(function(o) {
+													resolve2(o[0].toString()*1);
+											});
+								});
+								return p2;
+						};	
+						instance.baseHaben=function(address_account) {
+								var p2 = new Promise(function(resolve2, reject2) { 
+											//console.log(instance.obj);
+											instance.obj.baseHaben(address_account).then(function(o) {
+													resolve2(o[0].toString()*1);
+											});
+								});
+								return p2;
+						};								
 						instance.balancesCachedSoll=function(address_account) {
 								var p2 = new Promise(function(resolve2, reject2) { 
 											//console.log(instance.obj);
