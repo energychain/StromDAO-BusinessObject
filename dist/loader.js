@@ -1949,7 +1949,15 @@ this.singleclearing=function(obj_or_address) {
 							});									
 					});
 					return p2;
-				};				
+				};	
+				instance.last_time=function() {
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.last_time().then(function(o) {									
+								resolve2(o[0]);											
+							});									
+					});
+					return p2;
+				};								
 				instance.energyCost=function() {
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.energyCost().then(function(o) {									
