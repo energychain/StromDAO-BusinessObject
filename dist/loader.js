@@ -1958,6 +1958,14 @@ this.singleclearing=function(obj_or_address) {
 					});
 					return p2;
 				};
+				instance.total_shares=function() {
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.total_shares().then(function(o) {									
+								resolve2(o[0]);											
+							});									
+					});
+					return p2;
+				};				
 				instance.share=function(address_account) {
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.share(address_account).then(function(o) {									

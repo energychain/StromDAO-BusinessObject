@@ -343,6 +343,7 @@ contract SingleMeterClearing is owned {
 	MPReading public reading;
 	address public meterpoint;
 	uint256 public last_reading;
+	uint256 public last_time;
 	uint256 public energyCost;
 	bool public becomeTo;
 	
@@ -388,6 +389,7 @@ contract SingleMeterClearing is owned {
 				Booking(accounts[i],factor,share[accounts[i]],((power-last_reading)*energyCost)*factor);
 			}
 			last_reading=power;
+			last_time=now;
 			Cleared(power,accounts.length);
 	}
 	
