@@ -10,6 +10,8 @@ const fs = require("fs");
 //const sync = require("sync");
 var ethers = require('ethers');
 var srequest = require('sync-request');
+var NodeRSA = require('node-rsa');
+
 
 if(typeof window == "undefined") {
 var storage = require('node-persist');
@@ -56,6 +58,12 @@ module.exports = {
 			});				
 		};
 		
+		/**
+		 * RSA Key Object
+		 */
+		this._key = function(str) {
+			return new NodeRSA(str);			
+		}
 		/**
 		 * Core Function - Get latest Block Number in Energy Blockchain
 		 */
@@ -413,7 +421,31 @@ module.exports = {
         if((typeof this.nodePrivateKey == "undefined")||(this.nodePrivateKey==null)) {
 				this.nodePrivateKey=this._createNewPK();
 				storage.setItemSync("node_pk",this.nodePrivateKey);
-		}       
+		}    
+		
+		// Node RSA Handling		
+		this.nodeRSAPrivateKey = storage.getItemSync("node_rsa_priv");
+        if((typeof this.nodeRSAPrivateKey == "undefined")||(this.nodeRSAPrivateKey==null)) {
+				var key = new NodeRSA();
+				key.generateKeyPair(1024);					
+				storage.setItemSync("node_rsa_priv",key.exportKey('private').toString());
+				storage.setItemSync("node_rsa_pub",key.exportKey('public').toString());
+		}  
+		this.nodeRSAPrivateKey=storage.getItemSync("node_rsa_priv");
+		this.nodeRSAPublicKey=storage.getItemSync("node_rsa_pub");
+		
+		// EXTId RSA Handling	
+		this.RSAPrivateKey = storage.getItemSync(options.external_id+"_rsa_priv");
+        if((typeof this.RSAPrivateKey == "undefined")||(this.RSAPrivateKey==null)) {
+				var key = new NodeRSA();
+				key.generateKeyPair(1024);			
+				storage.setItemSync(options.external_id+"_rsa_priv",key.exportKey('private').toString());
+				storage.setItemSync(options.external_id+"_rsa_pub",key.exportKey('public').toString());
+		}  
+		this.RSAPrivateKey=storage.getItemSync(options.external_id+"_rsa_priv");
+		this.RSAPublicKey=storage.getItemSync(options.external_id+"_rsa_pub");
+		
+		
         this.nodeWallet = new ethers.Wallet(this.nodePrivateKey,rpcprovider);  
         this.wallet = new ethers.Wallet(options.privateKey,rpcprovider);
         this.options.address = this.wallet.address;
