@@ -376,7 +376,7 @@ contract SingleMeterClearing is owned {
 	
 	function becomeProvider() {
 			if(state==0) {
-					provider=msg.sender;
+					provider=msg.sender;					
 					state=1;
 			}
 	}
