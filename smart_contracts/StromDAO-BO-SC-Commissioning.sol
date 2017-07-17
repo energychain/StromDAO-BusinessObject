@@ -326,8 +326,8 @@ contract SingleMeterClearingFactory {
 		reading=_reading;		
 	}
 	
-	function build(TxHandler _stromkonto,address _meterpoint,uint256 _cost,bool _becomeTo) returns(SingleMeterClearing) {
-			SingleMeterClearing smc = new SingleMeterClearing(_stromkonto,reading,_meterpoint,_cost,_becomeTo);
+	function build(TxHandler _stromkonto,address _meterpoint,uint256 _cost,address _account,bool _becomeTo) returns(SingleMeterClearing) {
+			SingleMeterClearing smc = new SingleMeterClearing(_stromkonto,reading,_meterpoint,_cost,_account,_becomeTo);
 			smc.transferOwnership(msg.sender);
 			Built(address(smc),msg.sender);
 			return smc;		
@@ -345,16 +345,22 @@ contract SingleMeterClearing is owned {
 	uint256 public last_reading;
 	uint256 public last_time;
 	uint256 public energyCost;
+	address public account;
+	address public provider;
+	uint8 public state;
+	
 	bool public becomeTo;
 	
 	event Cleared(uint256 _power,uint256 _num_accounts);
 	event Booking(address _account,uint256 factor,uint256 share,uint256 value); 
-	function SingleMeterClearing(TxHandler _stromkonto,MPReading _reading,address _meterpoint,uint256 _cost,bool _becomeTo) {
+	function SingleMeterClearing(TxHandler _stromkonto,MPReading _reading,address _meterpoint,uint256 _cost,address _account, bool _becomeTo) {
 		stromkonto=_stromkonto;
 		meterpoint=_meterpoint;
 		reading=_reading;
 		energyCost=_cost;
 		becomeTo=_becomeTo;
+		account=_account;
+		state=0;
 	}
 	
 	function setAccount(address _account,uint256 _shares) onlyOwner {
@@ -368,6 +374,29 @@ contract SingleMeterClearing is owned {
 		share[_account]=_shares;		
 	}
 	
+	function becomeProvider() {
+			if(state==0) {
+					provider=msg.sender;
+					state=1;
+			}
+	}
+	
+	function activate() {
+		if(msg.sender==provider) {
+			state=2;
+		}
+	}
+	function deactivate() {
+		if(msg.sender==provider) {
+			state=1;
+		}
+	}
+	function setMeterPoint(address _meterpoint) {
+		if((msg.sender==provider)&&(state==1)) {
+			meterpoint=_meterpoint;
+		}
+	}
+	
 	function addTx(address _from,address _to,uint256 value,uint256 base) onlyOwner {
 			stromkonto.addTx(_from,_to,value,base);		
 	}
@@ -376,15 +405,16 @@ contract SingleMeterClearing is owned {
 			energyCost=_cost;
 	}
 	function clearing() onlyOwner {
+			if(state<2) return;
 			uint256 time;
 			uint256 power;		
 			(time,power)=reading.readings(meterpoint);
 			for(uint256 i=0;i<accounts.length;i++) {
 				uint256 factor=share[accounts[i]];
 				if(becomeTo) {
-					stromkonto.addTx(accounts[i],address(this),((power-last_reading)*energyCost)*factor,(power-last_reading)*factor);
+					stromkonto.addTx(accounts[i],account,((power-last_reading)*energyCost)*factor,(power-last_reading));
 				} else {
-					stromkonto.addTx(address(this),accounts[i],((power-last_reading)*energyCost)*factor,(power-last_reading)*factor);
+					stromkonto.addTx(account,accounts[i],((power-last_reading)*energyCost)*factor,(power-last_reading));
 				}
 				Booking(accounts[i],factor,share[accounts[i]],((power-last_reading)*energyCost)*factor);
 			}

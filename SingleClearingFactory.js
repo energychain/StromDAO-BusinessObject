@@ -18,13 +18,13 @@ this.factory = function(obj_or_address) {
 				 * Stores a reading to this contract instance. Requires sender to be approved Meter-Point 
 				 * @see approveMP()
 				 */
-				instance.build= function(address_stromkonto,address_meterpoint,uint256_cost,bool_becometo) {	
+				instance.build= function(address_stromkonto,address_meterpoint,uint256_cost,address_account,bool_becometo) {	
 							
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.onbuilt=function(cb) {						
 									resolve2(cb);						
 							};		
-							instance.obj.build(address_stromkonto,address_meterpoint,uint256_cost,bool_becometo).then(function(o) {	
+							instance.obj.build(address_stromkonto,address_meterpoint,uint256_cost,address_account,bool_becometo).then(function(o) {	
 										
 							});									
 					});

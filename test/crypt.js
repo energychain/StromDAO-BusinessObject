@@ -23,10 +23,12 @@ describe('StromDAO: RSA Cryption', function() {
     console.log("  - Private Node Key",node.nodeRSAPrivateKey);
     console.log("  - Private EXTid Key",node.RSAPrivateKey);
     
+    
 	describe('Work with Exitid Key', function() {
 	
 		it('Encrypt to Extid', function(done) {
 				var extkey = node._key(node.RSAPublicKey);
+				console.log("MaxMessage Size",extkey.getMaxMessageSize());
 				encoded = extkey.encrypt(my_str);				
 				done();
 		});	
