@@ -365,7 +365,9 @@ contract SingleMeterClearing is owned {
 		state=0;
 	}
 	
-	function setAccount(address _account,uint256 _shares) onlyOwner {
+	function setAccount(address _account,uint256 _shares)  {
+		if((state!=1) && (msg.sender!=provider)) return;
+		
 		if(share[_account]==0) {
 				accounts.push(_account);
 				total_shares+=_shares;				
@@ -386,6 +388,11 @@ contract SingleMeterClearing is owned {
 	function activate() {
 		if(msg.sender==provider) {
 			state=2;
+			uint256 time;
+			uint256 power;		
+			(time,power)=reading.readings(meterpoint);
+			last_reading=power;
+			last_time=now;
 		}
 	}
 	function deactivate() {

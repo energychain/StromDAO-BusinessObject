@@ -37,6 +37,30 @@ this.singleclearing=function(obj_or_address) {
 					});
 					return p2;
 				};
+				instance.becomeProvider=function() {
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.becomeProvider().then(function(o) {									
+								parent._waitForTransactionKeepRef(o,resolve2);												
+							});									
+					});
+					return p2;
+				};
+				instance.activate=function() {
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.activate().then(function(o) {									
+								parent._waitForTransactionKeepRef(o,resolve2);												
+							});									
+					});
+					return p2;
+				};	
+				instance.deactivate=function() {
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.deactivate().then(function(o) {									
+								parent._waitForTransactionKeepRef(o,resolve2);												
+							});									
+					});
+					return p2;
+				};								
 				instance.setEnergyCost=function(uint256_cost)  {		
 		
 					var p2 = new Promise(function(resolve2, reject2) { 
