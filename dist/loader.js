@@ -1966,6 +1966,22 @@ this.singleclearing=function(obj_or_address) {
 					});
 					return p2;
 				};
+				instance.state=function() {
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.state().then(function(o) {									
+								resolve2(o[0].toString());											
+							});									
+					});
+					return p2;
+				};
+				instance.provider=function() {
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.provider().then(function(o) {									
+								resolve2(o[0].toString());											
+							});									
+					});
+					return p2;
+				};
 				instance.total_shares=function() {
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.total_shares().then(function(o) {									
