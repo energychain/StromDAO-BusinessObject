@@ -337,6 +337,8 @@ contract SingleMeterClearingFactory {
 contract SingleMeterClearing is owned {
 	
 	mapping(address=>uint256) public share;
+	mapping(address=>uint256) public balanceOf;
+	
 	address[] public accounts;
 	uint256 public total_shares=0;
 	TxHandler public stromkonto;
@@ -351,7 +353,7 @@ contract SingleMeterClearing is owned {
 	
 	bool public becomeTo;
 	
-	event Cleared(uint256 _power,uint256 _num_accounts);
+	event Cleared(uint256 _power,uint256 _delta,uint256 _num_accounts);
 	event Booking(address _account,uint256 factor,uint256 share,uint256 value); 
 	function SingleMeterClearing(TxHandler _stromkonto,MPReading _reading,address _meterpoint,uint256 _cost,address _account, bool _becomeTo) {
 		stromkonto=_stromkonto;
@@ -404,23 +406,27 @@ contract SingleMeterClearing is owned {
 	function setEnergyCost(uint256 _cost) onlyOwner {
 			energyCost=_cost;
 	}
-	function clearing() onlyOwner {
-			if(state<2) return;
+	function clearing() {
+	if(state<2) return;
 			uint256 time;
 			uint256 power;		
 			(time,power)=reading.readings(meterpoint);
+			uint256 delta=power-last_reading;
+			if(delta<1)  return;
+			
+			if(becomeTo) {
+				stromkonto.addTx(account,provider,(delta*energyCost),delta);
+			} else {
+				stromkonto.addTx(provider,account,(delta*energyCost),delta);
+			}
 			for(uint256 i=0;i<accounts.length;i++) {
 				uint256 factor=share[accounts[i]];
-				if(becomeTo) {
-					stromkonto.addTx(accounts[i],account,((power-last_reading)*energyCost)*factor,(power-last_reading));
-				} else {
-					stromkonto.addTx(account,accounts[i],((power-last_reading)*energyCost)*factor,(power-last_reading));
-				}
-				Booking(accounts[i],factor,share[accounts[i]],((power-last_reading)*energyCost)*factor);
+				balanceOf[accounts[i]]+=delta*factor;				
+				Booking(accounts[i],factor,share[accounts[i]],(delta*factor));
 			}
 			last_reading=power;
 			last_time=now;
-			Cleared(power,accounts.length);
+			Cleared(power,delta,accounts.length);
 	}
 	
 }
