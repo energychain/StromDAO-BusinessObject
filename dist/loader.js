@@ -1933,6 +1933,14 @@ this.singleclearing=function(obj_or_address) {
 					});
 					return p2;
 				};
+				instance.setMeterPoint=function(address_meterpoint)  {				
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.setMeterPoint(address_meterpoint).then(function(o) {									
+								parent._waitForTransactionKeepRef(o,resolve2);												
+							});									
+					});
+					return p2;
+				};
 				instance.addTx=function(address_from,address_to,uint256_value,uint256_base)  {		
 		
 					var p2 = new Promise(function(resolve2, reject2) { 
