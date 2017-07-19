@@ -2173,7 +2173,7 @@ this.stringstorage = function(obj_or_address) {
 				instance.buildAndAssign=function(uint_role,string_str) {
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.build(string_str).then(function(address_string) {
-								parent.rolelookup().then(function(rl) {
+								parent.roleLookup().then(function(rl) {
 										rl.setRelation(uint_role,address_string).then(function(d) {
 												resolve2(d);
 										});
