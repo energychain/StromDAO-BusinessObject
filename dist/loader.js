@@ -1762,7 +1762,29 @@ this.rolelookup=function(obj_or_address) {
 							});
 						});													
 						return p2;
-				}							
+				}		
+				instance.getName=function(address_target) {
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.relations(address_target,25).then(function(o) {
+								parent.stringstorage(o[0]).then(function(p) {
+										p.str().then(function(str) {
+											resolve2(str);																				
+										});
+								});
+							});
+						});													
+					return p2;					
+				}	
+				instance.setName=function(string_name) {
+					var p2 = new Promise(function(resolve2, reject2) { 
+							parent.stringstoragefactory().then(function(ssf) {
+									ssf.buildAndAssign(25,string_name).then(function(o) {
+											resolve2(o);
+									});									
+							});							
+						});													
+					return p2;					
+				}									
 				resolve(instance);
 			});
 			return p1;
