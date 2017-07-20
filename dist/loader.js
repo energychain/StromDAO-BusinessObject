@@ -352,6 +352,7 @@ this.coldstorage = function(obj_or_address) {
 			if(typeof obj_or_address == "undefined") obj_or_address=parent.options.contracts["StromDAO-BO.sol:StringStorage"];
 			
 			var p1 = new Promise(function(resolve, reject) { 
+				var instance={};
 				
 				instance.setObj=function(bucket,str) {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
