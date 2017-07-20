@@ -1976,7 +1976,7 @@ this.singleclearing=function(obj_or_address) {
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.accounts(uint256_idx).then(function(o) {									
 								resolve2(o[0]);											
-							});									
+							}).catch(function(r) {resolve2();});									
 					});
 					return p2;
 				};
