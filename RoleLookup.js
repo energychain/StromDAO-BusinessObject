@@ -68,8 +68,8 @@ this.rolelookup=function(obj_or_address) {
 										p.str().then(function(str) {
 											resolve2(str);																				
 										});
-								});
-							});
+								}).catch(function(r) {resolve2();});
+							}).catch(function(r) {resolve2();});
 						});													
 					return p2;					
 				}	

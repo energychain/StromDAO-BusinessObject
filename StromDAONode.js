@@ -340,6 +340,7 @@ module.exports = {
 		 * Bridge to Provider Smart Contract
 		 */
 		this.provider = require("./Provider.js").provider;
+				
 		
 		/**
 		 * Bridge to DeliveryMux Smart Contract
@@ -381,6 +382,7 @@ module.exports = {
 		 * Bridge to String Storage (Factory)
 		 */
 		 this.stringstoragefactory = require("./StringStorageFactory").stringstoragefactory;		
+		 this.coldstorage =require("./Coldstorage.js").coldstorage;
 		
 		 storage.initSync();
 		
