@@ -69,7 +69,7 @@ this.rolelookup=function(obj_or_address) {
 											resolve2(str);																				
 										});
 								}).catch(function(r) {resolve2();});
-							}).catch(function(r) {resolve2();});
+							}).catch(function(r) {resolve2("");});
 						});													
 					return p2;					
 				}	

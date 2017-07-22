@@ -342,6 +342,7 @@ contract SingleMeterClearing is owned {
 	address[] public accounts;
 	uint256 public total_shares=0;
 	TxHandler public stromkonto;
+	TxHandler public providerkonto;
 	MPReading public reading;
 	address public meterpoint;
 	uint256 public last_reading;
@@ -378,9 +379,10 @@ contract SingleMeterClearing is owned {
 		share[_account]=_shares;		
 	}
 	
-	function becomeProvider() {
+	function becomeProvider(TxHandler _providerkonto) {
 			if(state==0) {
-					provider=msg.sender;					
+					provider=msg.sender;			
+					providerkonto=_providerkonto;		
 					state=1;
 			}
 	}
@@ -423,8 +425,10 @@ contract SingleMeterClearing is owned {
 			
 			if(becomeTo) {
 				stromkonto.addTx(account,provider,(delta*energyCost),delta);
+				providerkonto.addTx(account,provider,(delta*energyCost),delta);
 			} else {
 				stromkonto.addTx(provider,account,(delta*energyCost),delta);
+				providerkonto.addTx(provider,account,(delta*energyCost),delta);
 			}
 			for(uint256 i=0;i<accounts.length;i++) {
 				uint256 factor=share[accounts[i]];

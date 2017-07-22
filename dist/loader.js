@@ -453,7 +453,7 @@ this.loadDefaults=function(options) {
 					contract_type["StromDAO-BO.sol_MPRDecorateFactory"]="0x599A82fF93533220b2e6E529477342b484DB2d73";
 					contract_type["StromDAO-BO.sol_SettlementFactory"]="0x6dE580411a5432D0A5Bd304b42C3a2b8A3710E50";
 					contract_type["StromDAO-BO.sol_ClearingFactory"]="0x2E3F061534A3A1D57F51f57f32bf7c8fe80e6621";
-					contract_type["StromDAO-BO.sol_SingleClearingFactory"]="0x7b49a618D88949C8f594149616Ce155b314DfbE5";
+					contract_type["StromDAO-BO.sol_SingleClearingFactory"]="0x3Df3fF97B8F93BbdAeB7C945bAdf32016C369212";
 					contract_type["StromDAO-BO.sol_DirectClearingFactory"]="0xA88C076bbf5C50d2e35f89f285D373bEd636FD87";
 					contract_type["StromDAO-BO.sol_StromkontoProxyFactory"]="0xBa8032C634a9dd76f09C0957CD2330b04a46470f";
 					contract_type["StromDAO-BO.sol_MPTokenFactory"]="0x604Caaa72ea8cfCf64179079c30D4168D5bd87bc";
@@ -1805,7 +1805,7 @@ this.rolelookup=function(obj_or_address) {
 											resolve2(str);																				
 										});
 								}).catch(function(r) {resolve2();});
-							}).catch(function(r) {resolve2();});
+							}).catch(function(r) {resolve2("");});
 						});													
 					return p2;					
 				}	
@@ -1956,9 +1956,9 @@ this.singleclearing=function(obj_or_address) {
 					});
 					return p2;
 				};
-				instance.becomeProvider=function() {
+				instance.becomeProvider=function(address_stromkonto) {
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.becomeProvider().then(function(o) {									
+							instance.obj.becomeProvider(address_stromkonto).then(function(o) {									
 								parent._waitForTransactionKeepRef(o,resolve2);												
 							});									
 					});

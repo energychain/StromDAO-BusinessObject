@@ -37,9 +37,9 @@ this.singleclearing=function(obj_or_address) {
 					});
 					return p2;
 				};
-				instance.becomeProvider=function() {
+				instance.becomeProvider=function(address_stromkonto) {
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.becomeProvider().then(function(o) {									
+							instance.obj.becomeProvider(address_stromkonto).then(function(o) {									
 								parent._waitForTransactionKeepRef(o,resolve2);												
 							});									
 					});
