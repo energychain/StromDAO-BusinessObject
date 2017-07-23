@@ -2064,7 +2064,15 @@ this.singleclearing=function(obj_or_address) {
 				};
 				instance.getProvider=function() {
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.call.provider().then(function(o) {									
+							instance.obj.provider().then(function(o) {									
+								resolve2(o[0].toString());											
+							});									
+					});
+					return p2;
+				};
+				instance.getOwner=function() {
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.owner().then(function(o) {									
 								resolve2(o[0].toString());											
 							});									
 					});
