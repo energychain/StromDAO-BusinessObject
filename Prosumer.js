@@ -10,7 +10,7 @@
  this.prosumer = function(obj_or_address) {
 			
 			var p1 = new Promise(function(resolve, reject) { 
-				var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol_StringStorageFactory');			
+				var instance={};			
 				instance.test = {};				
 				
 				/**
@@ -22,11 +22,13 @@
 					var p2 = new Promise(function(resolve2, reject2) { 
 						var res={};
 						
-						parent.roleLookup(obj_or_address,10).then(function(stromkontoproxy) {
-							if(stromkontoproxy=="0x0000000000000000000000000000000000000000") {
-								stromkontoproxy="0x19BF166624F485f191d82900a5B7bc22Be569895";
+						parent.roleLookup().then(function(rlup) {
+							rlup.relations(obj_or_address,10).then(function(skop_sc) {
+							if(skop_sc=="0x0000000000000000000000000000000000000000") {
+								skop_sc="0x19BF166624F485f191d82900a5B7bc22Be569895";
 							}
-							res.stromkontoproxy=stromkontoproxy;
+							console.log(skop_sc);
+							res.stromkontoproxy=skop_sc;
 							res.account=obj_or_address;
 							parent.stromkonto(res.stromkontoproxy).then(function(skop) {
 								skop.balancesHaben(obj_or_address).then(function(haben) {
@@ -42,6 +44,7 @@
 							});							
 						});								
 					});
+				});
 					return p2;
 				};
 				
