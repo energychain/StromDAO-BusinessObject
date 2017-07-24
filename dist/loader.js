@@ -1693,12 +1693,12 @@ this.metaset=function(role_id) {
 				 * Stores a reading to this contract instance. Requires sender to be approved Meter-Point 
 				 * @see approveMP()
 				 */
-				instance.konto= function(address_account) {
+				instance.konto= function() {
 					
 					var p2 = new Promise(function(resolve2, reject2) { 
 						var res={};
 						
-						parent.roleLookup(address,10).then(function(stromkontoproxy) {
+						parent.roleLookup(obj_or_address,10).then(function(stromkontoproxy) {
 							if(stromkontoproxy=="0x0000000000000000000000000000000000000000") {
 								stromkontoproxy="0x19BF166624F485f191d82900a5B7bc22Be569895";
 							}
