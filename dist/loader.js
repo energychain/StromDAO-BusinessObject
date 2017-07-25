@@ -1720,10 +1720,44 @@ this.metaset=function(role_id) {
 							});							
 						});								
 					});
-				});
+					});
 					return p2;
 				};
-				
+				instance.smpc= function() {
+					
+					var p2 = new Promise(function(resolve2, reject2) { 
+						var res={};
+						
+						parent.roleLookup().then(function(rlup) {
+							rlup.relations(obj_or_address,101).then(function(smpc_sc) {										
+							res.smpc=smpc_sc;
+							res.account=obj_or_address;
+							parent.singleclearing(res.smpc).then(function(smpc) {
+								smpc.meterpoint().then(function(meterpoint) {
+									res.meterpoint=meterpoint;
+									smpc.last_reading().then(function(last_reading) {
+										res.last_reading=last_reading.toString()*1;	
+										smpc.last_time().then(function(last_time) {
+											res.last_time=last_time.toString()*1;	
+											smpc.energyCost().then(function(energyCost) {
+												res.energyCost=energyCost.toString()*1;	
+												smpc.state().then(function(state) {
+													res.state=state*1;	
+													smpc.total_shares().then(function(total_shares) {
+														res.total_shares=total_shares.toString()*1;	
+														resolve2(res);							
+													});									
+												});								
+											});									
+										});								
+									});	
+								});								
+							});							
+						});								
+					});
+					});
+					return p2;
+				};
 				
 				resolve(instance);
 			});
@@ -2119,6 +2153,7 @@ this.singleclearing=function(obj_or_address) {
 					});
 					return p2;
 				};
+				
 				instance.getProvider=function() {
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.provider().then(function(o) {									
@@ -2152,13 +2187,13 @@ this.singleclearing=function(obj_or_address) {
 					return p2;
 				};
 				instance.balanceOf=function(address_account) {
-								var p2 = new Promise(function(resolve2, reject2) { 
-											//console.log(instance.obj);
-											instance.obj.balanceOf(address_account).then(function(o) {
-													resolve2(o[0].toString()*1);
-											});
+					var p2 = new Promise(function(resolve2, reject2) { 
+								//console.log(instance.obj);
+								instance.obj.balanceOf(address_account).then(function(o) {
+										resolve2(o[0].toString()*1);
 								});
-								return p2;
+					});
+					return p2;
 				};														
 				resolve(instance);
 			});

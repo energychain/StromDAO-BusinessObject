@@ -143,6 +143,7 @@ this.singleclearing=function(obj_or_address) {
 					});
 					return p2;
 				};
+				
 				instance.getProvider=function() {
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.provider().then(function(o) {									
@@ -176,13 +177,13 @@ this.singleclearing=function(obj_or_address) {
 					return p2;
 				};
 				instance.balanceOf=function(address_account) {
-								var p2 = new Promise(function(resolve2, reject2) { 
-											//console.log(instance.obj);
-											instance.obj.balanceOf(address_account).then(function(o) {
-													resolve2(o[0].toString()*1);
-											});
+					var p2 = new Promise(function(resolve2, reject2) { 
+								//console.log(instance.obj);
+								instance.obj.balanceOf(address_account).then(function(o) {
+										resolve2(o[0].toString()*1);
 								});
-								return p2;
+					});
+					return p2;
 				};														
 				resolve(instance);
 			});
