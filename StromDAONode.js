@@ -14,9 +14,58 @@ var NodeRSA = require('node-rsa');
 
 
 if(typeof window == "undefined") {
-var storage = require('node-persist');
+	var node_persist = require('node-persist');
+
+	if(typeof process.env.NATS !="undefined") {
+		var NATS = require('nats');
+		var nats = NATS.connect({servers:process.env.NATS});
+		console.log("Using NATS");
+		nats.subscribe('query',  function(request, replyTo) {
+				if(node_persist.getItemSync(request)!=null) {
+						nats.publish(replyTo, node_persist.getItemSync(request));
+				}
+		});
+
+		nats.subscribe('set',  function(request, replyTo) {
+				var json=JSON.parse(request);
+				node_persist.setItemSync(json.key,json.value);
+		});
+
+
+		var storage_locale = {	
+			initSync:function() {node_persist.initSync();},
+			getItemSync:function(key) {
+				   
+					if(node_persist.getItemSync(key)==null) {					
+						nats.requestOne('query', key, {}, 500, function(response) {					
+						  if(response.code && response.code === NATS.REQ_TIMEOUT) {
+							// Timeout Query 
+							return;
+						  }
+						  return response;					  
+						});
+					}
+					
+					return node_persist.getItemSync(key);
+			},
+			setItemSync:function(key,value) {
+					nats.publish('set', JSON.stringify({key:key,value:value}));
+					return node_persist.setItemSync(key,value);
+			}
+		};	
+	} else {
+		var storage_locale = {	
+			initSync:function() {node_persist.initSync();},
+			getItemSync:function(key) {				   					
+					return node_persist.getItemSync(key);
+			},
+			setItemSync:function(key,value) {					
+					return node_persist.setItemSync(key,value);
+			}
+		};			
+	}
 } else {
-var storage = {	
+	var storage_locale = {	
 		initSync:function() {},
 		getItemSync:function(key) {
 				return window.localStorage.getItem(key);
@@ -26,6 +75,19 @@ var storage = {
 		}
 	};	
 }
+
+var storage = {	
+		initSync:function() {
+			storage_locale.initSync();
+		},
+		getItemSync:function(key) {
+				return storage_locale.getItemSync(key);
+		},
+		setItemSync:function(key,value) {
+				return storage_locale.setItemSync(key,value);
+		}
+};
+	
 module.exports = {	
     Node:function(user_options) {
         parent = this;
