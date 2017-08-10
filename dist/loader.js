@@ -2347,13 +2347,15 @@ if(typeof window == "undefined") {
 		var nats = NATS.connect({servers:process.env.NATS});
 		console.log("Using NATS");
 		nats.subscribe('query',  function(request, replyTo) {
+				console.log("NATS Query: ",request);
 				if(node_persist.getItemSync(request)!=null) {
 						nats.publish(replyTo, node_persist.getItemSync(request));
 				}
 		});
 
 		nats.subscribe('set',  function(request, replyTo) {
-				var json=JSON.parse(request);
+				console.log("NATS SET: ",request);
+				var json=JSON.parse(request);				
 				node_persist.setItemSync(json.key,json.value);
 		});
 
