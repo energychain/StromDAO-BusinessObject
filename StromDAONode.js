@@ -14,48 +14,7 @@ var NodeRSA = require('node-rsa');
 
 
 if(typeof window == "undefined") {
-	var node_persist = require('node-persist');
-
-	if(typeof process.env.NATS !="undefined") {
-		var NATS = require('nats');
-		var nats = NATS.connect({servers:process.env.NATS});
-		console.log("Using NATS");
-		nats.subscribe('query',  function(request, replyTo) {
-				console.log("NATS Query: ",request);
-				if(node_persist.getItemSync(request)!=null) {
-						nats.publish(replyTo, node_persist.getItemSync(request));
-				}
-		});
-
-		nats.subscribe('set',  function(request, replyTo) {
-				console.log("NATS SET: ",request);
-				var json=JSON.parse(request);				
-				node_persist.setItemSync(json.key,json.value);
-		});
-
-
-		var storage_locale = {	
-			initSync:function() {node_persist.initSync();},
-			getItemSync:function(key) {
-				   
-					if(node_persist.getItemSync(key)==null) {					
-						nats.requestOne('query', key, {}, 500, function(response) {					
-						  if(response.code && response.code === NATS.REQ_TIMEOUT) {
-							// Timeout Query 
-							return;
-						  }
-						  return response;					  
-						});
-					}
-					
-					return node_persist.getItemSync(key);
-			},
-			setItemSync:function(key,value) {
-					nats.publish('set', JSON.stringify({key:key,value:value}));
-					return node_persist.setItemSync(key,value);
-			}
-		};	
-	} else {
+		var node_persist = require('node-persist');	
 		var storage_locale = {	
 			initSync:function() {node_persist.initSync();},
 			getItemSync:function(key) {				   					
@@ -65,7 +24,7 @@ if(typeof window == "undefined") {
 					return node_persist.setItemSync(key,value);
 			}
 		};			
-	}
+	
 } else {
 	var storage_locale = {	
 		initSync:function() {},
@@ -78,7 +37,7 @@ if(typeof window == "undefined") {
 	};	
 }
 
-var storage = {	
+var bo_storage = {	
 		initSync:function() {
 			storage_locale.initSync();
 		},
@@ -449,7 +408,15 @@ module.exports = {
 		 this.stringstoragefactory = require("./StringStorageFactory").stringstoragefactory;		
 		 this.coldstorage =require("./Coldstorage.js").coldstorage;
 		
+		 if(typeof user_options.storage != "undefined") {
+			var storage=user_options.storage;	
+			console.log("NATS");
+		 } else {
+			 console.log("BO");
+			var storage=bo_storage;
+		 }
 		 storage.initSync();
+					
 		
 		this.storage=storage;
 		
