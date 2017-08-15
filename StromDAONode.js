@@ -125,7 +125,6 @@ module.exports = {
 		 */
 		 
 		this._saveLabel=function(address_type,address) {	
-			console.log("LABEL",address_type,address);			
 				if(address_type.length<2) {address_type=address_type+" "+address.substring(5,10);}
 				if(typeof window != "undefined") {
 						window.localStorage.removeItem("label_"+address.toLowerCase());
@@ -177,7 +176,6 @@ module.exports = {
 							 abi = JSON.parse(fs.readFileSync("node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi"));
 					}
 				} else {
-						console.log("Fetch","js/node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi");
 						var raw = srequest('GET',"js/node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi");				   
 						abi =JSON.parse(raw.body);
 				}
@@ -223,7 +221,6 @@ module.exports = {
 							 abi = JSON.parse(fs.readFileSync("node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi"));
 					}
 				} else {
-					console.log("Fetch","js/node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi");
 					var raw = srequest('GET',"js/node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi");				   
 					abi =JSON.parse(raw.body);
 				}
@@ -410,9 +407,7 @@ module.exports = {
 		
 		 if(typeof user_options.storage != "undefined") {
 			var storage=user_options.storage;	
-			console.log("NATS");
-		 } else {
-			 console.log("BO");
+		 } else {			
 			var storage=bo_storage;
 		 }
 		 storage.initSync();
