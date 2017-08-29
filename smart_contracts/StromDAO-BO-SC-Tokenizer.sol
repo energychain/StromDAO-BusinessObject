@@ -172,6 +172,9 @@ contract CUToken is owned {
 }
 
 
+
+
+
 contract tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData); }
 
 contract token is owned {
@@ -223,3 +226,19 @@ contract token is owned {
 
 
 
+contract XToken is token {
+	mapping (address => uint256) public rates;
+	function XToken() {
+		 
+		 
+	}	
+	function setRate(token _token,uint256 rate) onlyOwner {
+		rates[_token]=rate;
+	}	
+	function x(token from_token) {
+		uint256 amount=from_token.balanceOf(msg.sender);
+		from_token.transfer(this,amount);
+		balanceOf[msg.sender]+=amount*rates[from_token];
+		totalSupply+=amount*rates[from_token];		
+	}
+}
