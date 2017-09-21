@@ -18,6 +18,8 @@ Easy Quickstart is available from within the [Fury.Network](https://fury.network
 
 What this Hello-World does is creating a new MeterPoint derived from a random id (external_id). Signs conract for Meter-Point-Operations and confirms (counter-sign by MPO). 
 
+Testing of individual functions might be done via our [Introspect Page](https://demo.stromdao.de/introspect.html).
+
 ## Demo Case
 There is a Mock-Up Demo available to illustrate energy delivery handling, billing and other use cases on: https://github.com/energychain/BusinessObject-Demo
 

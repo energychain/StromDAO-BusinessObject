@@ -1590,7 +1590,7 @@ this.factory = function(obj_or_address) {
 						  
 							instance.obj.onbuilt=function(cb) {	
 									var p3=new Promise(function(resolve3, reject3) {															
-									parent._waitForTransaction(bdx.hash).then(resolve3(cb));
+										parent._waitForTransaction(bdx.hash).then(resolve3(cb));
 									});
 									p3.then(function() {
 											resolve2(cb);
