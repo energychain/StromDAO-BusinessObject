@@ -496,5 +496,12 @@ module.exports = {
 				
 			});
 		}
+		this.sign = function(data) {			
+				return this.wallet.sign({data:data});
+		}
+		this.verify = function(signedData) {
+				var transaction  = ethers.Wallet.parseTransaction(signedData);
+				return transaction.from;
+		}
     }
 };
