@@ -1,6 +1,6 @@
 {
   "name": "stromdao-businessobject",
-  "version": "0.4.60",
+  "version": "0.4.62",
   "description": "Abstract BusinessObject for StromDAO Energy Blockchain. Abstraction layer between blockchain technology and business logic providing energy market related entities and use cases.",
   "main": "StromDAONode.js",
   "engines": {
@@ -25,7 +25,7 @@
     "abstraction",
     "stromdao"
   ],
-  "author": "Thorsten Zoerner <me@thorsten-zoerner.com> (https://blog.stromhaltig.de)",
+  "author": "Thorsten Zoerner <thorsten.zoerner@stromdao.com> (https://stromdao.de)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/energychain/StromDAO-BusinessObject/issues"

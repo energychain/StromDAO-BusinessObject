@@ -270,9 +270,9 @@ contract Stromkonto is TxHandler {
 	
 	function addTx(address _from,address _to, uint256 _value,uint256 _base) onlyOwner {
 		balancesSoll[_from]+=_value;
-		baseSoll[_from]+=_value;
+		baseSoll[_from]+=_base;
 		balancesHaben[_to]+=_value;
-		baseHaben[_to]+=_value;
+		baseHaben[_to]+=_base;
 		sumTx+=_value;
 		sumBase+=_base;
 		Tx(_from,_to,_value,_base,balancesSoll[_from],balancesHaben[_from],balancesSoll[_to],balancesHaben[_to]);
