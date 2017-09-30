@@ -107,6 +107,15 @@ this.stromkonto = function(obj_or_address) {
 								});
 								return p2;
 						};	
+						instance.owner=function() {
+								var p2 = new Promise(function(resolve2, reject2) { 
+											//console.log(instance.obj);
+											instance.obj.owner().then(function(o) {
+													resolve2(o);
+											});
+								});
+								return p2;
+						};						
 						instance.history=function(address_meterpoint,length) {
 							var p2 = new Promise(function(resolve2, reject2) { 
 								parent.rpcprovider.getBlockNumber().then(function(latest_block) {

@@ -44,6 +44,15 @@ this.stromkontoproxy = function(obj_or_address) {
 								});
 								return p2;
 						};	
+						instance.owner=function() {
+								var p2 = new Promise(function(resolve2, reject2) { 
+											//console.log(instance.obj);
+											instance.obj.owner().then(function(o) {
+													resolve2(o);
+											});
+								});
+								return p2;
+						};							
 						instance.balancesHaben=function(address_acount) {
 								var p2 = new Promise(function(resolve2, reject2) { 
 											//console.log(instance.obj);
