@@ -313,6 +313,7 @@ module.exports = {
 		this.mprdecoratefactory = require("./MPRDecorateFactory.js").factory;
 		this.settlementfactory = require("./SettlementFactory.js").factory;
 		this.stromkontoproxyfactory = require("./StromkontoProxyFactory.js").factory;
+		this.assetsliabilitiesfactory = require("./AssetsLiabilitiesFactory.js").factory;
 		this.clearingfactory = require("./ClearingFactory.js").factory;
 		this.directclearingfactory = require("./DirectClearingFactory.js").factory;
 		this.singleclearingfactory = require("./SingleClearingFactory.js").factory;
@@ -385,6 +386,9 @@ module.exports = {
 		 */
 		this.stromkonto = require("./Stromkonto.js").stromkonto;		
 		this.stromkontoproxy = require("./StromkontoProxy.js").stromkontoproxy;	
+		this.assetsliabilities = require("./AssetsLiabilities.js").assetsliabilities;	
+		
+		
 		/**
 		 * Bridge to RoleLookup Smart Contract
 		 */

@@ -289,13 +289,30 @@ contract StromkontoProxyFactory {
 		sp.transferOwnership(msg.sender);
 		Built(address(sp),msg.sender);
 		return sp;
-	}
-	
+	}	
 }
+
+contract AssetsLiabilitiesFactory {
+	event Built(address _al,address _account,address _peer);
+	
+	function build(address _account) returns(StromkontoProxy) {
+		StromkontoProxy sp = new StromkontoProxy();
+		sp.modifySender(msg.sender,true);
+		sp.modifySender(_account,true);
+		sp.transferOwnership(msg.sender);
+		Built(address(sp),msg.sender,_account);
+		return sp;
+	}	
+}
+
 
 contract StromkontoProxy is Stromkonto {
 		
 		mapping(address=>bool) public allowedSenders;
+		
+		address public receipt_asset;
+		address public receipt_liability;
+		
 		
 		function StromkontoProxy() {
 				allowedSenders[msg.sender]=true;
@@ -315,6 +332,15 @@ contract StromkontoProxy is Stromkonto {
 			}
 		}
 		
+		function setReceiptAsset(address _address) {
+			if(allowedSenders[msg.sender]!=true) return; 
+			receipt_asset=_address;
+		}
+		
+		function setReceiptLiablity(address _address) {
+			if(allowedSenders[msg.sender]!=true) return; 
+			receipt_liability=_address;
+		}		
 }
 contract Billing {
 	
