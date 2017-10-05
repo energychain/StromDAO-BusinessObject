@@ -280,6 +280,32 @@ contract Stromkonto is TxHandler {
 	
 }
 
+contract Transferable is Stromkonto {
+	event Tx(address _from,address _to, uint256 _value,uint256 _base,uint256 _from_soll,uint256 _from_haben,uint256 _to_soll,uint256 _to_haben);
+	event Receipt(address _from,address _to,address _msg, uint256 _value,uint256 _base,bool _is_liability);
+	
+	function addTx(address _to,address _msg, uint256 _value,uint256 _base,bool _is_liability)  {
+		if(_is_liability) {
+			balancesSoll[_to]+=_value;
+			baseSoll[_to]+=_base;
+			balancesHaben[msg.sender]+=_value;
+			baseHaben[msg.sender]+=_base;
+			Tx(_to,msg.sender,_value,_base,balancesSoll[_to],balancesHaben[_to],balancesSoll[msg.sender],balancesHaben[msg.sender]);
+		} else {
+			balancesSoll[msg.sender]+=_value;
+			baseSoll[msg.sender]+=_base;
+			balancesHaben[_to]+=_value;
+			baseHaben[_to]+=_base;
+			Tx(msg.sender,_to,_value,_base,balancesSoll[msg.sender],balancesHaben[msg.sender],balancesSoll[_to],balancesHaben[_to]);
+		}
+		
+		sumTx+=_value;
+		sumBase+=_base;
+		Receipt(msg.sender,_to,_msg,_value,_base,_is_liability);
+	}
+	
+}
+
 contract StromkontoProxyFactory {
 	event Built(address _sp,address _account);
 	

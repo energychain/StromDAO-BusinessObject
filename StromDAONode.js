@@ -384,7 +384,8 @@ module.exports = {
 		/**
 		 * Bridge to Stromkonto Smart Contract
 		 */
-		this.stromkonto = require("./Stromkonto.js").stromkonto;		
+		this.stromkonto = require("./Stromkonto.js").stromkonto;	
+		this.transferable = require("./Transferable.js").transferable;	
 		this.stromkontoproxy = require("./StromkontoProxy.js").stromkontoproxy;	
 		this.assetsliabilities = require("./AssetsLiabilities.js").assetsliabilities;	
 		
