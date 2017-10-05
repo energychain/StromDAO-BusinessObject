@@ -284,7 +284,7 @@ contract Transferable is Stromkonto {
 	event Tx(address _from,address _to, uint256 _value,uint256 _base,uint256 _from_soll,uint256 _from_haben,uint256 _to_soll,uint256 _to_haben);
 	event Receipt(address _from,address _to,address _msg, uint256 _value,uint256 _base,bool _is_liability);
 	
-	function addTx(address _to,address _msg, uint256 _value,uint256 _base,bool _is_liability)  {
+	function addRx(address _to,address _msg, uint256 _value,uint256 _base,bool _is_liability)  {
 		if(_is_liability) {
 			balancesSoll[_to]+=_value;
 			baseSoll[_to]+=_base;

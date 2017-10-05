@@ -13,9 +13,9 @@ this.transferable = function(obj_or_address) {
 			if(typeof obj_or_address == "undefined") obj_or_address=parent.options.contracts["StromDAO-BO.sol_Transferable"];
 			var p1 = new Promise(function(resolve, reject) { 					
 						var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol_Transferable');
-						instance.addTx=function(address_to,address_msg,uint256_value,uint256_base,bool_is_liability) {
+						instance.addRx=function(address_to,address_msg,uint256_value,uint256_base,bool_is_liability) {
 								var p2 = new Promise(function(resolve2, reject2) { 
-											instance.obj.addTx(address_to,address_msg,uint256_value,uint256_base,bool_is_liability).then(function(o) {
+											instance.obj.addRx(address_to,address_msg,uint256_value,uint256_base,bool_is_liability).then(function(o) {
 													parent._waitForTransactionKeepRef(o,resolve2);	
 											});
 								});
