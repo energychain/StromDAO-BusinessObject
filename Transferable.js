@@ -125,36 +125,28 @@ this.transferable = function(obj_or_address) {
 											entries=[];
 											for(var i=0;i<logs.length;i++) {
 													var data = logs[i].data;
-													if(data.length>256) {
+													if(data.length==386) {
 														data=data.substr(2);
 														_from ="0x"+ split64(data).substr(26);
 														data=data.substr(64);
 														_to ="0x"+split64(data).substr(26);
 														data=data.substr(64);
+														_msg ="0x"+split64(data).substr(26);
+														data=data.substr(64);
 															
 														_value =(split64(data));
 														data=data.substr(64);
 														_base =(split64(data));
-														data=data.substr(64);
-														_fromSoll =(split64(data));
-														data=data.substr(64);
-														_fromHaben =(split64(data));
-														data=data.substr(64);
-														_toSoll =(split64(data));
-														data=data.substr(64);
-														_toHaben =(split64(data));
-														data=data.substr(64);
+														data=data.substr(64);														
 														if((_from.toLowerCase()==address_meterpoint.toLowerCase())||(_to.toLowerCase()==address_meterpoint.toLowerCase())) {
 															var entry={};
 															entry.sender=_from;
-															entry.msg=_to;
+															entry.recipient=_to;
+															entry.msg=_msg;
 															entry.base=_base;
 															entry.value=_value;
-															entry.toSoll=_toSoll;
-															entry.toHaben=_toHaben;
-															entry.fromSoll=_fromSoll;
-															entry.fromHaben=_fromHaben;
-															entry.blockNumber=logs[i].blockNumber;
+															entry.data=data;
+															entry.blockNumber=logs[i].blockNumber;															
 															entries.push(entry);
 														}
 													}
