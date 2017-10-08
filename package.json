@@ -1,6 +1,6 @@
 {
   "name": "stromdao-businessobject",
-  "version": "0.4.71",
+  "version": "0.4.72",
   "description": "Abstract BusinessObject for StromDAO Energy Blockchain. Abstraction layer between blockchain technology and business logic providing energy market related entities and use cases.",
   "main": "StromDAONode.js",
   "engines": {
@@ -32,20 +32,20 @@
   },
   "homepage": "https://github.com/energychain/StromDAO-BusinessObject#readme",
   "dependencies": {
-    "ethers": "^2.0.3",
+    "ethers": "^2.1.2",
     "get-random-values": "^1.2.0",
     "nats": "^0.7.20",
-    "node-persist": "^2.0.11",
+    "node-persist": "^2.1.0",
     "node-rsa": "^0.4.2",
-    "request": "^2.81.0",
+    "request": "^2.83.0",
     "smokesignal": "^0.2.2",
     "sync": "^0.2.5",
     "sync-request": "^4.0.3"
   },
   "devDependencies": {
     "bithound": "^1.7.0",
-    "mocha": "^3.3.0",
+    "mocha": "^3.5.3",
     "snazzy": "^7.0.0",
-    "standard": "^10.0.2"
+    "standard": "^10.0.3"
   }
 }
