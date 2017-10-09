@@ -2649,7 +2649,7 @@ module.exports = {
 		 * Keeps transaction receipt for in local persistance store (Key=Hash, Value=Receipt)
 		 */
 		this._keepHashRef=function(transaction) {
-				storage.setItemSync(transaction.hash,transaction);
+				storage.setItemSync(transaction.hash,JSON.stringify(transaction));
 				return transaction.hash;
 		};
 		
