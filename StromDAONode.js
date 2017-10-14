@@ -76,7 +76,15 @@ module.exports = {
 				});
 			});
 			return p2;
-		}		
+		}	
+		this.wallet=function() {			
+			var p2 = new Promise(function(resolve2, reject2) {
+				new ethers.Wallet.fromBrainWallet(username,password).then(function(account_wallet) {	
+					resolve2(account_wallet);							
+				});
+			});
+			return p2;
+		}					
 	},
     Node:function(user_options) {
         parent = this;
