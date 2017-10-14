@@ -2556,6 +2556,34 @@ var bo_storage = {
 };
 	
 module.exports = {	
+	Account:function(username,password) {
+		this.username=username;
+		this.password=password;
+		this.encrypt=function(data) {
+			var p2 = new Promise(function(resolve2, reject2) {
+				new ethers.Wallet.fromBrainWallet(username,password).then(function(account_wallet) {
+					var crypto=require("crypto");					
+					var cipher = crypto.createCipher( 'aes-256-ctr',account_wallet.privateKey);
+					var crypted = cipher.update(data,'utf8','hex');
+					crypted += cipher.final('hex');
+					resolve2(crypted);							
+				});
+			});
+			return p2;
+		}
+		this.decrypt=function(data) {
+			var p2 = new Promise(function(resolve2, reject2) {
+				new ethers.Wallet.fromBrainWallet(username,password).then(function(account_wallet) {
+					var crypto=require("crypto");										
+					var decipher = crypto.createDecipher('aes-256-ctr',account_wallet.privateKey);
+					var dec = decipher.update(data,'hex','utf8')
+					dec += decipher.final('utf8');		
+					resolve2(dec);							
+				});
+			});
+			return p2;
+		}		
+	},
     Node:function(user_options) {
         parent = this;
         this._memcach=[];
@@ -3017,7 +3045,7 @@ module.exports = {
     }
 };
 
-},{"./AssetsLiabilities.js":1,"./AssetsLiabilitiesFactory.js":2,"./BLG.js":3,"./Billing.js":4,"./CUToken.js":5,"./Clearing.js":6,"./ClearingFactory.js":7,"./Coldstorage.js":8,"./DSO.js":9,"./Defaults.js":10,"./Delivery.js":11,"./DeliveryMux.js":12,"./DirectBalancingGroupFactory.js":13,"./DirectCharging.js":14,"./DirectChargingFactory.js":15,"./DirectClearing.js":16,"./DirectClearingFactory.js":17,"./DirectConnection.js":18,"./DirectConnectionFactory.js":19,"./ERC20Token.js":20,"./MPO.js":21,"./MPR.js":22,"./MPRDecorate.js":23,"./MPRDecorateFactory.js":24,"./MPRSet.js":25,"./MPRSetFactory.js":26,"./MPSet.js":27,"./MPSetFactory.js":28,"./MPToken.js":29,"./MPTokenFactory.js":30,"./MetaPublish":31,"./Prosumer.js":32,"./Provider.js":33,"./RoleLookup":34,"./Settlement.js":35,"./SettlementFactory.js":36,"./SingleClearing.js":37,"./SingleClearingFactory.js":38,"./StringStorage":39,"./StringStorageFactory":40,"./Stromkonto.js":42,"./StromkontoProxy.js":43,"./StromkontoProxyFactory.js":44,"./TXcache.js":45,"./Transferable.js":46,"./XToken.js":47,"./XTokenFactory.js":48,"ethers":162,"fs":324,"get-random-values":168,"node-persist":234,"node-rsa":235,"sync-request":309}],42:[function(require,module,exports){
+},{"./AssetsLiabilities.js":1,"./AssetsLiabilitiesFactory.js":2,"./BLG.js":3,"./Billing.js":4,"./CUToken.js":5,"./Clearing.js":6,"./ClearingFactory.js":7,"./Coldstorage.js":8,"./DSO.js":9,"./Defaults.js":10,"./Delivery.js":11,"./DeliveryMux.js":12,"./DirectBalancingGroupFactory.js":13,"./DirectCharging.js":14,"./DirectChargingFactory.js":15,"./DirectClearing.js":16,"./DirectClearingFactory.js":17,"./DirectConnection.js":18,"./DirectConnectionFactory.js":19,"./ERC20Token.js":20,"./MPO.js":21,"./MPR.js":22,"./MPRDecorate.js":23,"./MPRDecorateFactory.js":24,"./MPRSet.js":25,"./MPRSetFactory.js":26,"./MPSet.js":27,"./MPSetFactory.js":28,"./MPToken.js":29,"./MPTokenFactory.js":30,"./MetaPublish":31,"./Prosumer.js":32,"./Provider.js":33,"./RoleLookup":34,"./Settlement.js":35,"./SettlementFactory.js":36,"./SingleClearing.js":37,"./SingleClearingFactory.js":38,"./StringStorage":39,"./StringStorageFactory":40,"./Stromkonto.js":42,"./StromkontoProxy.js":43,"./StromkontoProxyFactory.js":44,"./TXcache.js":45,"./Transferable.js":46,"./XToken.js":47,"./XTokenFactory.js":48,"crypto":384,"ethers":162,"fs":324,"get-random-values":168,"node-persist":234,"node-rsa":235,"sync-request":309}],42:[function(require,module,exports){
 /*
  * StromDAO Business Object: Stromkonto
  * =========================================

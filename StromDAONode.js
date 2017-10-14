@@ -50,6 +50,34 @@ var bo_storage = {
 };
 	
 module.exports = {	
+	Account:function(username,password) {
+		this.username=username;
+		this.password=password;
+		this.encrypt=function(data) {
+			var p2 = new Promise(function(resolve2, reject2) {
+				new ethers.Wallet.fromBrainWallet(username,password).then(function(account_wallet) {
+					var crypto=require("crypto");					
+					var cipher = crypto.createCipher( 'aes-256-ctr',account_wallet.privateKey);
+					var crypted = cipher.update(data,'utf8','hex');
+					crypted += cipher.final('hex');
+					resolve2(crypted);							
+				});
+			});
+			return p2;
+		}
+		this.decrypt=function(data) {
+			var p2 = new Promise(function(resolve2, reject2) {
+				new ethers.Wallet.fromBrainWallet(username,password).then(function(account_wallet) {
+					var crypto=require("crypto");										
+					var decipher = crypto.createDecipher('aes-256-ctr',account_wallet.privateKey);
+					var dec = decipher.update(data,'hex','utf8')
+					dec += decipher.final('utf8');		
+					resolve2(dec);							
+				});
+			});
+			return p2;
+		}		
+	},
     Node:function(user_options) {
         parent = this;
         this._memcach=[];
