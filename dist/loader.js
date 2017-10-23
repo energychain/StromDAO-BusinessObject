@@ -1617,7 +1617,7 @@ this.mpset=function(obj_or_address) {
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.meterpoints(uint256_idx).then(function(o) {									
 								resolve2(o[0]);											
-							});									
+							}).catch(function(e) {reject2();});									
 					});
 					return p2;
 				};
@@ -1625,7 +1625,7 @@ this.mpset=function(obj_or_address) {
 				instance.length=function() {
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.length().then(function(o) {									
-								resolve2(o[0]);											
+								resolve2(o);											
 							});									
 					});
 					return p2;
