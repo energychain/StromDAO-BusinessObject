@@ -35,6 +35,15 @@ this.erc20token = function(obj_or_address) {
 					return p2;
 				};
 				
+				instance.owner=function() {					
+					var p2 = new Promise(function(resolve2, reject2) { 							
+							instance.obj.owner().then(function(o) {														
+								 resolve2(o);									
+							});									
+					});
+					return p2;
+				};
+				
 				instance.balanceOf=function(address_account) {					
 						var p2 = new Promise(function(resolve2, reject2) { 
 											//console.log(instance.obj);
