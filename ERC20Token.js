@@ -38,7 +38,7 @@ this.erc20token = function(obj_or_address) {
 				instance.owner=function() {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
 							instance.obj.owner().then(function(o) {														
-								 resolve2(o);									
+								 resolve2(o[0].toString());									
 							});									
 					});
 					return p2;
