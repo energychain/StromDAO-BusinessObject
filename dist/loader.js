@@ -2723,8 +2723,12 @@ module.exports = {
 				if(typeof window == "undefined") {
 					if(fs.existsSync("smart_contracts/"+contract_type+".abi")) {
 							 abi = JSON.parse(fs.readFileSync("smart_contracts/"+contract_type+".abi"));
-						} else {
+						} else 
+					if(fs.existsSync("smart_contracts/"+contract_type+".abi")) {
 							 abi = JSON.parse(fs.readFileSync("node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi"));
+					} else {
+						var raw = srequest('GET',"http://stromkonto.net/abi/"+contract_type+".abi");				   
+						abi =JSON.parse(raw.body);							 
 					}
 				} else {
 						var raw = srequest('GET',"js/node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi");				   
