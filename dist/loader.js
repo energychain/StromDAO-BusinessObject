@@ -1605,9 +1605,9 @@ this.mpset=function(obj_or_address) {
 		
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.addMeterPoint(address_meterpoint).then(function(o) {	
-								parent._waitForTransactionKeepRef(o,function() {console.log("MP Added"); });		
-								resolve2(o);							
-																			
+								parent._waitForTransactionKeepRef(o,function() {									
+									resolve2(o);							
+								});									
 							});									
 					});
 					return p2;
@@ -2727,7 +2727,7 @@ module.exports = {
 					if(fs.existsSync("smart_contracts/"+contract_type+".abi")) {
 							 abi = JSON.parse(fs.readFileSync("node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi"));
 					} else {
-						var raw = srequest('GET',"http://stromkonto.net/abi/"+contract_type+".abi");				   
+						var raw = srequest('GET',"https://stromkonto.net/abi/"+contract_type+".abi");				   
 						abi =JSON.parse(raw.body);							 
 					}
 				} else {

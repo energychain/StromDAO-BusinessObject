@@ -212,7 +212,7 @@ module.exports = {
 					if(fs.existsSync("smart_contracts/"+contract_type+".abi")) {
 							 abi = JSON.parse(fs.readFileSync("node_modules/stromdao-businessobject/smart_contracts/"+contract_type+".abi"));
 					} else {
-						var raw = srequest('GET',"http://stromkonto.net/abi/"+contract_type+".abi");				   
+						var raw = srequest('GET',"https://stromkonto.net/abi/"+contract_type+".abi");				   
 						abi =JSON.parse(raw.body);							 
 					}
 				} else {
