@@ -15,7 +15,7 @@ this.mpset=function(obj_or_address) {
 				instance.addMeterPoint=function(address_meterpoint)  {		
 		
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.addMeterPoint(address_meterpoint).then(function(o) {	
+							instance.obj.addMeterPoint( parent._resolveName(address_meterpoint)).then(function(o) {	
 								parent._waitForTransactionKeepRef(o,function() {									
 									resolve2(o);							
 								});									

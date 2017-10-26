@@ -53,7 +53,7 @@ this.mpr = function(obj_or_address) {
 				 */
 				instance.readings=function(address_meterpoint) {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
-							instance.obj.readings(address_meterpoint).then(function(o) {		
+							instance.obj.readings( parent._resolveName(address_meterpoint)).then(function(o) {		
 													
 								 resolve2(o);									
 							});									

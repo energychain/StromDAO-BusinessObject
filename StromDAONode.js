@@ -92,6 +92,10 @@ module.exports = {
         this._utils=ethers.utils;
 		this._defaults = require("./Defaults.js").deployment;
 		this._deployment = require("./Defaults.js").loadDefaults;
+		this._resolveName = function(address) {			
+			var a=parent.storage.getItemSync("ext:"+address);	
+			if((typeof a!="undefined")&&(a!=null)) return a; else return address;
+		}
 		/**
 		 * Core Function to create a new key-pair.  
 		 */

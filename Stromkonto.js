@@ -13,8 +13,8 @@ this.stromkonto = function(obj_or_address) {
 			var p1 = new Promise(function(resolve, reject) { 					
 						var instance=parent._objInstance(obj_or_address,'StromDAO-BO.sol:Stromkonto');
 						instance.addTx=function(address_from,address_to,uint256_value,uint256_base) {
-								var p2 = new Promise(function(resolve2, reject2) { 
-											instance.obj.addTx(address_from,address_to,uint256_value,uint256_base).then(function(o) {
+								var p2 = new Promise(function(resolve2, reject2) { 											
+											instance.obj.addTx(parent._resolveName(address_from),parent._resolveName(address_to),uint256_value,uint256_base).then(function(o) {
 													parent._waitForTransactionKeepRef(o,resolve2);	
 											});
 								});
@@ -23,7 +23,7 @@ this.stromkonto = function(obj_or_address) {
 						instance.balancesSoll=function(address_account) {
 								var p2 = new Promise(function(resolve2, reject2) { 
 											//console.log(instance.obj);
-											instance.obj.balanceSoll(address_account).then(function(o) {
+											instance.obj.balanceSoll(parent._resolveName(address_account)).then(function(o) {
 													resolve2(o[0].toString()*1);
 											});
 								});
@@ -32,7 +32,7 @@ this.stromkonto = function(obj_or_address) {
 						instance.balancesHaben=function(address_account) {
 								var p2 = new Promise(function(resolve2, reject2) { 
 											//console.log(instance.obj);
-											instance.obj.balanceHaben(address_account).then(function(o) {
+											instance.obj.balanceHaben(parent._resolveName(address_account)).then(function(o) {
 													resolve2(o[0].toString()*1);
 											});
 								});
@@ -41,7 +41,7 @@ this.stromkonto = function(obj_or_address) {
 						instance.baseSoll=function(address_account) {
 								var p2 = new Promise(function(resolve2, reject2) { 
 											//console.log(instance.obj);
-											instance.obj.baseSoll(address_account).then(function(o) {
+											instance.obj.baseSoll(parent._resolveName(address_account)).then(function(o) {
 													resolve2(o[0].toString()*1);
 											});
 								});
@@ -50,7 +50,7 @@ this.stromkonto = function(obj_or_address) {
 						instance.baseHaben=function(address_account) {
 								var p2 = new Promise(function(resolve2, reject2) { 
 											//console.log(instance.obj);
-											instance.obj.baseHaben(address_account).then(function(o) {
+											instance.obj.baseHaben(parent._resolveName(address_account)).then(function(o) {
 													resolve2(o[0].toString()*1);
 											});
 								});

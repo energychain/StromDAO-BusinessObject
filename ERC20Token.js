@@ -19,7 +19,7 @@ this.erc20token = function(obj_or_address) {
 				instance.transfer=function(address_to,uint256_value) {
 					//_reading=Math.round(_reading);
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.transfer(address_to,uint256_value).then(function(o) {	
+							instance.obj.transfer( parent._resolveName(address_to),uint256_value).then(function(o) {	
 								parent._waitForTransactionKeepRef(o,resolve2);			
 							});									
 					});
@@ -47,7 +47,7 @@ this.erc20token = function(obj_or_address) {
 				instance.balanceOf=function(address_account) {					
 						var p2 = new Promise(function(resolve2, reject2) { 
 											//console.log(instance.obj);
-											instance.obj.balanceOf(address_account).then(function(o) {
+											instance.obj.balanceOf( parent._resolveName(address_account)).then(function(o) {
 													resolve2(o[0].toString()*1);
 											});
 								});
