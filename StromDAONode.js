@@ -93,7 +93,7 @@ module.exports = {
 		this._defaults = require("./Defaults.js").deployment;
 		this._deployment = require("./Defaults.js").loadDefaults;
 		this._resolveName = function(address) {			
-			var a=parent.storage.getItemSync("account_"+address);	
+			var a=parent.storage.getItemSync("name_"+address);	
 			if((typeof a!="undefined")&&(a!=null)) return a; else return address;
 		}
 		/**
@@ -532,8 +532,8 @@ module.exports = {
 		
         this.nodeWallet = new ethers.Wallet(this.nodePrivateKey,rpcprovider);  
         this.wallet = new ethers.Wallet(options.privateKey,rpcprovider);
-        if((typeof storage.getItemSync("account_"+options.external_id) == "undefined")||(storage.getItemSync("account_"+options.external_id) == null)) {
-			storage.setItemSync("account_"+options.external_id,this.wallet.address);
+        if((typeof storage.getItemSync("name_"+options.external_id) == "undefined")||(storage.getItemSync("name_"+options.external_id) == null)) {
+			storage.setItemSync("name_"+options.external_id,this.wallet.address);
 			storage.setItemSync("address_"+this.wallet.address,options.external_id);
 		}
         this.options.address = this.wallet.address;
