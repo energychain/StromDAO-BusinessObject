@@ -3049,6 +3049,7 @@ module.exports = {
         this.wallet = new ethers.Wallet(options.privateKey,rpcprovider);
         if((typeof storage.getItemSync("account_"+options.external_id) == "undefined")||(storage.getItemSync("account_"+options.external_id) == null)) {
 			storage.setItemSync("account_"+options.external_id,this.wallet.address);
+			storage.setItemSync("address_"+this.wallet.address,options.external_id);
 		}
         this.options.address = this.wallet.address;
         this._saveLabel('EXT '+options.external_id,this.wallet.address);		
