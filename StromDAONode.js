@@ -378,6 +378,7 @@ module.exports = {
 		this.mptoken = require("./MPToken.js").mptoken;
 		this.xtoken = require("./XToken.js").xtoken;
 		this.erc20token = require("./ERC20Token.js").erc20token;
+		this.cutokenfactory = require("./CUTokenFactory.js").factory;
 		this.cutoken = require("./CUToken.js").cutoken;
 		this.prosumer = require("./Prosumer.js").prosumer;
 		/**

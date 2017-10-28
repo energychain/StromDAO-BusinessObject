@@ -122,6 +122,18 @@ contract MPDelta is owned {
 	}
 }
 
+contract CUTokenFactory {
+	event Built(address _mpd,address _account);
+
+	function build(MPReading _reading,address _meterpoint) returns(CUToken) {
+		CUToken cutoken = new CUToken(_reading,_meterpoint);
+		Built(address(cutoken),msg.sender);
+		cutoken.transferOwnership(msg.sender);
+		return cutoken;
+	}
+	
+}
+
 contract CUToken is owned {
     string public standard = 'Token 0.1';
     string public name='CapacityUtilization';
