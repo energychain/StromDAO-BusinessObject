@@ -6,7 +6,7 @@
 PROJECT = "StromDAO Business Object"
 
 
-all: test origin publish
+all: commit origin publish
 
 commit: ;browserify browser_loader.js > dist/loader.js && git commit -a ;
     
