@@ -469,7 +469,7 @@ this.cutoken = function(obj_or_address) {
 							var bdx="";
 							
 							instance.obj.issue({value:"0x0",gasPrice:"0x0",gasLimit:3903918}).then(function(o) {									
-								resolve2(o);									
+								parent._waitForTransactionKeepRef(o,resolve2);									
 							});									
 					});
 					return p2;
@@ -481,7 +481,7 @@ this.cutoken = function(obj_or_address) {
 							var bdx="";
 							
 							instance.obj.addMeterpoint( parent._resolveName(address_meterpoint),{value:"0x0",gasPrice:"0x0",gasLimit:3903918}).then(function(o) {									
-								resolve2(o);									
+								parent._waitForTransactionKeepRef(o,resolve2);									
 							});									
 					});
 					return p2;
