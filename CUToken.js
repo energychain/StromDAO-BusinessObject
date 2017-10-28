@@ -60,6 +60,18 @@ this.cutoken = function(obj_or_address) {
 					return p2;
 				};
 				
+				instance.addMeterpoint= function(address_meterpoint) {	
+							
+					var p2 = new Promise(function(resolve2, reject2) { 
+							var bdx="";
+							
+							instance.obj.addMeterpoint(address_meterpoint,{value:"0x0",gasPrice:"0x0",gasLimit:3903918}).then(function(o) {									
+								resolve2(o);									
+							});									
+					});
+					return p2;
+				};
+				
 				resolve(instance);
 			});
 			return p1;
