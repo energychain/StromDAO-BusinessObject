@@ -30,8 +30,8 @@ this.factory = function(obj_or_address) {
 									p3.then(function() {
 											resolve2(cb);
 									});								
-							};								
-							instance.obj.build({value:"0x0",gasPrice:"0x0",gasLimit:3795290}).then(function(o) {	
+							};														
+							instance.obj.build(address_reading,address_meterpoint,{value:"0x0",gasPrice:"0x0",gasLimit:3795290}).then(function(o) {	
 								bdx=0;		
 							});									
 					});
