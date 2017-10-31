@@ -144,7 +144,8 @@ contract CUToken is owned {
 	MPDelta public source;
 	MPDelta[] public targets;
 	uint256 cnt_targets=0;
-
+	uint256 lastIssueTime=0;
+	
     mapping (address => uint256) public balanceOf;
     mapping (address => mapping (address => uint256)) public allowance;
 
@@ -166,11 +167,13 @@ contract CUToken is owned {
 	function issue() onlyOwner {		
 		uint256 sum_source=source.delta();
 		for(uint256 i=0;i<cnt_targets;i++) {
+				if(targets[i].lastReadingTime()<lastIssueTime) { throw; }
 				uint256 delta = targets[i].delta();				
 				totalSupply+=delta*sum_source;
 				balanceOf[targets[i].meterpoint()]+=delta*sum_source;	
 				Transfer(msg.sender,targets[i].meterpoint(),delta*sum_source);  	
-		}				
+		}	
+		lastIssueTime=now();			
 	}
 	
     function transfer(address _to, uint256 _value) {
