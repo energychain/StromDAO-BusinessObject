@@ -356,6 +356,7 @@ module.exports = {
 		 
 		
 		this.mpset = require("./MPSet.js").mpset;
+		this.mpdelta = require("./MPDelta.js").mpdelta;
 		this.mprset = require("./MPRSet.js").mprset;
 		this.mpsetfactory = require("./MPSetFactory.js").factory;
 		this.mprsetfactory = require("./MPRSetFactory.js").factory;
