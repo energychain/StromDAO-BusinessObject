@@ -1,6 +1,6 @@
 {
   "name": "stromdao-businessobject",
-  "version": "0.5.13",
+  "version": "0.5.14",
   "description": "Abstract BusinessObject for StromDAO Energy Blockchain. Abstraction layer between blockchain technology and business logic providing energy market related entities and use cases.",
   "main": "StromDAONode.js",
   "engines": {
@@ -39,7 +39,6 @@
     "node-persist": "^2.1.0",
     "node-rsa": "^0.4.2",
     "request": "^2.83.0",
-    "smokesignal": "^0.2.2",
     "sync": "^0.2.5",
     "sync-request": "^4.0.3"
   },
