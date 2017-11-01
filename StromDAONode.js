@@ -477,16 +477,16 @@ module.exports = {
         
 		if(typeof web3 != "undefined") {
 			// set default provider to same host as we are comming from (if available)
-			var rpcprovider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8080/rpc", 42);
+			var rpcprovider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8080/rpc");
 			if(typeof window != "undefined") {
 				if(options.rpc == "undefined") {
-					var rpcprovider = new ethers.providers.JsonRpcProvider(location.origin+"/rpc", 42);
+					var rpcprovider = new ethers.providers.JsonRpcProvider(location.origin+"/rpc");
 				} else {
-					var rpcprovider = new ethers.providers.JsonRpcProvider(options.rpc, 42); 
+					var rpcprovider = new ethers.providers.JsonRpcProvider(options.rpc); 
 				}
 			}
 		} else { 
-			var rpcprovider = new ethers.providers.JsonRpcProvider(options.rpc, 42);        
+			var rpcprovider = new ethers.providers.JsonRpcProvider(options.rpc);        
 		}
         if(typeof options.external_id !="undefined") {
 			if(typeof options.privateKey !="undefined") {
