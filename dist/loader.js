@@ -2193,7 +2193,7 @@ this.rolelookup=function(obj_or_address) {
 				};
 				instance.setRelation=function(uint256_role,address_target) {					
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.setRelation(uint256_role,address_target).then(function(o) {
+							instance.obj.setRelation(uint256_role, parent._resolveName(address_target)).then(function(o) {
 								parent._waitForTransaction(o.hash).then(function() {										
 												 resolve2(parent._keepHashRef(o));						
 												});																														
