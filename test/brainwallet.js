@@ -45,25 +45,19 @@ describe('StromDAO: Brain Wallet', function() {
 							done();
 				});					
 		});			
-		it('Persist PK for this node', function(done) {
+		it('Store Keys', function(done) {
 				var Account = new StromDAONode.Account("test","test");
-				Account.encrypt(node.wallet.privateKey).then(function(enc) {
-					node.stringstoragefactory().then(function(ssf)  {
-						console.log(" - Encrypted pk",enc);
-						ssf.build(enc).then(function(ss) {
-							node.roleLookup().then(function(rl) {
-									rl.setRelation(256,ss).then(function(tx) {
-										done();	
-									});
-							});
-						});
-					});							
-				});					
+				node.furyuser().then(function(furyuser) {
+					furyuser.setUserKeys(Account).then(function(tx) {
+							console.log("TX Store RSA",tx);
+							done();
+					});
+				});			
 		});
 		it('Retrieve PK for this node', function(done) {
 				var Account = new StromDAONode.Account("test","test");
 				node.roleLookup().then(function(rl) {
-					rl.relations(node.wallet.address,256).then(function(ss_addres) {
+					rl.relations(node.wallet.address,222).then(function(ss_addres) {
 						node.stringstorage(ss_addres).then(function(ss) {
 								ss.str().then(function(str) {
 										Account.decrypt(str).then(function(pk) {
@@ -79,7 +73,7 @@ describe('StromDAO: Brain Wallet', function() {
 		it('Retrieve PK for this node (wrong username)', function(done) {
 				var Account = new StromDAONode.Account("test2","test");
 				node.roleLookup().then(function(rl) {
-					rl.relations(node.wallet.address,256).then(function(ss_addres) {
+					rl.relations(node.wallet.address,222).then(function(ss_addres) {
 						node.stringstorage(ss_addres).then(function(ss) {
 								ss.str().then(function(str) {
 										Account.decrypt(str).then(function(pk) {												
@@ -91,5 +85,15 @@ describe('StromDAO: Brain Wallet', function() {
 					});						
 				});				
 		});
+		it('Retrieve RSA Keys', function(done) {
+				var Account = new StromDAONode.Account("test","test");
+				node.furyuser().then(function(furyuser) {
+						furyuser.getRSAKeys(Account).then(function(tx) {
+								assert.equal(Account.RSAPrivateKey,node.RSAPrivateKey);
+								done();
+						});
+				});			
+		});
+
 	});
 });

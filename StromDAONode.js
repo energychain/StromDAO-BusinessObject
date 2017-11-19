@@ -382,6 +382,7 @@ module.exports = {
 		this.cutokenfactory = require("./CUTokenFactory.js").factory;
 		this.cutoken = require("./CUToken.js").cutoken;
 		this.prosumer = require("./Prosumer.js").prosumer;
+		this.furyuser = require("./Furyuser.js").furyuser;
 		/**
 		 * Bridge to DirectConnectionFactory Smart Contract
 		 */
