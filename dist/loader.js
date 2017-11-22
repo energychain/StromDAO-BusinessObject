@@ -1322,7 +1322,8 @@ this.erc20token = function(obj_or_address) {
 					var p2 = new Promise(function(resolve2, reject2) { 
 						parent.furyuser().then(function(furyuser) {
 								furyuser.getRole(role).then(function(tx) {
-									if(tx=="0x0000000000000000000000000000000000000000") {									
+									if(tx=="0x0000000000000000000000000000000000000000") {	
+										console.log("Nothing linked to role",role);								
 										resolve2();
 									} else {
 										parent.stringstorage(tx).then(function(ss) {
