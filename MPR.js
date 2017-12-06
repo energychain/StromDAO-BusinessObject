@@ -25,7 +25,7 @@ this.mpr = function(obj_or_address) {
 				instance.storeReading=function(uint256_reading) {
 					//_reading=Math.round(_reading);
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.storeReading(uint256_reading).then(function(o) {	
+							instance.obj.storeReading(Math.round(uint256_reading)).then(function(o) {	
 								parent._waitForTransactionKeepRef(o,resolve2);			
 							});									
 					});
