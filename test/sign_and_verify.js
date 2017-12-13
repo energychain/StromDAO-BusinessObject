@@ -20,11 +20,15 @@ describe('StromDAO: Prosumer Info', function() {
     
     
 	describe('Sign Message', function() {	
-		it('Sign Message', function(done) {
-			console.log(message);
+		it('Sign Message', function(done) {			
 			signed_message=node_in.sign(message);					
 			done();
 		});		
+		it('Verify different Message has different Signature', function(done) {			
+			signed_message_2=node_in.sign(message+"_123");							
+			assert.notEqual(signed_message_2,signed_message);
+			done();
+		});	
 		it('Verify Message', function(done) {
 			
 			verify_from=node_in.verify(signed_message);			

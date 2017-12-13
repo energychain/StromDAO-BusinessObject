@@ -3341,8 +3341,8 @@ module.exports = {
 				
 			});
 		}
-		this.sign = function(data) {			
-				return this.wallet.sign(this._utils.id(data));
+		this.sign = function(data) {							
+				return this.wallet.sign({data:this._utils.id(data)});
 		}
 		this.verify = function(signedData) {
 				var transaction  = ethers.Wallet.parseTransaction(signedData);
