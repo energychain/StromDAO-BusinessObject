@@ -556,6 +556,9 @@ module.exports = {
 				
 			});
 		}
+		this.hash = function(data) {
+				return this._utils.keccak256(this._utils.toUtf8Bytes(data));			
+		}
 		this.sign = function(data) {							
 				return this.wallet.sign({data:this._utils.keccak256(this._utils.toUtf8Bytes(data))});
 		}
