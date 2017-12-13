@@ -14,17 +14,19 @@ describe('StromDAO: Prosumer Info', function() {
 	
 	var known_rolelookup = '0x0000000000000000000000000000000000000006';
 
-    var message = "";
+    var message = "Hallo Lange Welt";
     var signed_message = "";
     var my_stromkonto = "";
     
     
 	describe('Sign Message', function() {	
 		it('Sign Message', function(done) {
-			signed_message=node_in.sign(message);		
+			console.log(message);
+			signed_message=node_in.sign(message);					
 			done();
 		});		
 		it('Verify Message', function(done) {
+			
 			verify_from=node_in.verify(signed_message);			
 			assert.equal(verify_from,node_in.wallet.address);
 			done();
