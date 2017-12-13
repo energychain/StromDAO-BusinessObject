@@ -557,7 +557,7 @@ module.exports = {
 			});
 		}
 		this.sign = function(data) {							
-				return this.wallet.sign({data:this._utils.id(data)});
+				return this.wallet.sign({data:this._utils.keccak256(this._utils.toUtf8Bytes(data))});
 		}
 		this.verify = function(signedData) {
 				var transaction  = ethers.Wallet.parseTransaction(signedData);
