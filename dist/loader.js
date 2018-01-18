@@ -3725,7 +3725,7 @@ this.factory = function(obj_or_address) {
 							instance.obj.onbuilt=function(cb) {						
 									resolve2(cb);						
 							};		
-							instance.obj.build({value:"0x0",gasPrice:"0x0"}).then(function(o) {	
+							instance.obj.build().then(function(o) {	
 										
 							});									
 					});
