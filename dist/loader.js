@@ -2756,10 +2756,7 @@ this.stringstorage = function(obj_or_address) {
 									resolve2(cb);						
 							};	
 							
-							instance.obj.build(string_str,{value:"0x0",gasPrice:"0x0"}).then(function(o) {	
-								
-								//{value:"0x0",gasPrice:"0x0",gas:"2974441329"}
-								//parent._waitForTransactionKeepRef(o,resolve2);			
+							instance.obj.build(string_str).then(function(o) {			
 							});									
 					});
 					return p2;
