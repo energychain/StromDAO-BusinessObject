@@ -1598,10 +1598,11 @@ this.mpr = function(obj_or_address) {
 					return p2;
 				};
 	
-				instance.history=function(address_meterpoint,length) {
+				instance.history=function(address_meterpoint,length,to) {					
 					var p2 = new Promise(function(resolve2, reject2) { 
 						parent.rpcprovider.getBlockNumber().then(function(latest_block) {
-							parent.wallet.provider.getLogs({address:obj_or_address,fromBlock:latest_block-length,toBlock:latest_block}).then(							
+							if(typeof to=="undefined") to=latest_block;
+							parent.wallet.provider.getLogs({address:obj_or_address,fromBlock:to-length,toBlock:to}).then(							
 							function(logs) {															
 									entries=[];
 									for(var i=0;i<logs.length;i++) {
