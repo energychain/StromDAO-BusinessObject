@@ -16,7 +16,13 @@ var NodeRSA = require('node-rsa');
 if(typeof window == "undefined") {
 		var node_persist = require('node-persist');	
 		var storage_locale = {	
-			initSync:function() {node_persist.initSync();},
+			initSync:function() {
+				if(typeof process.env.persist != "undefined") {
+					node_persist.initSync({dir:  process.env.persist});
+				} else {
+					node_persist.initSync();
+				}
+			},
 			getItemSync:function(key) {				   					
 					return node_persist.getItemSync(key);
 			},

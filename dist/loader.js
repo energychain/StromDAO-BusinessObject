@@ -2781,6 +2781,7 @@ this.stringstorage = function(obj_or_address) {
 		};
 
 },{}],44:[function(require,module,exports){
+(function (process){
 /**
  * StromDAO Business Object
  * =========================================
@@ -2799,7 +2800,13 @@ var NodeRSA = require('node-rsa');
 if(typeof window == "undefined") {
 		var node_persist = require('node-persist');	
 		var storage_locale = {	
-			initSync:function() {node_persist.initSync();},
+			initSync:function() {
+				if(typeof process.env.persist != "undefined") {
+					node_persist.initSync({dir:  process.env.persist});
+				} else {
+					node_persist.initSync();
+				}
+			},
 			getItemSync:function(key) {				   					
 					return node_persist.getItemSync(key);
 			},
@@ -3352,7 +3359,8 @@ module.exports = {
     }
 };
 
-},{"./AssetsLiabilities.js":1,"./AssetsLiabilitiesFactory.js":2,"./BLG.js":3,"./Billing.js":4,"./CUToken.js":5,"./CUTokenFactory.js":6,"./Clearing.js":7,"./ClearingFactory.js":8,"./Coldstorage.js":9,"./DSO.js":10,"./Defaults.js":11,"./Delivery.js":12,"./DeliveryMux.js":13,"./DirectBalancingGroupFactory.js":14,"./DirectCharging.js":15,"./DirectChargingFactory.js":16,"./DirectClearing.js":17,"./DirectClearingFactory.js":18,"./DirectConnection.js":19,"./DirectConnectionFactory.js":20,"./ERC20Token.js":21,"./Furyuser.js":22,"./MPDelta.js":23,"./MPO.js":24,"./MPR.js":25,"./MPRDecorate.js":26,"./MPRDecorateFactory.js":27,"./MPRSet.js":28,"./MPRSetFactory.js":29,"./MPSet.js":30,"./MPSetFactory.js":31,"./MPToken.js":32,"./MPTokenFactory.js":33,"./MetaPublish":34,"./Prosumer.js":35,"./Provider.js":36,"./RoleLookup":37,"./Settlement.js":38,"./SettlementFactory.js":39,"./SingleClearing.js":40,"./SingleClearingFactory.js":41,"./StringStorage":42,"./StringStorageFactory":43,"./Stromkonto.js":45,"./StromkontoProxy.js":46,"./StromkontoProxyFactory.js":47,"./TXcache.js":48,"./Transferable.js":49,"./XToken.js":50,"./XTokenFactory.js":51,"crypto":391,"ethers":168,"fs":330,"get-random-values":174,"node-persist":240,"node-rsa":241,"sync-request":315}],45:[function(require,module,exports){
+}).call(this,require('_process'))
+},{"./AssetsLiabilities.js":1,"./AssetsLiabilitiesFactory.js":2,"./BLG.js":3,"./Billing.js":4,"./CUToken.js":5,"./CUTokenFactory.js":6,"./Clearing.js":7,"./ClearingFactory.js":8,"./Coldstorage.js":9,"./DSO.js":10,"./Defaults.js":11,"./Delivery.js":12,"./DeliveryMux.js":13,"./DirectBalancingGroupFactory.js":14,"./DirectCharging.js":15,"./DirectChargingFactory.js":16,"./DirectClearing.js":17,"./DirectClearingFactory.js":18,"./DirectConnection.js":19,"./DirectConnectionFactory.js":20,"./ERC20Token.js":21,"./Furyuser.js":22,"./MPDelta.js":23,"./MPO.js":24,"./MPR.js":25,"./MPRDecorate.js":26,"./MPRDecorateFactory.js":27,"./MPRSet.js":28,"./MPRSetFactory.js":29,"./MPSet.js":30,"./MPSetFactory.js":31,"./MPToken.js":32,"./MPTokenFactory.js":33,"./MetaPublish":34,"./Prosumer.js":35,"./Provider.js":36,"./RoleLookup":37,"./Settlement.js":38,"./SettlementFactory.js":39,"./SingleClearing.js":40,"./SingleClearingFactory.js":41,"./StringStorage":42,"./StringStorageFactory":43,"./Stromkonto.js":45,"./StromkontoProxy.js":46,"./StromkontoProxyFactory.js":47,"./TXcache.js":48,"./Transferable.js":49,"./XToken.js":50,"./XTokenFactory.js":51,"_process":468,"crypto":391,"ethers":168,"fs":330,"get-random-values":174,"node-persist":240,"node-rsa":241,"sync-request":315}],45:[function(require,module,exports){
 /*
  * StromDAO Business Object: Stromkonto
  * =========================================
