@@ -727,7 +727,7 @@ this.loadDefaults=function(options) {
 					contract_type["StromDAO-BO.sol_MPTokenFactory"]="0x604Caaa72ea8cfCf64179079c30D4168D5bd87bc";
 					contract_type["StromDAO-BO.sol_XTokenFactory"]="0x814e1eEE776b00D3285913dADceb2ff6DeEFea51";
 					contract_type["StromDAO-BO.sol_CUTokenFactory"]="0x392c6a3482ffd600fF8C2b816b09d6613ad61BC4";
-					contract_type["StromDAO-BO.sol_SPVfactory"]="0x683c0A349b88fB1a2D16f32BBaF09B6a898a5dd5";					
+					contract_type["StromDAO-BO.sol_SPVfactory"]="0x83835a8297e01d8f7736cEb183b07071FE2992e7";					
 											
 					var roles=[];
 					roles[0]=0;
@@ -2446,11 +2446,11 @@ this.spv = function(obj_or_address) {
 				
 				instance.meteredPrice=function(uint256_value) {					
 						var p2 = new Promise(function(resolve2, reject2) { 											
-											instance.obj.meteredPrice(uint256_value).then(function(o) {
-													resolve2(o.hash);
-											});
-								});
-								return p2;
+							instance.obj.meteredPrice(uint256_value).then(function(o) {
+									parent._waitForTransactionKeepRef(o,resolve2);
+							});
+						});
+						return p2;
 				};
 				
 				instance.sell=function(address_to,uint256_fund,uint256_value) {					

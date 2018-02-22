@@ -119,3 +119,106 @@ describe('Become second investor', function() {
 		});
 	});		
 });
+
+describe('Finish invest phase - spend funds.', function() {
+	this.timeout(300000);
+	
+	it('Re-Open project owner', function(done) {		
+		node_owner = new StromDAONode.Node({external_id:owner_id,testMode:true});								
+		assert.equal(node_owner.wallet.address,owner_address);		
+		done();							
+	});	
+	it('Disallow Funding', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+			 spv.disallowFunding().then(function(o) {						
+					assert.equal(o.length,66);							
+					done();	
+				}).catch(function(e) {console.log("Error",e);});
+		});					
+	});	
+	it('As Owner: Try another funding of 50 - should now be earning', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+			 spv.fund(50).then(function(o) {						
+					assert.equal(o.length,66);							
+					done();	
+				});
+		});
+	});
+	it('Check if funding is still 300', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+			 spv.totalSupply().then(function(o) {										
+					assert.equal(o,300);							
+					done();	
+				});
+		});
+	});	
+	it('Spend 270', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+			 spv.spend(270).then(function(o) {										
+					assert.equal(o.length,66);							
+					done();	
+				});
+		});
+	});	
+	it('Check if funding is still 300', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+			 spv.totalSupply().then(function(o) {										
+					assert.equal(o,300);							
+					done();	
+				});
+		});
+	});	
+	it('As Owner: Book earning of 150', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+			 spv.earn(150).then(function(o) {						
+					assert.equal(o.length,66);							
+					done();	
+				});
+		});
+	});
+	it('Check if earning is now 200', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+			 spv.earnings().then(function(o) {										
+					assert.equal(o,200);							
+					done();	
+				});
+		});
+	});	
+});
+describe('Do metered earning (Earn as soon as meter reading is available).', function() {
+	this.timeout(300000);
+	node_owner = new StromDAONode.Node({external_id:owner_id,testMode:true});		
+	it('Set price per reading unit to 10', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+			 spv.meteredPrice(10).then(function(o) {						
+					assert.equal(o.length,66);							
+					done();	
+				}).catch(function(e) {console.log("Error",e);});
+		});					
+	});	
+	it('Set initial reading to 200', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+			 spv.meteredEarn(200).then(function(o) {						
+					assert.equal(o.length,66);							
+					done();	
+				}).catch(function(e) {console.log("Error",e);});
+		});					
+	});
+	it('Set second reading to 211', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+			 spv.meteredEarn(211).then(function(o) {						
+					assert.equal(o.length,66);							
+					done();	
+				}).catch(function(e) {console.log("Error",e);});
+		});					
+	});
+	it('Check if earning is now 310 (110 new)', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+			 spv.earnings().then(function(o) {										
+					assert.equal(o,310);							
+					done();	
+				});
+		});
+	});	
+});
+

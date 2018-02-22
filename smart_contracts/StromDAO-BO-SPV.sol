@@ -176,7 +176,7 @@ contract SPV is owned {
     }    
     function meteredPrice(uint256 _value) public onlyOwner {
        meteredprice=_value;    
-       meteredPrice(_value);
+       MeteredPrice(_value);
     }
     
 

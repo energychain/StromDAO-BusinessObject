@@ -67,11 +67,11 @@ this.spv = function(obj_or_address) {
 				
 				instance.meteredPrice=function(uint256_value) {					
 						var p2 = new Promise(function(resolve2, reject2) { 											
-											instance.obj.meteredPrice(uint256_value).then(function(o) {
-													resolve2(o.hash);
-											});
-								});
-								return p2;
+							instance.obj.meteredPrice(uint256_value).then(function(o) {
+									parent._waitForTransactionKeepRef(o,resolve2);
+							});
+						});
+						return p2;
 				};
 				
 				instance.sell=function(address_to,uint256_fund,uint256_value) {					
