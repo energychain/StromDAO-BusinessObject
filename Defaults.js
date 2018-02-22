@@ -45,7 +45,7 @@ this.loadDefaults=function(options) {
 					contract_type["StromDAO-BO.sol_MPTokenFactory"]="0x604Caaa72ea8cfCf64179079c30D4168D5bd87bc";
 					contract_type["StromDAO-BO.sol_XTokenFactory"]="0x814e1eEE776b00D3285913dADceb2ff6DeEFea51";
 					contract_type["StromDAO-BO.sol_CUTokenFactory"]="0x392c6a3482ffd600fF8C2b816b09d6613ad61BC4";
-					contract_type["StromDAO-BO.sol_SPVfactory"]="0xAebF5Dd8A0885Cb6681C2B405Fde53f78113b678";					
+					contract_type["StromDAO-BO.sol_SPVfactory"]="0x683c0A349b88fB1a2D16f32BBaF09B6a898a5dd5";					
 											
 					var roles=[];
 					roles[0]=0;

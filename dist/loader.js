@@ -727,7 +727,7 @@ this.loadDefaults=function(options) {
 					contract_type["StromDAO-BO.sol_MPTokenFactory"]="0x604Caaa72ea8cfCf64179079c30D4168D5bd87bc";
 					contract_type["StromDAO-BO.sol_XTokenFactory"]="0x814e1eEE776b00D3285913dADceb2ff6DeEFea51";
 					contract_type["StromDAO-BO.sol_CUTokenFactory"]="0x392c6a3482ffd600fF8C2b816b09d6613ad61BC4";
-					contract_type["StromDAO-BO.sol_SPVfactory"]="0xAebF5Dd8A0885Cb6681C2B405Fde53f78113b678";					
+					contract_type["StromDAO-BO.sol_SPVfactory"]="0x683c0A349b88fB1a2D16f32BBaF09B6a898a5dd5";					
 											
 					var roles=[];
 					roles[0]=0;
@@ -2395,51 +2395,59 @@ this.spv = function(obj_or_address) {
 				
 				instance.fund=function(uint256_value) {					
 						var p2 = new Promise(function(resolve2, reject2) { 											
-											instance.obj.fund(uint256_value).then(function(o) {
-													resolve2(o[0].toString());
-											});
-								});
-								return p2;
+									instance.obj.fund(uint256_value).then(function(o) {
+										parent._waitForTransactionKeepRef(o,resolve2);	
+									});
+						});
+						return p2;
 				};
-				instance.allowFunding=function(bool_allowed) {					
+				instance.allowFunding=function() {							
 						var p2 = new Promise(function(resolve2, reject2) { 											
-											instance.obj.allowFunding(bool_allowed).then(function(o) {
-													resolve2(o[0].toString());
-											});
-								});
-								return p2;
+									instance.obj.allowFunding().then(function(o) {													
+										parent._waitForTransactionKeepRef(o,resolve2);	
+									});
+						});
+						return p2;
+				};
+				instance.disallowFunding=function() {							
+						var p2 = new Promise(function(resolve2, reject2) { 											
+									instance.obj.disallowFunding().then(function(o) {													
+											parent._waitForTransactionKeepRef(o,resolve2);	
+									});
+						});
+						return p2;
 				};
 				instance.spend=function(uint256_value) {					
 						var p2 = new Promise(function(resolve2, reject2) { 											
-											instance.obj.spend(uint256_value).then(function(o) {
-													resolve2(o[0].toString());
-											});
-								});
-								return p2;
+									instance.obj.spend(uint256_value).then(function(o) {
+										parent._waitForTransactionKeepRef(o,resolve2);	
+									});
+						});
+						return p2;
 				};
 				
 				instance.earn=function(uint256_value) {					
 						var p2 = new Promise(function(resolve2, reject2) { 											
-											instance.obj.earn(uint256_value).then(function(o) {
-													resolve2(o[0].toString());
-											});
-								});
-								return p2;
+									instance.obj.earn(uint256_value).then(function(o) {
+										parent._waitForTransactionKeepRef(o,resolve2);	
+									});
+						});
+						return p2;
 				};
 				
 				instance.meteredEarn=function(uint256_reading) {					
 						var p2 = new Promise(function(resolve2, reject2) { 											
-											instance.obj.meteredEarn(uint256_reading).then(function(o) {
-													resolve2(o[0].toString());
-											});
-								});
-								return p2;
+									instance.obj.meteredEarn(uint256_reading).then(function(o) {
+										parent._waitForTransactionKeepRef(o,resolve2);	
+									});
+						});
+						return p2;
 				};
 				
 				instance.meteredPrice=function(uint256_value) {					
 						var p2 = new Promise(function(resolve2, reject2) { 											
 											instance.obj.meteredPrice(uint256_value).then(function(o) {
-													resolve2(o[0].toString());
+													resolve2(o.hash);
 											});
 								});
 								return p2;
@@ -2447,25 +2455,25 @@ this.spv = function(obj_or_address) {
 				
 				instance.sell=function(address_to,uint256_fund,uint256_value) {					
 						var p2 = new Promise(function(resolve2, reject2) { 											
-											instance.obj.sell(address_to,uint256_fund,uint256_value).then(function(o) {
-													resolve2(o[0].toString());
-											});
-								});
-								return p2;
+									instance.obj.sell(address_to,uint256_fund,uint256_value).then(function(o) {
+											parent._waitForTransactionKeepRef(o,resolve2);	
+									});
+						});
+						return p2;
 				};
 				
 				instance.transfer=function(address_to, uint256_fund) {					
 						var p2 = new Promise(function(resolve2, reject2) { 											
-											instance.obj.transfer(address_to, uint256_fund).then(function(o) {
-													resolve2(o[0].toString());
-											});
-								});
-								return p2;
+									instance.obj.transfer(address_to, uint256_fund).then(function(o) {
+										parent._waitForTransactionKeepRef(o,resolve2);	
+									});
+						});
+						return p2;
 				};
 				
 				instance.totalSupply=function() {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
-							instance.obj.totalSupply().then(function(o) {														
+							instance.obj.totalSupply().then(function(o) {	
 								 resolve2(o[0].toString()*1);									
 							});									
 					});
@@ -2492,7 +2500,7 @@ this.spv = function(obj_or_address) {
 					
 				instance.totalSupply=function() {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
-							instance.obj.totalSupply().then(function(o) {														
+							instance.obj.totalSupply().then(function(o) {																				
 								 resolve2(o[0].toString()*1);									
 							});									
 					});
@@ -2599,17 +2607,22 @@ this.factory = function(obj_or_address) {
 					var p2 = new Promise(function(resolve2, reject2) { 
 							var bdx="";
 						  
+							
 							instance.obj.onbuilt=function(cb) {	
 									var p3=new Promise(function(resolve3, reject3) {															
-										parent._waitForTransaction(bdx.hash).then(resolve3(cb));
+										parent._waitForTransaction(bdx.hash).then(resolve3(cb)).catch(function(e) {
+												resolve3(cb);
+										});
 									});
 									p3.then(function() {
 											resolve2(cb);
+									}).catch(function(e) {
+											console.log("Error P3",e);
 									});								
 							};								
 							instance.obj.build(address_stromkonto,string_spvname,{value:"0x0",gasPrice:"0x0",gasLimit:3795290}).then(function(o) {	
 								bdx=0;		
-							});									
+							}).catch(function(e) {console.log("Error P2",e);});									
 					});
 					return p2;
 				};
