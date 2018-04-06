@@ -187,6 +187,7 @@ contract SPV is owned {
         balanceOf[_to]-=_fund;
         stromkonto.addTx(this,_to,_value,0);
         totalSupply-=_fund;
+        earnings-=_value;
         Selling(_to,_fund,_value);
     }
  

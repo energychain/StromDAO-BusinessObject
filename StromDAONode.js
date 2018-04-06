@@ -56,6 +56,23 @@ var bo_storage = {
 };
 	
 module.exports = {	
+	
+	Util:function() {
+		this.decrypt=function(data,salt) {
+			var crypto=require("crypto");										
+			var decipher = crypto.createDecipher('aes-256-ctr',salt);
+			var dec = decipher.update(data,'hex','utf8')
+			dec += decipher.final('utf8');	
+			return dec;
+		}
+		this.encrypt=function(data,salt) {
+			var crypto=require("crypto");					
+			var cipher = crypto.createCipher( 'aes-256-ctr',salt);
+			var crypted = cipher.update(data,'utf8','hex');
+			crypted += cipher.final('hex');
+			return crypted;
+		}
+	},
 	Account:function(username,password) {
 		this.username=username;
 		this.password=password;

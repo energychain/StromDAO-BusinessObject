@@ -19,6 +19,9 @@ var owner_address="";
 
 var investor_id = "SPV_"+Math.random()*10000000;
 var investor_address="";
+
+var investor_id2 = "SPV_"+Math.random()*10000000;
+var investor_address2="";
 	
 describe('Setup Owner Role for Hybrid Power Market', function() {
 	this.timeout(300000);
@@ -221,4 +224,180 @@ describe('Do metered earning (Earn as soon as meter reading is available).', fun
 		});
 	});	
 });
-
+describe('Add another investor and transfer funds from owner to new investor', function() {
+	this.timeout(300000);
+	it('Create a new entity that takes role of second Investor', function(done) {		
+		node_investor2 = new StromDAONode.Node({external_id:investor_id2,testMode:true});						
+		assert.equal(node_investor2.wallet.address.length,42);
+		investor_address2=node_investor2.wallet.address;
+		console.log("> Address (Investor2)",node_investor2.wallet.address);
+		done();							
+	});	
+	it('Re-Open project owner', function(done) {		
+		node_owner = new StromDAONode.Node({external_id:owner_id,testMode:true});								
+		assert.equal(node_owner.wallet.address,owner_address);		
+		done();							
+	});
+	it('Transfer 13 funds to new investor', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+			 spv.transfer(investor_address2,13).then(function(o) {						
+					assert.equal(o.length,66);							
+					done();	
+				}).catch(function(e) {console.log("Error",e);});
+		});									
+	});	
+	it('SPV total funded is 300', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+			 spv.totalSupply().then(function(o) {										
+					assert.equal(o,300);							
+					done();	
+				});
+		});
+	});	
+	it('- owner has 87', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+			 spv.balanceOf(owner_address).then(function(o) {										
+					assert.equal(o,87);							
+					done();	
+				});
+		});
+	});	
+	it('- Investor has 200', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+			 spv.balanceOf(investor_address).then(function(o) {										
+					assert.equal(o,200);							
+					done();	
+				});
+		});
+	});		
+	it('- Second Investor has 13', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+			 spv.balanceOf(investor_address2).then(function(o) {										
+					assert.equal(o,13);							
+					done();	
+				});
+		});
+	});			
+});
+describe('Sell (Exchange) Funds for cash', function() {
+	this.timeout(300000);
+	var node_owner = {};
+	it('Re-Open project owner', function(done) {		
+		node_owner = new StromDAONode.Node({external_id:owner_id,testMode:true});								
+		assert.equal(node_owner.wallet.address,owner_address);		
+		done();							
+	});
+	it('As Owner: Book earning of 290', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+			 spv.earn(290).then(function(o) {						
+					assert.equal(o.length,66);							
+					done();	
+				});
+		});
+	});
+	it('Check if earning is now 600 (290 new)', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+			 spv.earnings().then(function(o) {										
+					assert.equal(o,600);							
+					done();	
+				});
+		});
+	});	
+	it('Calculate exchange Rate (should be 600 earned / 300 funded = 2)', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+				spv.totalSupply().then(function(o) {										
+					assert.equal(o,300);							
+					done();	
+				});
+		});		
+	});	
+	it('Sell 10 funds to investor1 for 20 earnings (=payout)', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+			 spv.sell(investor_address,10,20).then(function(o) {						
+					assert.equal(o.length,66);							
+					done();	
+				});
+		});
+	});
+	it('Check if earning is now 580 (20 less)', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+			 spv.earnings().then(function(o) {										
+					assert.equal(o,580);							
+					done();	
+				});
+		});
+	});	
+	it('Check if total funds is now 290 (10 less)', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+				spv.totalSupply().then(function(o) {										
+					assert.equal(o,290);							
+					done();	
+				});
+		});		
+	});	
+	it('- Investor has 190', function(done) {		
+		node_owner.spv(spv_address).then(function(spv) {
+			 spv.balanceOf(investor_address).then(function(o) {										
+					assert.equal(o,190);							
+					done();	
+				});
+		});
+	});		
+});
+describe('Validate Stromkonto Consensus', function() {
+	this.timeout(300000);
+	var node_owner = {};
+	it('Re-Open project owner', function(done) {		
+		node_owner = new StromDAONode.Node({external_id:owner_id,testMode:true});								
+		assert.equal(node_owner.wallet.address,owner_address);		
+		done();							
+	});
+	it('- SPV has liabilities of 290', function(done) {		
+		node_owner.stromkonto("0x19BF166624F485f191d82900a5B7bc22Be569895").then(function(sko) {
+			 sko.balancesSoll(spv_address).then(function(o) {						
+					assert.equal(o,290);							
+					done();	
+				});
+		});
+	});
+	it('- SPV has savings of 900', function(done) {		
+		node_owner.stromkonto("0x19BF166624F485f191d82900a5B7bc22Be569895").then(function(sko) {
+			 sko.balancesHaben(spv_address).then(function(o) {						
+					assert.equal(o,900);							
+					done();	
+				});
+		});
+	});	
+	it('- Owner has liabilities of 700', function(done) {		
+		node_owner.stromkonto("0x19BF166624F485f191d82900a5B7bc22Be569895").then(function(sko) {
+			 sko.balancesSoll(owner_address).then(function(o) {						
+					assert.equal(o,700);							
+					done();	
+				});
+		});
+	});
+	it('- Owner has savings of 270', function(done) {		
+		node_owner.stromkonto("0x19BF166624F485f191d82900a5B7bc22Be569895").then(function(sko) {
+			 sko.balancesHaben(owner_address).then(function(o) {						
+					assert.equal(o,270);							
+					done();	
+				});
+		});
+	});		
+	it('- Investor has liabilities of 200', function(done) {		
+		node_owner.stromkonto("0x19BF166624F485f191d82900a5B7bc22Be569895").then(function(sko) {
+			 sko.balancesSoll(investor_address).then(function(o) {						
+					assert.equal(o,200);							
+					done();	
+				});
+		});
+	});
+	it('- Investor has savings of 20', function(done) {		
+		node_owner.stromkonto("0x19BF166624F485f191d82900a5B7bc22Be569895").then(function(sko) {
+			 sko.balancesHaben(investor_address).then(function(o) {						
+					assert.equal(o,20);							
+					done();	
+				});
+		});
+	});	
+});	

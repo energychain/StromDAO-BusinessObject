@@ -727,7 +727,7 @@ this.loadDefaults=function(options) {
 					contract_type["StromDAO-BO.sol_MPTokenFactory"]="0x604Caaa72ea8cfCf64179079c30D4168D5bd87bc";
 					contract_type["StromDAO-BO.sol_XTokenFactory"]="0x814e1eEE776b00D3285913dADceb2ff6DeEFea51";
 					contract_type["StromDAO-BO.sol_CUTokenFactory"]="0x392c6a3482ffd600fF8C2b816b09d6613ad61BC4";
-					contract_type["StromDAO-BO.sol_SPVfactory"]="0x83835a8297e01d8f7736cEb183b07071FE2992e7";					
+					contract_type["StromDAO-BO.sol_SPVfactory"]="0x17Af8b0f84036bE4cf2E0fB02f25ec4ae2ffE08b";					
 											
 					var roles=[];
 					roles[0]=0;
@@ -3096,6 +3096,23 @@ var bo_storage = {
 };
 	
 module.exports = {	
+	
+	Util:function() {
+		this.decrypt=function(data,salt) {
+			var crypto=require("crypto");										
+			var decipher = crypto.createDecipher('aes-256-ctr',salt);
+			var dec = decipher.update(data,'hex','utf8')
+			dec += decipher.final('utf8');	
+			return dec;
+		}
+		this.encrypt=function(data,salt) {
+			var crypto=require("crypto");					
+			var cipher = crypto.createCipher( 'aes-256-ctr',salt);
+			var crypted = cipher.update(data,'utf8','hex');
+			crypted += cipher.final('hex');
+			return crypted;
+		}
+	},
 	Account:function(username,password) {
 		this.username=username;
 		this.password=password;
