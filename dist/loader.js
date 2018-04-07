@@ -728,7 +728,7 @@ this.loadDefaults=function(options) {
 					contract_type["StromDAO-BO.sol_XTokenFactory"]="0x814e1eEE776b00D3285913dADceb2ff6DeEFea51";
 					contract_type["StromDAO-BO.sol_CUTokenFactory"]="0x392c6a3482ffd600fF8C2b816b09d6613ad61BC4";
 					contract_type["StromDAO-BO.sol_SPVfactory"]="0x17Af8b0f84036bE4cf2E0fB02f25ec4ae2ffE08b";					
-					contract_type["StromDAO-BO.sol_HySM"]="0xd51A56769B78311d61E67B2DFBF5d5C939a66901";
+					contract_type["StromDAO-BO.sol_HySM"]="0xB36a4ff2d7d3F38EC255D56BABb16DaFF49B8F09";
 											
 					var roles=[];
 					roles[0]=0;
@@ -1447,7 +1447,14 @@ this.hysm = function(obj_or_address) {
 					});
 					return p2;
 				};
-	
+				instance.managed_tokens=function(uint256_idx) {					
+					var p2 = new Promise(function(resolve2, reject2) { 							
+							instance.obj.managed_tokens(uint256_idx).then(function(o) {															
+								 resolve2(o);									
+							});									
+					});
+					return p2;
+				};
 				instance.managed_tokens_cnt=function() {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
 							instance.obj.managed_tokens_cnt().then(function(o) {															

@@ -107,6 +107,7 @@ contract HySM  is owned,MPReading {
 	 
 	HySToken[] public managed_tokens;
 	uint256 public managed_tokens_cnt=0;
+	uint256 public active_token_idx=0;	
 	
 	struct commissioninfo {
 		address account;
@@ -140,26 +141,26 @@ contract HySM  is owned,MPReading {
 		}
 	}	
 	
+	function setActiveTokenIdx(uint256 _active_token_idx) {
+		current_hystoken=managed_tokens[active_token_idx];
+	}
+	
 	function commission(address _account,address _oracle,uint256 _value_energy,uint256 _value_time) onlyOwner public {
 		  commissions[_account]=commissioninfo(_account,_oracle,_value_energy,_value_time);
 		  commissions[_oracle]=commissioninfo(_account,_oracle,_value_energy,_value_time);
 		  commissioning[_oracle]=readings[_oracle];				  
 		  emit Commissioning(_account,_oracle,_value_energy,_value_time);  
 	}
-	
-	function activateHySToken(HySToken _token) onlyOwner public {
-		current_hystoken = _token;		
-		managed_tokens.push(_token);
-		managed_tokens_cnt=managed_tokens.length;
-	}
-	
-	function createHySToken(uint256 _max_supply) onlyOwner public {
-		HySToken _token = new HySToken();	
-		current_hystoken = _token;		
+			
+	function createHySToken(uint256 _max_supply,uint256 _credit) onlyOwner public {
+		HySToken _token = new HySToken();				
 		managed_tokens.push(_token);
 		managed_tokens_cnt=managed_tokens.length;
 		_token.setMaxSupply(_max_supply);
+		stromkonto.addTx(address(_token),msg.sender,_credit,0);
+		current_hystoken = _token;	
 	}
+	
 	function transferHySToken(address _new_owner,HySToken _token) onlyOwner public {
 			_token.transferOwnership(_new_owner);		
 	} 
@@ -175,8 +176,7 @@ contract HySToken is MPReading,Token {
     mapping(address=>address) public delegations;
 	event Reading(address _meter_point,uint256 _power);
 	event Delegate(address _oracle,address _account);
-	function storeReading(uint256 _reading) public {
-	    
+	function storeReading(uint256 _reading) public {	    
 		    if(readings[tx.origin].power>(0)) {
 				if(totalSupply+_reading-readings[tx.origin].power<maxSupply) {
 					totalSupply+=_reading-readings[tx.origin].power;
@@ -184,7 +184,9 @@ contract HySToken is MPReading,Token {
 						shareHolders.push(tx.origin);	
 					}
 					balanceOf[tx.origin]+=_reading-readings[tx.origin].power;	
-				} else revert();
+				} else {
+					// Funding Goal Reached but no Exception thrown! As we have to set in HySM next Token						
+				}
 			}        			
 			readings[tx.origin]=reading(now,_reading);   			
 			emit Reading(tx.origin,_reading);

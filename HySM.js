@@ -58,7 +58,14 @@ this.hysm = function(obj_or_address) {
 					});
 					return p2;
 				};
-	
+				instance.managed_tokens=function(uint256_idx) {					
+					var p2 = new Promise(function(resolve2, reject2) { 							
+							instance.obj.managed_tokens(uint256_idx).then(function(o) {															
+								 resolve2(o);									
+							});									
+					});
+					return p2;
+				};
 				instance.managed_tokens_cnt=function() {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
 							instance.obj.managed_tokens_cnt().then(function(o) {															
