@@ -408,6 +408,7 @@ module.exports = {
 		this.cutoken = require("./CUToken.js").cutoken;
 		this.prosumer = require("./Prosumer.js").prosumer;
 		this.furyuser = require("./Furyuser.js").furyuser;
+		this.hysm = require("./HySM.js").hysm;
 		/**
 		 * Bridge to DirectConnectionFactory Smart Contract
 		 */
