@@ -402,6 +402,7 @@ module.exports = {
 		this.mptoken = require("./MPToken.js").mptoken;
 		this.xtoken = require("./XToken.js").xtoken;
 		this.erc20token = require("./ERC20Token.js").erc20token;
+		this.erc20token = require("./HySToken.js").hystoken;
 		this.cutokenfactory = require("./CUTokenFactory.js").factory;
 		this.spvfactory = require("./SPVfactory.js").factory;
 		this.spv = require("./SPV.js").spv;
