@@ -728,7 +728,7 @@ this.loadDefaults=function(options) {
 					contract_type["StromDAO-BO.sol_XTokenFactory"]="0x814e1eEE776b00D3285913dADceb2ff6DeEFea51";
 					contract_type["StromDAO-BO.sol_CUTokenFactory"]="0x392c6a3482ffd600fF8C2b816b09d6613ad61BC4";
 					contract_type["StromDAO-BO.sol_SPVfactory"]="0x17Af8b0f84036bE4cf2E0fB02f25ec4ae2ffE08b";					
-					contract_type["StromDAO-BO.sol_HySM"]="0xB36a4ff2d7d3F38EC255D56BABb16DaFF49B8F09";
+					contract_type["StromDAO-BO.sol_HySM"]="0xdC8Dcc960366762a9F1FD50bce903c6167cF590e";
 											
 					var roles=[];
 					roles[0]=0;
@@ -1411,7 +1411,6 @@ this.hysm = function(obj_or_address) {
 				 * @see approveMP()
 				 */
 				instance.storeReading=function(uint256_reading) {
-					//_reading=Math.round(_reading);
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.storeReading(Math.round(uint256_reading)).then(function(o) {	
 								parent._waitForTransactionKeepRef(o,resolve2);			
@@ -1420,6 +1419,31 @@ this.hysm = function(obj_or_address) {
 					return p2;
 				};
 				
+				instance.createHySToken=function(uint256_max_supply,uint256_credit,address_account,address_oracle,uint256_value_energy,uint256_value_time) {					
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.createHySToken(uint256_max_supply,uint256_credit,address_account,address_oracle,uint256_value_energy,uint256_value_time).then(function(o) {	
+								parent._waitForTransactionKeepRef(o,resolve2);			
+							});									
+					});
+					return p2;
+				};
+				instance.commission=function(address_account,address_oracle,uint256_value_energy,uint256_value_time) {					
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.commission(address_account,address_oracle,uint256_value_energy,uint256_value_time).then(function(o) {	
+								parent._waitForTransactionKeepRef(o,resolve2);			
+							});									
+					});
+					return p2;
+				};	
+				
+				instance.setActiveTokenIdx=function(uint256_active_token_idx) {					
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.setActiveTokenIdx(uint256_active_token_idx).then(function(o) {	
+								parent._waitForTransactionKeepRef(o,resolve2);			
+							});									
+					});
+					return p2;
+				};								
 				/**
 				 * Allows a test commit to check if it fails. Prominse that might be used to validate a Meter-Point is fully connected.
 				 */
@@ -3326,6 +3350,12 @@ module.exports = {
 			var crypted = cipher.update(data,'utf8','hex');
 			crypted += cipher.final('hex');
 			return crypted;
+		}
+		this.toMoney=function(uint256) {
+				return uint256/100000000;
+		}
+		this.fromMoney=function(value) {
+				return value*100000000;
 		}
 	},
 	Account:function(username,password) {

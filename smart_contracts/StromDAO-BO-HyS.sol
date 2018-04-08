@@ -104,6 +104,7 @@ contract HySM  is owned,MPReading {
 	mapping(address=>reading) public readings;
 	mapping(address=>reading) public commissioning;
 	mapping(address=>commissioninfo) public commissions;
+	mapping(address=>address) public hysoracles;
 	 
 	HySToken[] public managed_tokens;
 	uint256 public managed_tokens_cnt=0;
@@ -137,12 +138,16 @@ contract HySM  is owned,MPReading {
 		if(address(current_hystoken)!=address(0)) {
 			address oracle=commissions[tx.origin].account;
 			if(oracle==address(0)) oracle=tx.origin;
-			current_hystoken.storeDelegatedReading(oracle,_reading);	
+			if(hysoracles[oracle]==address(0)) {
+				// Only allow to receive tokens for reading if not an oracle of asset
+				current_hystoken.storeDelegatedReading(oracle,_reading);	
+			}
 		}
 	}	
 	
-	function setActiveTokenIdx(uint256 _active_token_idx) {
-		current_hystoken=managed_tokens[active_token_idx];
+	function setActiveTokenIdx(uint256 _active_token_idx) onlyOwner {
+		active_token_idx=_active_token_idx;
+		current_hystoken=managed_tokens[_active_token_idx];		
 	}
 	
 	function commission(address _account,address _oracle,uint256 _value_energy,uint256 _value_time) onlyOwner public {
@@ -152,13 +157,14 @@ contract HySM  is owned,MPReading {
 		  emit Commissioning(_account,_oracle,_value_energy,_value_time);  
 	}
 			
-	function createHySToken(uint256 _max_supply,uint256 _credit) onlyOwner public {
+	function createHySToken(uint256 _max_supply,uint256 _credit,address _account,address _oracle,uint256 _value_energy,uint256 _value_time) onlyOwner public {
 		HySToken _token = new HySToken();				
 		managed_tokens.push(_token);
 		managed_tokens_cnt=managed_tokens.length;
 		_token.setMaxSupply(_max_supply);
-		stromkonto.addTx(address(_token),msg.sender,_credit,0);
-		current_hystoken = _token;	
+		stromkonto.addTx(address(_token),address(this),_credit,0);
+		commissions[address(_token)]=commissioninfo(_account,_oracle,_value_energy,_value_time);
+		hysoracles[_oracle]=address(_token);		
 	}
 	
 	function transferHySToken(address _new_owner,HySToken _token) onlyOwner public {
@@ -185,7 +191,7 @@ contract HySToken is MPReading,Token {
 					}
 					balanceOf[tx.origin]+=_reading-readings[tx.origin].power;	
 				} else {
-					// Funding Goal Reached but no Exception thrown! As we have to set in HySM next Token						
+					// Funding Goal Reached but no Exception thrown! As we have to set in HySM next Token															
 				}
 			}        			
 			readings[tx.origin]=reading(now,_reading);   			

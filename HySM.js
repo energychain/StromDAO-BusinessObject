@@ -22,7 +22,6 @@ this.hysm = function(obj_or_address) {
 				 * @see approveMP()
 				 */
 				instance.storeReading=function(uint256_reading) {
-					//_reading=Math.round(_reading);
 					var p2 = new Promise(function(resolve2, reject2) { 
 							instance.obj.storeReading(Math.round(uint256_reading)).then(function(o) {	
 								parent._waitForTransactionKeepRef(o,resolve2);			
@@ -31,6 +30,31 @@ this.hysm = function(obj_or_address) {
 					return p2;
 				};
 				
+				instance.createHySToken=function(uint256_max_supply,uint256_credit,address_account,address_oracle,uint256_value_energy,uint256_value_time) {					
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.createHySToken(uint256_max_supply,uint256_credit,address_account,address_oracle,uint256_value_energy,uint256_value_time).then(function(o) {	
+								parent._waitForTransactionKeepRef(o,resolve2);			
+							});									
+					});
+					return p2;
+				};
+				instance.commission=function(address_account,address_oracle,uint256_value_energy,uint256_value_time) {					
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.commission(address_account,address_oracle,uint256_value_energy,uint256_value_time).then(function(o) {	
+								parent._waitForTransactionKeepRef(o,resolve2);			
+							});									
+					});
+					return p2;
+				};	
+				
+				instance.setActiveTokenIdx=function(uint256_active_token_idx) {					
+					var p2 = new Promise(function(resolve2, reject2) { 
+							instance.obj.setActiveTokenIdx(uint256_active_token_idx).then(function(o) {	
+								parent._waitForTransactionKeepRef(o,resolve2);			
+							});									
+					});
+					return p2;
+				};								
 				/**
 				 * Allows a test commit to check if it fails. Prominse that might be used to validate a Meter-Point is fully connected.
 				 */

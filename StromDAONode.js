@@ -72,6 +72,12 @@ module.exports = {
 			crypted += cipher.final('hex');
 			return crypted;
 		}
+		this.toMoney=function(uint256) {
+				return uint256/100000000;
+		}
+		this.fromMoney=function(value) {
+				return value*100000000;
+		}
 	},
 	Account:function(username,password) {
 		this.username=username;
