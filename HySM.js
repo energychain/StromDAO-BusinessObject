@@ -30,9 +30,9 @@ this.hysm = function(obj_or_address) {
 					return p2;
 				};
 				
-				instance.createHySToken=function(uint256_max_supply,uint256_credit,address_account,address_oracle,uint256_value_energy,uint256_value_time) {					
+				instance.createHySToken=function(uint256_max_supply,uint256_credit,address_account,address_oracle,uint256_value_energy,uint256_value_time,uint256__time_base) {					
 					var p2 = new Promise(function(resolve2, reject2) { 
-							instance.obj.createHySToken(uint256_max_supply,uint256_credit,address_account,address_oracle,uint256_value_energy,uint256_value_time).then(function(o) {	
+							instance.obj.createHySToken(uint256_max_supply,uint256_credit,address_account,address_oracle,uint256_value_energy,uint256_value_time,uint256__time_base).then(function(o) {	
 								parent._waitForTransactionKeepRef(o,resolve2);			
 							});									
 					});
@@ -102,6 +102,15 @@ this.hysm = function(obj_or_address) {
 				instance.current_hystoken=function() {					
 					var p2 = new Promise(function(resolve2, reject2) { 							
 							instance.obj.current_hystoken().then(function(o) {															
+								 resolve2(o);									
+							});									
+					});
+					return p2;
+				};
+				
+				instance.owner=function() {					
+					var p2 = new Promise(function(resolve2, reject2) { 							
+							instance.obj.owner().then(function(o) {															
 								 resolve2(o);									
 							});									
 					});
