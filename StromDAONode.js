@@ -416,6 +416,9 @@ module.exports = {
 		this.prosumer = require("./Prosumer.js").prosumer;
 		this.furyuser = require("./Furyuser.js").furyuser;
 		this.hysm = require("./HySM.js").hysm;
+		this.apexfund = require("./ApexFund.js").apexfund;
+		this.apextoken = require("./ApexToken.js").apextoken;
+		this.apexcommissions = require("./ApexCommissions.js").apexcommissions;
 		/**
 		 * Bridge to DirectConnectionFactory Smart Contract
 		 */

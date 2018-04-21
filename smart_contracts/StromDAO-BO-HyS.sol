@@ -42,215 +42,247 @@ contract MPReading is owned {
 }
 
 
-contract TxHandler is owned  {	
-	  function addTx(address _from,address _to, uint256 _value,uint256 _base) onlyOwner { }	
-	  function modifySender(address _who,bool _allow) public onlyOwner {	}
-}
-
-contract Stromkonto is TxHandler {
- 
-	event Transfer(address indexed _from, address indexed _to, uint256 _value);
-	event Tx(address _from,address _to, uint256 _value,uint256 _base,uint256 _from_soll,uint256 _from_haben,uint256 _to_soll,uint256 _to_haben);
-	
-	mapping (address => uint256) public balancesHaben;
-	mapping (address => uint256) public balancesSoll;
-	
-	mapping (address => uint256) public baseHaben;
-	mapping (address => uint256) public baseSoll;
-	uint256 public sumTx;
-	uint256 public sumBase;
-	
-	function transfer(address _to, uint256 _value) returns (bool success) { return false; throw;}
-	
-
-	function balanceHaben(address _owner) constant returns (uint256 balance) { return balancesHaben[_owner]; }
-	
-	function balanceSoll(address _owner) constant returns (uint256 balance) { return balancesSoll[_owner]; }
-
-	
-	function addTx(address _from,address _to, uint256 _value,uint256 _base) onlyOwner {}
-	
-}
-
-
-contract StromkontoProxy is Stromkonto {
-		
-		mapping(address=>bool) public allowedSenders;
-		
-		address public receipt_asset;
-		address public receipt_liability;
-		
-		
-		function StromkontoProxy() public { }
-		function modifySender(address _who,bool _allow) public onlyOwner {	}
-				
-		
-		function setReceiptAsset(address _address) public { }
-		
-		function setReceiptLiablity(address _address) public {	}		
-}
-
-contract StromkontoProxyFactory {
-	event Built(address _sp,address _account);
-	
-	function build() returns(StromkontoProxy) {
-		
-	}	
-}
-
-contract HySM  is owned,MPReading {
-	
-	TxHandler public stromkonto;
-	HySToken public current_hystoken;
-	mapping(address=>reading) public readings;
-	mapping(address=>reading) public commissioning;
-	mapping(address=>commissioninfo) public commissions;
-	mapping(address=>address) public hysoracles;
-	 
-	HySToken[] public managed_tokens;
-	uint256 public managed_tokens_cnt=0;
-	uint256 public active_token_idx=0;	
-	
-	struct commissioninfo {
-		address account;
-		address oracle;
-		uint256 value_energy;
-		uint256 value_time;	
-		uint256 time_base;	
-	}
-	event Reading(address _meter_point,uint256 _power);
-	event Commissioning(address account,address oracle,uint256 value_energy,uint256 value_time);
-	
-	
-	function HySM(StromkontoProxyFactory _stromkontoproxyfactory ) public {
-			stromkonto =_stromkontoproxyfactory.build();
-			stromkonto.modifySender(msg.sender,true);
-	}
-	
-	function modifyTxSender(address _who,bool _allow) onlyOwner public {
-		    stromkonto.modifySender(_who,_allow);
-	}
-	
-	function storeReading(uint256 _reading) public {
-		if(readings[tx.origin].power==(0)) {
-			commissioning[tx.origin]=reading(now,_reading); 			
-		} 
-		readings[tx.origin]=reading(now,_reading);   		
-		emit Reading(tx.origin,_reading);
-		if(address(current_hystoken)!=address(0)) {
-			address oracle=commissions[tx.origin].account;
-			if(oracle==address(0)) oracle=tx.origin;
-			if(hysoracles[oracle]==address(0)) {
-				// Only allow to receive tokens for reading if not an oracle of asset
-				current_hystoken.storeDelegatedReading(oracle,_reading);	
-			}
-		}
-	}	
-	
-	function setActiveTokenIdx(uint256 _active_token_idx) onlyOwner {
-		active_token_idx=_active_token_idx;
-		current_hystoken=managed_tokens[_active_token_idx];		
-	}
-	
-	function commission(address _account,address _oracle,uint256 _value_energy,uint256 _value_time) onlyOwner public {
-		  commissions[_account]=commissioninfo(_account,_oracle,_value_energy,_value_time,now);
-		  commissions[_oracle]=commissioninfo(_account,_oracle,_value_energy,_value_time,now);
-		  commissioning[_oracle]=readings[_oracle];				  
-		  emit Commissioning(_account,_oracle,_value_energy,_value_time);  
-	}
-			
-	function createHySToken(uint256 _max_supply,uint256 _credit,address _account,address _oracle,uint256 _value_energy,uint256 _value_time,uint256 _time_base) onlyOwner public {
-		if(_time_base==0) _time_base=now;
-		HySToken _token = new HySToken();				
-		managed_tokens.push(_token);
-		managed_tokens_cnt=managed_tokens.length;
-		_token.setMaxSupply(_max_supply);
-		stromkonto.addTx(address(_token),address(this),_credit,0);
-		commissions[address(_token)]=commissioninfo(_account,_oracle,_value_energy,_value_time,_time_base);
-		hysoracles[_oracle]=address(_token);		
-	}
-	
-	function transferHySToken(address _new_owner,HySToken _token) onlyOwner public {
-			_token.transferOwnership(_new_owner);		
-	} 
-	
-	function setStromkontoProxy(StromkontoProxy _stromkontoproxy) onlyOwner public {	
-		stromkonto.transferOwnership(msg.sender);	
-		stromkonto=_stromkontoproxy;
-	}
-		
-}
-contract HySToken is MPReading,Token {
-    mapping(address=>reading) public readings;    
-	event Reading(address _meter_point,uint256 _power);	
-	function storeReading(uint256 _reading) public {	    
-		    if(readings[tx.origin].power>(0)) {
-				if(totalSupply+_reading-readings[tx.origin].power<maxSupply) {
-					totalSupply+=_reading-readings[tx.origin].power;
-					if(balanceOf[tx.origin]==0) {
-						shareHolders.push(tx.origin);	
-					}
-					balanceOf[tx.origin]+=_reading-readings[tx.origin].power;	
-				} else {
-					// Funding Goal Reached but no Exception thrown! As we have to set in HySM next Token															
-				}
-			}        			
-			readings[tx.origin]=reading(now,_reading);   			
-			emit Reading(tx.origin,_reading);		
-	}	
-	function storeDelegatedReading(address _account,uint256 _reading) public onlyOwner {
+contract ApexToken is Token {
 	    
-		    if(readings[_account].power>(0)) {
-				if(totalSupply+_reading-readings[_account].power<maxSupply) {
-					totalSupply+=_reading-readings[_account].power;
-					if(balanceOf[_account]==0) {
-						shareHolders.push(_account);	
-					}
-					balanceOf[_account]+=_reading-readings[_account].power;	
-				} else revert();
-			}        			
-			readings[_account]=reading(now,_reading);   			
-			emit Reading(_account,_reading);
-	}	
-	    
-    string public standard = 'HySToken 0.3';
-    string public name = "HySToken";
+    string public standard = 'ApexToken 0.2';
+    string public name = "ApexToken";
     string public symbol = "💰";
-    uint8 public decimals = 3;
+    uint8 public decimals = 8;
     uint256 public totalSupply;
 	uint256 public maxSupply;
 	address[] public shareHolders;    
     mapping (address => uint256) public balanceOf;    
+    address public oracle;
+    uint256 public value=0;
     
     event Transfer(address indexed from, address indexed to, uint256 value);
+    event Oracle(address _oracle);
+    event Valuation(uint256 _value);
+    event Shareholder(address _address);
     
-    function HySToken() public {
-        balanceOf[msg.sender] = 0;              // Give the creator all initial tokens
-        totalSupply = 0;                        // Update total supply     
-        maxSupply = 0;   
+    uint256 public freeFlow=0;
+    
+    function ApexToken(uint256 initialSupply,address _oracle) public {
+        balanceOf[msg.sender] = initialSupply;             
+        totalSupply = initialSupply;                       
+        oracle=_oracle;
     }
 
-	function issue(uint256 _value) onlyOwner public {
-			totalSupply+=_value;
-			balanceOf[msg.sender]+=_value;
+	function setOracle(address _oracle) public onlyOwner {
+			oracle=_oracle;
+			Oracle(_oracle);
+	}	
+	
+	function incValue(uint256 _value) public onlyOwner {
+			value+=_value;
+			emit Valuation(value);
 	}
 	
-	function setMaxSupply(uint256 _maxSupply) onlyOwner public {
-			maxSupply=_maxSupply;
+	function setValue(uint256 _value) public onlyOwner {
+			value=_value;
+			emit Valuation(value);
 	}
+	
     /* Send coins */
     function transfer(address _to, uint256 _value) public {
 		if(balanceOf[_to]==0) {
 			shareHolders.push(_to);		
-		}
-        if (balanceOf[msg.sender] < _value) revert();           // Check if the sender has enough
-        if (balanceOf[_to] + _value < balanceOf[_to]) revert(); // Check for overflows
-        balanceOf[msg.sender] -= _value;                     // Subtract from the sender
-        balanceOf[_to] += _value;                            // Add the same to the recipient
-        emit Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
+			emit Shareholder(_to);
+		}		
+        if (balanceOf[msg.sender] < _value) revert();           
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert(); 
+        balanceOf[msg.sender] -= _value;                     
+        balanceOf[_to] += _value;                            
+        emit Transfer(msg.sender, _to, _value);                  
+		freeFlow=totalSupply-balanceOf[owner];
     }
 
     function () public {
-        revert();     // Prevents accidental sending of ether
+        revert();    
     }
+}
+
+contract ApexFund is MPReading {		
+	
+	string public standard = 'ApexToken 0.2';
+    string public name = "ApexToken";
+    string public symbol = "💰";
+    uint8 public decimals = 8;
+    uint256 public totalSupply;
+	uint256 public maxSupply;
+	address[] public shareHolders;    
+    mapping (address => uint256) public balanceOf;    
+    address public oracle;
+    uint256 public value=0;
+    
+    event Transfer(address indexed from, address indexed to, uint256 value);
+    event Oracle(address _oracle);
+    event Valuation(uint256 _value);
+    event Shareholder(address _address);
+    
+    uint256 public freeFlow=0;
+
+	function setOracle(address _oracle) public onlyOwner {
+			oracle=_oracle;
+			Oracle(_oracle);
+	}	
+	
+	function incValue(uint256 _value) public onlyOwner {
+			value+=_value;
+			emit Valuation(value);
+	}
+	
+	function setValue(uint256 _value) public onlyOwner {
+			value=_value;
+			emit Valuation(value);
+	}
+	
+    /* Send coins */
+    function transfer(address _to, uint256 _value) public {
+		if(balanceOf[_to]==0) {
+			shareHolders.push(_to);		
+			emit Shareholder(_to);
+		}
+        if (balanceOf[msg.sender] < _value) revert();           
+        if (balanceOf[_to] + _value < balanceOf[_to]) revert(); 
+        balanceOf[msg.sender] -= _value;                     
+        balanceOf[_to] += _value;                            
+        emit Transfer(msg.sender, _to, _value);                  
+		freeFlow=totalSupply-balanceOf[owner];
+    }
+
+    function () public {
+        revert();    
+    }
+
+    uint256 managed_tokens_cnt=0;    
+    
+    mapping(address=>reading) public readings;
+    mapping(address=>address) public oracles;
+    mapping(address=>address) public accounts;
+    mapping(address=>uint256) public valuation;
+    mapping(address=>ApexToken) public preferedToken;
+       
+    ApexToken[] public managed_tokens;
+    ApexToken public recommended;
+    
+    event addedToken(address indexed _token);
+    event oracleAccount(address indexed _oracle,address indexed _account,uint256 _valuation);
+   
+    
+	function ApexFund()  {
+        balanceOf[msg.sender] = 0;             
+        totalSupply = 0;                               
+    }
+    
+    function addToken(ApexToken _token) public onlyOwner {
+        managed_tokens.push(_token);
+		managed_tokens_cnt=managed_tokens.length;	
+		emit addedToken(_token);
+	}
+	
+	function storeReading(uint256 _reading) public {
+		if(readings[tx.origin].power>_reading) revert();
+		if(readings[tx.origin].power!=0) {
+			// issue Token
+			uint256 power_increase = _reading-readings[tx.origin].power;
+			if(power_increase>0) {
+				address accountable = accounts[tx.origin];	
+				if(accountable!=address(0)) {								
+					value+=valuation[accountable]*power_increase;
+					emit Valuation(valuation[accountable]*power_increase);
+					balanceOf[accountable]+=power_increase;
+					totalSupply+=power_increase;					
+					emit Transfer(msg.sender,accountable, power_increase);                  
+					freeFlow=totalSupply-balanceOf[owner];
+					
+					ApexToken target = recommended;
+					if(address(preferedToken[accountable])!=address(0)) {
+						if(preferedToken[accountable].freeFlow()+power_increase<preferedToken[accountable].totalSupply()) {
+								target=preferedToken[accountable];
+						}
+					}
+					if(address(target)==address(0)) { revert(); }
+					target.transfer(accountable,power_increase);
+					target.incValue(valuation[accountable]*power_increase);					
+					
+				}
+			}				
+		}
+		readings[tx.origin]=reading(now,_reading);
+		emit Reading(tx.origin,_reading);
+	}
+	
+	function addAccountValue(address account,uint256 value_increase) public onlyOwner {
+			incValue(value_increase);
+			balanceOf[owner]+=value_increase;
+			totalSupply+=value_increase;					
+			transfer(account,value_increase);
+			ApexToken target = recommended;
+			if(address(preferedToken[account])!=address(0)) {
+				if(preferedToken[account].freeFlow()+value_increase<preferedToken[account].totalSupply()) {
+						target=preferedToken[account];
+				}
+			}
+			if(address(target)==address(0)) { revert(); }
+			target.transfer(account,value_increase);
+			target.incValue(value_increase);			
+	}
+	
+	function createAndActivateToken(uint256 _initialSupply,address _oracle,uint256 _valuation) public onlyOwner {
+		ApexToken target = new ApexToken(_initialSupply,_oracle);
+		addToken(target);
+		assignOracle(_oracle,target,_valuation);
+		recommended=target;
+	}
+	function addTokenValue(ApexToken _token,uint256 _value) public onlyOwner {
+			value+=_value;
+			_token.incValue(_value);
+			emit Valuation(value);
+	}
+    
+    function setRecommendedToken(uint256 idx) public onlyOwner {
+		recommended=managed_tokens[idx];
+	}
+	
+	function setPreferedToken(ApexToken _token) public {
+		preferedToken[msg.sender]=_token;		
+	}
+	function transferTokenOwnership(ApexToken _token) public onlyOwner {		
+			_token.transferOwnership(msg.sender);
+	}
+    function assignOracle(address _oracle,address _account,uint256 _valuation) public onlyOwner {
+		valuation[_account]=_valuation;
+		oracles[_account]=_oracle;
+		accounts[_oracle]=_account;
+		emit oracleAccount(_oracle,_account,_valuation);
+	}
+}
+
+contract ApexCommissions is owned {
+	
+	struct commissioninfo {	
+		address oracle;	
+		uint256 value_energy;
+		uint256 value_time;	
+		uint256 power_base;
+		uint256 time_base;					
+	}
+    struct reading {
+		uint256 time;
+		uint256 power;
+		
+	}
+	MPReading public apexfund;
+	
+	mapping(address=>commissioninfo) public commissions;
+	
+	function ApexCommissions(MPReading _apexfund) {
+			apexfund=_apexfund;
+	}
+	
+	function commission(address account,address oracle,uint256 value_energy,uint256 value_time,uint256 power,uint256 time) public onlyOwner {				
+		commissions[account]=commissioninfo(oracle,value_energy,value_time,power,time);
+	}  
+	
 }
