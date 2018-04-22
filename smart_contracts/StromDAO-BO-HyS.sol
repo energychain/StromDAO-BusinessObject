@@ -155,7 +155,7 @@ contract ApexFund is MPReading {
         revert();    
     }
 
-    uint256 managed_tokens_cnt=0;    
+    uint256 public managed_tokens_cnt=0;    
     
     mapping(address=>reading) public readings;
     mapping(address=>address) public oracles;
