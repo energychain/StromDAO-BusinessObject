@@ -44,7 +44,7 @@ contract MPReading is owned {
 
 contract ApexToken is Token {
 	    
-    string public standard = 'ApexToken 0.2';
+    string public standard = 'ApexToken 0.3';
     string public name = "ApexToken";
     string public symbol = "💰";
     uint8 public decimals = 8;
@@ -83,6 +83,9 @@ contract ApexToken is Token {
 			emit Valuation(value);
 	}
 	
+	function setName(string _name) public onlyOwner {
+			name=_name;
+	}
     /* Send coins */
     function transfer(address _to, uint256 _value) public {
 		if(balanceOf[_to]==0) {
@@ -104,8 +107,8 @@ contract ApexToken is Token {
 
 contract ApexFund is MPReading {		
 	
-	string public standard = 'ApexToken 0.2';
-    string public name = "ApexToken";
+	string public standard = 'ApexToken 0.3';
+    string public name = "ApexFund";
     string public symbol = "💰";
     uint8 public decimals = 8;
     uint256 public totalSupply;
@@ -114,6 +117,7 @@ contract ApexFund is MPReading {
     mapping (address => uint256) public balanceOf;    
     address public oracle;
     uint256 public value=0;
+    uint256 public invest=0;
     
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Oracle(address _oracle);
@@ -168,7 +172,7 @@ contract ApexFund is MPReading {
     
     event addedToken(address indexed _token);
     event oracleAccount(address indexed _oracle,address indexed _account,uint256 _valuation);
-   
+    event investment(uint256 _invest);
     
 	function ApexFund()  {
         balanceOf[msg.sender] = 0;             
@@ -204,8 +208,7 @@ contract ApexFund is MPReading {
 					}
 					if(address(target)==address(0)) { revert(); }
 					target.transfer(accountable,power_increase);
-					target.incValue(valuation[accountable]*power_increase);					
-					
+					target.incValue(valuation[accountable]*power_increase);						
 				}
 			}				
 		}
@@ -213,7 +216,7 @@ contract ApexFund is MPReading {
 		emit Reading(tx.origin,_reading);
 	}
 	
-	function addAccountValue(address account,uint256 value_increase) public onlyOwner {
+	function addAssetValue(address account,uint256 value_increase) public onlyOwner {
 			incValue(value_increase);
 			balanceOf[owner]+=value_increase;
 			totalSupply+=value_increase;					
@@ -233,11 +236,15 @@ contract ApexFund is MPReading {
 		ApexToken target = new ApexToken(_initialSupply,_oracle);
 		addToken(target);
 		assignOracle(_oracle,target,_valuation);
+		invest+=_initialSupply;
+		emit investment(invest);
 		recommended=target;
 	}
 	function addTokenValue(ApexToken _token,uint256 _value) public onlyOwner {
 			value+=_value;
 			_token.incValue(_value);
+			invest+=_token.totalSupply();
+			emit investment(invest);
 			emit Valuation(value);
 	}
     
