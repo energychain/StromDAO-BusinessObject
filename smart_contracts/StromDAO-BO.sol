@@ -306,31 +306,6 @@ contract Transferable is Stromkonto {
 	
 }
 
-contract StromkontoProxyFactory {
-	event Built(address _sp,address _account);
-	
-	function build() returns(StromkontoProxy) {
-		StromkontoProxy sp = new StromkontoProxy();
-		sp.modifySender(msg.sender,true);
-		sp.transferOwnership(msg.sender);
-		Built(address(sp),msg.sender);
-		return sp;
-	}	
-}
-
-contract AssetsLiabilitiesFactory {
-	event Built(address _al,address _account,address _peer);
-	
-	function build(address _account) returns(StromkontoProxy) {
-		StromkontoProxy sp = new StromkontoProxy();
-		sp.modifySender(msg.sender,true);
-		sp.modifySender(_account,true);
-		sp.transferOwnership(msg.sender);
-		Built(address(sp),msg.sender,_account);
-		return sp;
-	}	
-}
-
 
 contract StromkontoProxy is Stromkonto {
 		
@@ -340,7 +315,7 @@ contract StromkontoProxy is Stromkonto {
 		address public receipt_liability;
 		
 		
-		function StromkontoProxy() {
+		constructor StromkontoProxy() {
 				allowedSenders[msg.sender]=true;
 		}
 		function modifySender(address _who,bool _allow) onlyOwner {

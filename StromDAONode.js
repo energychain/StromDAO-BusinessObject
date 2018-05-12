@@ -419,6 +419,7 @@ module.exports = {
 		this.apexfund = require("./ApexFund.js").apexfund;
 		this.apextoken = require("./ApexToken.js").apextoken;
 		this.apexcommissions = require("./ApexCommissions.js").apexcommissions;
+		this.infostorage = require("./InfoStorage.js").infostorage;
 		/**
 		 * Bridge to DirectConnectionFactory Smart Contract
 		 */
