@@ -1,50 +1,49 @@
 {
-  "name": "stromdao-businessobject",
-  "version": "0.5.54",
-  "description": "Abstract BusinessObject for StromDAO Energy Blockchain. Abstraction layer between blockchain technology and business logic providing energy market related entities and use cases.",
-  "main": "StromDAONode.js",
-  "engines": {
-    "node": ">=7.6.0",
-    "npm": ">=4.5.0"
-  },
-  "scripts": {
-    "lint": "standard --verbose | snazzy",
-    "test": "mocha --harmony test/consensus.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/energychain/StromDAO-BusinessObject.git"
-  },
-  "keywords": [
-    "blockchain",
-    "energy",
-    "businessobject",
-    "power",
-    "delivery",
-    "smartmeter",
-    "abstraction",
-    "stromdao"
-  ],
-  "author": "Thorsten Zoerner <thorsten.zoerner@stromdao.com> (https://stromdao.de)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/energychain/StromDAO-BusinessObject/issues"
-  },
-  "homepage": "https://github.com/energychain/StromDAO-BusinessObject#readme",
-  "dependencies": {    
-    "ethers": "^2.1.3",
-    "get-random-values": "^1.2.0",
-    "nats": "^0.7.24",
-    "node-persist": "^2.1.0",
-    "node-rsa": "^0.4.2",
-    "request": "^2.83.0",
-    "sync": "^0.2.5",
-    "sync-request": "^4.0.3"
-  },
-  "devDependencies": {
-    "bithound": "^1.7.0",
-    "mocha": "^3.5.3",
-    "snazzy": "^7.0.0",
-    "standard": "^10.0.3"
-  }
+	"name": "stromdao-businessobject",
+	"version": "0.5.55",
+	"description": "Abstract BusinessObject for StromDAO Energy Blockchain. Abstraction layer between blockchain technology and business logic providing energy market related entities and use cases.",
+	"keywords": [
+		"blockchain",
+		"energy",
+		"businessobject",
+		"power",
+		"delivery",
+		"smartmeter",
+		"abstraction",
+		"stromdao"
+	],
+	"homepage": "https://github.com/energychain/StromDAO-BusinessObject#readme",
+	"bugs": {
+		"url": "https://github.com/energychain/StromDAO-BusinessObject/issues"
+	},
+	"license": "MIT",
+	"author": "Thorsten Zoerner <thorsten.zoerner@stromdao.com> (https://stromdao.de)",
+	"main": "StromDAONode.js",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/energychain/StromDAO-BusinessObject.git"
+	},
+	"scripts": {
+		"lint": "standard --verbose | snazzy",
+		"test": "mocha --harmony test/consensus.js"
+	},
+	"dependencies": {
+		"ethers": "^2.1.3",
+		"get-random-values": "^1.2.0",
+		"nats": "^0.7.24",
+		"node-persist": "^2.1.0",
+		"node-rsa": "^0.4.2",
+		"request": "^2.83.0",
+		"sync-request": "^4.0.3"
+	},
+	"devDependencies": {
+		"bithound": "^1.7.0",
+		"mocha": "^3.5.3",
+		"snazzy": "^7.0.0",
+		"standard": "^10.0.3"
+	},
+	"engines": {
+		"node": ">=7.6.0",
+		"npm": ">=4.5.0"
+	}
 }
